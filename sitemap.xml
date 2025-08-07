@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/</loc>
+        <lastmod>2024-01-15</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/banner/home-right.png</image:loc>
+            <image:caption>Ahmad Kamel - Professional Web and Mobile Developer</image:caption>
+            <image:title>Ahmad Kamel Portfolio</image:title>
+        </image:image>
+    </url>
+    
+    <!-- About Page -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/about</loc>
+        <lastmod>2024-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/about-us.png</image:loc>
+            <image:caption>Ahmad Kamel - Senior Full Stack Developer Profile</image:caption>
+            <image:title>About Ahmad Kamel</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Contact Page -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/contact</loc>
+        <lastmod>2024-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Services - Website Development -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/#services</loc>
+        <lastmod>2024-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Assets - Important Images -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/assets/img/logo.png</loc>
+        <lastmod>2024-01-15</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+</urlset>
