@@ -1,14 +1,14 @@
 <template>
   <router-link
     :to="toolPath"
-    class="tool-card block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 h-full border border-gray-100"
+    class="tool-card block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 h-full border border-gray-100 flex flex-col"
   >
     <div class="text-center h-full flex flex-col">
-      <div :class="iconBackgroundClass" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
+      <div :class="iconBackgroundClass" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg">
         <div class="text-2xl">{{ icon }}</div>
       </div>
       <h3 class="text-xl font-bold text-gray-800 mb-3">{{ title }}</h3>
-      <p class="text-gray-600 text-sm leading-relaxed flex-grow mb-4">{{ description }}</p>
+      <p class="text-gray-600 text-sm leading-relaxed flex-grow mb-6">{{ description }}</p>
       <div class="mt-auto">
         <div :class="buttonClass" class="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-lg transform hover:scale-105 transition-all duration-300 w-full justify-center">
           {{ actionText || 'Open Tool' }}
