@@ -47,8 +47,28 @@
             gtag('config', 'G-EK4W85EF5F');
         }
     </script>
-  <script type="module" crossorigin src="/assets/main-HRqT0jqP.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-BVr0fk-6.css">
+
+    <script>
+        // SPA-Static Integration Bridge
+        // This script helps coordinate between Vue SPA and static HTML files
+        
+        // Set initial SPA preference flag
+        if (!localStorage.getItem('prefer-spa')) {
+            localStorage.setItem('prefer-spa', 'true');
+        }
+        
+        // Handle direct URL access to tools
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/tools/') && !currentPath.endsWith('.html')) {
+            // This is a Vue SPA route, make sure the router handles it
+            console.log('SPA handling tool route:', currentPath);
+        }
+    </script>
+
+    <!-- Routing Bridge for enhanced navigation -->
+    <script src="/assets/js/routing-bridge.js"></script>
+  <script type="module" crossorigin src="/assets/main-aSj7m82x.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-BfCA3JEV.css">
 </head>
 <body>
     <div id="app"></div>

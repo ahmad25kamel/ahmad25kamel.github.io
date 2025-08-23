@@ -18,6 +18,9 @@
     </script>
     
     <!-- Local CSS -->
+    
+    <!-- Routing Bridge for seamless navigation -->
+    <script src="../assets/js/routing-bridge.js"></script>
     <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
     
     <!-- PDF-lib CDN -->
@@ -37,6 +40,27 @@
         .drop-zone.dragover {
             border-color: #8b5cf6;
             background-color: #f3e8ff;
+        }
+        
+        /* Breadcrumb styling */
+        .breadcrumb-container {
+            font-size: 0.875rem;
+        }
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .breadcrumb-link:hover {
+            color: white;
+        }
+        .breadcrumb-separator {
+            margin: 0 8px;
+            opacity: 0.6;
+        }
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
         }
         .page-checkbox {
             cursor: pointer;
@@ -65,7 +89,7 @@
                     <h1 class="text-2xl md:text-3xl font-bold">Split PDF</h1>
                     <p class="text-sm md:text-base opacity-90">Extract specific pages or split into multiple documents</p>
                 </div>
-                <a href="../index.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                <div class="navigation-wrapper"><div class="breadcrumb-container text-sm opacity-75 mb-2"></div><a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
                     ← Back to Tools
                 </a>
             </div>
