@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF to Image Converter - Private Online Tools</title>
     <meta name="description" content="Convert PDF pages to PNG/JPG images. Download individually or as ZIP. 100% client-side, no uploads required.">
+    <meta name="keywords" content="PDF to image, PDF to PNG, PDF to JPG, convert PDF, PDF converter, PDF to picture, extract images from PDF, PDF image extractor, free PDF converter, online PDF to image">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     
     <!-- Google Analytics -->
@@ -16,8 +17,8 @@
         gtag('config', 'G-EK4W85EF5F');
     </script>
     
-    <!-- TailwindCSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
     
     <!-- PDF.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -36,6 +37,12 @@
         .drop-zone.dragover {
             border-color: #3182ce;
             background-color: #ebf8ff;
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -133,6 +140,30 @@
             <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
         </div>
     </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
+        ☕ Support
+    </button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
+                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
+                <div class="space-y-3">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
+                        🎁 Saweria (Indonesia)
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
+                        ❤️ GitHub Sponsors
+                    </a>
+                </div>
+                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // PDF.js worker setup
@@ -287,6 +318,25 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        });
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', () => {
+            supportModal.classList.add('hidden');
+        });
+
+        supportModal.addEventListener('click', (e) => {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
         });
     </script>
 </body>
