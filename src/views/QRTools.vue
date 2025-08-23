@@ -290,19 +290,64 @@ export default {
         return
       }
       
-      // Load QR code library from public folder
+      // Load QR code library - try CDN first for reliability
       try {
         const script = document.createElement('script')
-        script.src = '/js/qrcode.min.js'
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js'
         script.onload = () => {
           console.log('QR code library loaded successfully')
+          // QRious creates window.QRious, so we need to adapt
+          if (window.QRious && !window.QRCode) {
+            this.setupQRCode()
+          }
         }
-        script.onerror = (error) => {
-          console.error('Failed to load QR code library:', error)
+        script.onerror = () => {
+          console.log('CDN failed, trying local library')
+          this.loadLocalQRLibrary()
         }
         document.head.appendChild(script)
       } catch (error) {
         console.error('Error loading QR library:', error)
+        this.loadLocalQRLibrary()
+      }
+    },
+
+    async loadLocalQRLibrary() {
+      try {
+        const script = document.createElement('script')
+        script.src = '/js/qrcode.min.js'
+        script.onload = () => {
+          console.log('Local QR code library loaded successfully')
+        }
+        script.onerror = (error) => {
+          console.error('Failed to load local QR code library:', error)
+        }
+        document.head.appendChild(script)
+      } catch (error) {
+        console.error('Error loading local QR library:', error)
+      }
+    },
+
+    setupQRCode() {
+      // Create a QRCode compatibility layer for QRious
+      if (window.QRious && !window.QRCode) {
+        window.QRCode = {
+          toCanvas: (canvas, text, options, callback) => {
+            try {
+              const qr = new QRious({
+                element: canvas,
+                value: text,
+                size: options.width || 300,
+                background: options.color?.light || '#ffffff',
+                foreground: options.color?.dark || '#000000',
+                errorCorrectionLevel: options.errorCorrectionLevel || 'M'
+              })
+              if (callback) callback(null)
+            } catch (error) {
+              if (callback) callback(error)
+            }
+          }
+        }
       }
     },
 
@@ -314,10 +359,15 @@ export default {
 
       try {
         // Wait for QRCode library to be available
-        if (!window.QRCode) {
-          console.log('QRCode library not yet loaded, retrying...')
+        if (!window.QRCode && !window.QRious) {
+          console.log('QR library not yet loaded, retrying...')
           setTimeout(() => this.generateQRCode(), 100)
           return
+        }
+
+        // Setup QRCode compatibility if using QRious
+        if (window.QRious && !window.QRCode) {
+          this.setupQRCode()
         }
 
         const canvas = this.$refs.qrCanvas
@@ -338,15 +388,28 @@ export default {
         const ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         
-        // Generate QR code using the actual library
-        window.QRCode.toCanvas(canvas, this.qrText, options, (error) => {
-          if (error) {
-            console.error('Error generating QR code:', error)
-            return
-          }
-          
+        // Generate QR code using the library
+        if (window.QRCode) {
+          window.QRCode.toCanvas(canvas, this.qrText, options, (error) => {
+            if (error) {
+              console.error('Error generating QR code:', error)
+              return
+            }
+            
+            this.generatedQR = canvas.toDataURL()
+          })
+        } else if (window.QRious) {
+          // Direct QRious usage as fallback
+          const qr = new QRious({
+            element: canvas,
+            value: this.qrText,
+            size: parseInt(this.qrSize),
+            background: this.backgroundColor,
+            foreground: this.foregroundColor,
+            errorCorrectionLevel: this.errorCorrection
+          })
           this.generatedQR = canvas.toDataURL()
-        })
+        }
       } catch (error) {
         console.error('Error generating QR code:', error)
       }
@@ -519,6 +582,9 @@ export default {
   },
 
   mounted() {
+    // Load QR code library
+    this.loadQRLibrary()
+    
     // SEO optimizations
     document.title = 'QR Code Tools - Private Online Tools'
     
@@ -526,7 +592,7 @@ export default {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Generate QR codes from text or decode QR codes from images. 100% client-side, no uploads required.')
     }
-  }
+  },
 }
 </script>
 
@@ -552,6 +618,21 @@ export default {
 .tab-button.active {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
+}
+
+/* QR Code canvas styling */
+.qr-preview {
+  max-width: 300px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.qr-preview canvas {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
 }
 
 .qr-preview {

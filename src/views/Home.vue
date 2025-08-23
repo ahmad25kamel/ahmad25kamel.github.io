@@ -13,7 +13,7 @@
     <!-- Main Content -->
     <main class="container mx-auto py-8 lg:py-12">
       <!-- Tools Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 lg:mb-16 auto-rows-fr">
+      <div class="tools-grid mb-12 lg:mb-16 auto-rows-fr">
         <!-- PDF Tools -->
         <ToolCard
           icon="📄"
@@ -69,7 +69,7 @@
       <!-- Features Section -->
       <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8 mb-12 lg:mb-16 border border-gray-100">
         <h2 class="text-2xl lg:text-3xl font-bold text-center text-gray-800 mb-8 lg:mb-10">Why Choose Our Tools?</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
+        <div class="features-grid auto-rows-fr">
           <div class="text-center p-4 flex flex-col">
             <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg">
               <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@
       </div>
 
       <!-- Categories Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12 lg:mb-16 auto-rows-fr">
+      <div class="categories-grid mb-12 lg:mb-16 auto-rows-fr">
         <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col">
           <h3 class="text-lg font-bold text-gray-800 mb-4">📄 PDF Tools</h3>
           <p class="text-gray-600 text-sm flex-grow">Convert, merge, split, and manipulate PDF files</p>
