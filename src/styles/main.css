@@ -97,12 +97,33 @@
     }
 }
 
-/* Animation classes */
+/* Animation classes - Enhanced */
 .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease-in-out;
 }
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
+}
+
+/* Pulse animation for loading states */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+button:focus, input:focus, textarea:focus, select:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
 }
 
 /* Language selector styles */
