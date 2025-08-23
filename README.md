@@ -1,12 +1,12 @@
 # Ahmad Kamel - Professional Web & Mobile Developer Portfolio
 
-🚀 **Expert Full Stack Developer | 8+ Years Experience | Cairo, Egypt**
+🚀 **Expert Full Stack Developer | 8+ Years Experience | Indonesia**
 
 Welcome to my professional portfolio website showcasing my expertise in web and mobile development. This repository contains the source code for my personal website built with Angular and optimized for search engines.
 
 ## 🌟 About Me
 
-I'm Ahmad Kamel, a passionate full-stack developer with over 8 years of experience creating innovative web and mobile solutions. Based in Cairo, Egypt, I specialize in building scalable applications that drive business growth and enhance user experiences for clients worldwide.
+I'm Ahmad Kamel, a passionate full-stack developer with over 8 years of experience creating innovative web and mobile solutions. Based in Indonesia, I specialize in building scalable applications that drive business growth and enhance user experiences for clients worldwide.
 
 ### 🎯 Specializations
 - **Frontend Development**: React.js, Angular, Vue.js, JavaScript (ES6+), TypeScript
@@ -59,8 +59,8 @@ This website has been fully optimized for search engines with:
 - ✅ Contact forms optimized for lead generation
 
 ### Local SEO
-- ✅ Cairo, Egypt location targeting
-- ✅ Arabic and English language support
+- ✅ Indonesia location targeting
+- ✅ Indonesia and English language support
 - ✅ Regional business information
 
 ## 📱 Features
