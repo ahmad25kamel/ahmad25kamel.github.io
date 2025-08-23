@@ -11,7 +11,7 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       input: {
-        main: resolve(fileURLToPath(new URL('.', import.meta.url)), 'index_vue.html')
+        main: resolve(fileURLToPath(new URL('.', import.meta.url)), 'index.html')
       },
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
@@ -28,5 +28,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
-  }
+  },
+  root: '.',
+  publicDir: 'public'
 })
