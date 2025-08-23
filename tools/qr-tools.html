@@ -15,8 +15,8 @@
     <script src="../assets/js/i18n.js"></script>
     
     <!-- Local QR Code libraries -->
-    <script src="../assets/js/vendor/qrcode-fixed.js"></script>
-    <script src="../assets/js/vendor/simple-qr-reader.js"></script>
+    <script src="../assets/js/vendor/qrcode-simple.js"></script>
+    <script src="../assets/js/vendor/qr-reader-simple.js"></script>
     
     <style>
         .gradient-bg {
@@ -190,10 +190,10 @@
                         <!-- QR code will be generated here -->
                     </div>
                     <div class="space-x-4">
-                        <button id="downloadQR" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded transition-colors">
+                        <button id="downloadQR" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg font-medium">
                             📥 Download QR Code
                         </button>
-                        <button id="copyQR" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition-colors">
+                        <button id="copyQR" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-lg font-medium">
                             📋 Copy to Clipboard
                         </button>
                     </div>
