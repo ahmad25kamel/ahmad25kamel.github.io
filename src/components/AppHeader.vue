@@ -1,19 +1,23 @@
 <template>
-  <header class="gradient-bg text-white py-6">
+  <header class="gradient-bg text-white py-6 lg:py-8">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <router-link
             v-if="showBackButton"
             to="/"
-            class="flex items-center text-white hover:text-gray-200 transition-colors"
+            class="flex items-center text-white hover:text-gray-200 transition-colors bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-2 rounded-lg"
           >
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            Back to Tools
+            <span class="hidden sm:inline">Back to Tools</span>
+            <span class="sm:hidden">Back</span>
           </router-link>
-          <h1 class="text-2xl md:text-3xl font-bold">{{ title }}</h1>
+          <div>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold">{{ title }}</h1>
+            <p v-if="subtitle" class="text-sm lg:text-lg opacity-90 mt-1">{{ subtitle }}</p>
+          </div>
         </div>
         
         <!-- Language Selector (if needed) -->
@@ -41,8 +45,6 @@
           </div>
         </div>
       </div>
-      
-      <p v-if="subtitle" class="mt-2 text-lg opacity-90">{{ subtitle }}</p>
     </div>
   </header>
 </template>
