@@ -30,12 +30,19 @@
     <link rel="icon" type="image/png" href="/assets/img/favicon.png">
     
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-EK4W85EF5F');
+        // Only load Google Analytics if not blocked by privacy tools
+        if (!navigator.doNotTrack && !window.doNotTrack) {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F';
+            document.head.appendChild(script);
+            
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EK4W85EF5F');
+        }
     </script>
   <script type="module" crossorigin src="/assets/main-Bl_BXozt.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/main-C0GRWp4Y.css">
