@@ -2,54 +2,157 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     
-    <!-- Homepage -->
+    <!-- Homepage - Portfolio & Tools Landing -->
     <url>
         <loc>https://ahmad25kamel.github.io/</loc>
-        <lastmod>2024-01-15</lastmod>
+        <lastmod>2025-08-23</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
         <image:image>
             <image:loc>https://ahmad25kamel.github.io/assets/img/banner/home-right.png</image:loc>
-            <image:caption>Ahmad Kamel - Professional Web and Mobile Developer</image:caption>
-            <image:title>Ahmad Kamel Portfolio</image:title>
+            <image:caption>Ahmad Kamel - Professional Web and Mobile Developer with Privacy-First Online Tools</image:caption>
+            <image:title>Ahmad Kamel Portfolio and Private Online Tools</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Private Online Tools - 100% Client-Side Privacy Tools</image:caption>
+            <image:title>Privacy Tools Favicon</image:title>
         </image:image>
     </url>
     
     <!-- About Page -->
     <url>
         <loc>https://ahmad25kamel.github.io/about</loc>
-        <lastmod>2024-01-15</lastmod>
+        <lastmod>2025-08-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
         <image:image>
             <image:loc>https://ahmad25kamel.github.io/assets/img/about-us.png</image:loc>
-            <image:caption>Ahmad Kamel - Senior Full Stack Developer Profile</image:caption>
-            <image:title>About Ahmad Kamel</image:title>
+            <image:caption>Ahmad Kamel - Senior Full Stack Developer Profile with 8+ Years Experience</image:caption>
+            <image:title>About Ahmad Kamel - Expert Developer</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Privacy Tools Section -->
+    
+    <!-- PDF to Image Converter -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/pdf-to-image.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Convert PDF pages to PNG/JPG images - 100% client-side privacy tool</image:caption>
+            <image:title>PDF to Image Converter Tool</image:title>
+        </image:image>
+    </url>
+    
+    <!-- PDF Merger -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/merge-pdf.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Combine multiple PDF files into single document - 100% client-side privacy tool</image:caption>
+            <image:title>PDF Merger Tool</image:title>
+        </image:image>
+    </url>
+    
+    <!-- PDF Splitter -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/split-pdf.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Extract specific pages or split PDF into multiple documents - 100% client-side privacy tool</image:caption>
+            <image:title>PDF Splitter Tool</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Image Resizer -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/resize-image.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Change image dimensions by pixels or percentage - 100% client-side privacy tool</image:caption>
+            <image:title>Image Resizer Tool</image:title>
+        </image:image>
+    </url>
+    
+    <!-- Image Compressor -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/compress-image.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Reduce image file size with quality control - 100% client-side privacy tool</image:caption>
+            <image:title>Image Compressor Tool</image:title>
+        </image:image>
+    </url>
+    
+    <!-- QR Code Tools -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/tools/qr-tools.html</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://ahmad25kamel.github.io/assets/img/favicon.png</image:loc>
+            <image:caption>Generate and decode QR codes - 100% client-side privacy tool</image:caption>
+            <image:title>QR Code Generator and Scanner Tool</image:title>
         </image:image>
     </url>
     
     <!-- Contact Page -->
     <url>
         <loc>https://ahmad25kamel.github.io/contact</loc>
-        <lastmod>2024-01-15</lastmod>
+        <lastmod>2025-08-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
-    <!-- Services - Website Development -->
-    <url>
-        <loc>https://ahmad25kamel.github.io/#services</loc>
-        <lastmod>2024-01-15</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
+    <!-- Important Assets and Resources -->
     
-    <!-- Assets - Important Images -->
+    <!-- Logo and Branding -->
     <url>
         <loc>https://ahmad25kamel.github.io/assets/img/logo.png</loc>
-        <lastmod>2024-01-15</lastmod>
+        <lastmod>2025-08-23</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
+    </url>
+    
+    <!-- Main Banner Image -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/assets/img/banner/home-right.png</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+    <!-- Favicon -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/favicon.ico</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Robots.txt -->
+    <url>
+        <loc>https://ahmad25kamel.github.io/robots.txt</loc>
+        <lastmod>2025-08-23</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.2</priority>
     </url>
     
 </urlset>
