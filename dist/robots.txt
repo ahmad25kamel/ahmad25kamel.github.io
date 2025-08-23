@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /source/
+Disallow: /old/
+Disallow: /*.json$
+Disallow: /*.ts$
+Disallow: /*.scss$
+
+# Allow important resources
+Allow: /assets/
+Allow: /dist/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.svg
+Allow: *.pdf
+
+# Sitemap location
+Sitemap: https://ahmad25kamel.github.io/sitemap.xml
+
+# Crawl delay to be respectful to servers
+Crawl-delay: 1
