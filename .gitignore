@@ -13,6 +13,9 @@ yarn-error.log*
 # Build outputs
 dist/
 
+# Test coverage
+coverage/
+
 # IDE files
 .vscode/
 .idea/
