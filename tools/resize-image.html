@@ -7,15 +7,6 @@
     <meta name="description" content="Change image dimensions by pixels or percentage with preview. 100% client-side, no uploads required.">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-EK4W85EF5F');
-    </script>
-    
     <!-- Local CSS -->
     <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
     
@@ -30,14 +21,6 @@
         .drop-zone.dragover {
             border-color: #f59e0b;
             background-color: #fffbeb;
-        }
-        .preview-container {
-            max-height: 400px;
-            overflow: hidden;
-        }
-        .image-compare {
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
         }
     </style>
 </head>
@@ -110,74 +93,25 @@
         <div id="resizeControls" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Resize Settings</h2>
             
-            <!-- Resize Method -->
+            <!-- Resize by pixels -->
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-3">Resize Method</label>
-                <div class="space-y-2">
-                    <label class="flex items-center">
-                        <input type="radio" name="resizeMethod" value="pixels" checked class="mr-3">
-                        <span>By Pixels (Exact dimensions)</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="resizeMethod" value="percentage" class="mr-3">
-                        <span>By Percentage (Scale proportionally)</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Pixel Method -->
-            <div id="pixelMethod" class="mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Dimensions</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Width (px)</label>
-                        <input type="number" id="newWidth" min="1" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                        <input type="number" id="newWidth" class="w-full p-2 border border-gray-300 rounded" placeholder="Width">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Height (px)</label>
-                        <input type="number" id="newHeight" min="1" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-                    </div>
-                    <div class="flex items-end">
-                        <label class="flex items-center">
-                            <input type="checkbox" id="maintainAspectRatio" checked class="mr-2">
-                            <span class="text-sm">Maintain aspect ratio</span>
-                        </label>
+                        <input type="number" id="newHeight" class="w-full p-2 border border-gray-300 rounded" placeholder="Height">
                     </div>
                 </div>
-            </div>
-
-            <!-- Percentage Method -->
-            <div id="percentageMethod" class="mb-6 hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Scale Percentage</label>
-                        <input type="range" id="scaleSlider" min="10" max="500" value="100" class="w-full">
-                        <div class="text-sm text-gray-600 text-center mt-1">Scale: <span id="scaleValue">100</span>%</div>
-                    </div>
-                    <div class="flex items-center justify-center">
-                        <div class="text-center">
-                            <p class="text-sm text-gray-600">New dimensions</p>
-                            <p class="font-semibold" id="scaledDimensions">-</p>
-                        </div>
-                    </div>
+                <div class="mt-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="maintainAspectRatio" checked class="mr-2">
+                        <span class="text-sm text-gray-700">Maintain aspect ratio</span>
+                    </label>
                 </div>
-            </div>
-
-            <!-- Output Format -->
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
-                <select id="outputFormat" class="w-full md:w-48 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-                    <option value="original">Keep Original Format</option>
-                    <option value="png">PNG (Lossless)</option>
-                    <option value="jpg">JPG (Smaller file size)</option>
-                    <option value="webp">WebP (Modern format)</option>
-                </select>
-            </div>
-
-            <!-- Quality Slider (for JPG/WebP) -->
-            <div id="qualityControls" class="mb-6 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Image Quality</label>
-                <input type="range" id="qualitySlider" min="10" max="100" value="90" class="w-full md:w-64">
-                <div class="text-sm text-gray-600 text-center mt-1">Quality: <span id="qualityValue">90</span>%</div>
             </div>
 
             <!-- Resize Button -->
@@ -193,49 +127,59 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Original Image -->
                 <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-3">Original</h3>
-                    <div class="preview-container image-compare">
-                        <img id="originalPreview" src="" alt="Original" class="w-full h-auto">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Original</h3>
+                    <div class="border rounded-lg overflow-hidden bg-gray-50">
+                        <img id="originalPreview" class="w-full" alt="Original">
                     </div>
-                    <p class="text-sm text-gray-600 mt-2 text-center" id="originalInfo">-</p>
+                    <p class="text-sm text-gray-600 mt-2" id="originalInfo">-</p>
                 </div>
-
+                
                 <!-- Resized Image -->
                 <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-3">Resized</h3>
-                    <div class="preview-container image-compare">
-                        <img id="resizedPreview" src="" alt="Resized" class="w-full h-auto">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Resized</h3>
+                    <div class="border rounded-lg overflow-hidden bg-gray-50">
+                        <img id="resizedPreview" class="w-full" alt="Resized">
                     </div>
-                    <p class="text-sm text-gray-600 mt-2 text-center" id="resizedInfo">-</p>
+                    <p class="text-sm text-gray-600 mt-2" id="resizedInfo">-</p>
                 </div>
             </div>
-
-            <!-- Download Button -->
-            <div class="text-center mt-6">
-                <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded transition-colors">
-                    📥 Download Resized Image
-                </button>
-            </div>
-        </div>
-
-        <!-- Info Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-3">🔒 Privacy & Security</h3>
-            <ul class="text-gray-600 space-y-2">
-                <li>• Your images are processed entirely in your browser</li>
-                <li>• No images are uploaded to any server</li>
-                <li>• All processing happens offline on your device</li>
-                <li>• Perfect for sensitive or personal images</li>
-            </ul>
+            
+            <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded mt-4 transition-colors">
+                📥 Download Resized Image
+            </button>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="gradient-bg text-white py-4 mt-12">
+    <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">
             <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
         </div>
     </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
+        ☕ Support
+    </button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
+                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
+                <div class="space-y-3">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
+                        🎁 Saweria (Indonesia)
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
+                        ❤️ GitHub Sponsors
+                    </a>
+                </div>
+                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Elements
@@ -250,13 +194,6 @@
         const newWidth = document.getElementById('newWidth');
         const newHeight = document.getElementById('newHeight');
         const maintainAspectRatio = document.getElementById('maintainAspectRatio');
-        const scaleSlider = document.getElementById('scaleSlider');
-        const scaleValue = document.getElementById('scaleValue');
-        const scaledDimensions = document.getElementById('scaledDimensions');
-        const outputFormat = document.getElementById('outputFormat');
-        const qualityControls = document.getElementById('qualityControls');
-        const qualitySlider = document.getElementById('qualitySlider');
-        const qualityValue = document.getElementById('qualityValue');
         const resizeBtn = document.getElementById('resizeBtn');
         const previewSection = document.getElementById('previewSection');
         const originalPreview = document.getElementById('originalPreview');
@@ -264,8 +201,6 @@
         const originalInfo = document.getElementById('originalInfo');
         const resizedInfo = document.getElementById('resizedInfo');
         const downloadBtn = document.getElementById('downloadBtn');
-        const pixelMethod = document.getElementById('pixelMethod');
-        const percentageMethod = document.getElementById('percentageMethod');
 
         let originalImage = null;
         let originalImageFile = null;
@@ -295,43 +230,6 @@
         fileInput.addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
                 loadImage(e.target.files[0]);
-            }
-        });
-
-        // Resize method change
-        document.querySelectorAll('input[name="resizeMethod"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'pixels') {
-                    pixelMethod.classList.remove('hidden');
-                    percentageMethod.classList.add('hidden');
-                } else {
-                    pixelMethod.classList.add('hidden');
-                    percentageMethod.classList.remove('hidden');
-                }
-            });
-        });
-
-        // Scale slider
-        scaleSlider.addEventListener('input', function() {
-            scaleValue.textContent = this.value;
-            if (originalImage) {
-                const newW = Math.round(originalImage.width * (this.value / 100));
-                const newH = Math.round(originalImage.height * (this.value / 100));
-                scaledDimensions.textContent = `${newW} × ${newH}`;
-            }
-        });
-
-        // Quality slider
-        qualitySlider.addEventListener('input', function() {
-            qualityValue.textContent = this.value;
-        });
-
-        // Output format change
-        outputFormat.addEventListener('change', function() {
-            if (this.value === 'jpg' || this.value === 'webp') {
-                qualityControls.classList.remove('hidden');
-            } else {
-                qualityControls.classList.add('hidden');
             }
         });
 
@@ -380,22 +278,18 @@
 
         // Display image information
         function displayImageInfo() {
-            originalSize.textContent = `${originalImage.width} × ${originalImage.height}`;
+            originalSize.textContent = originalImage.width + ' × ' + originalImage.height;
             fileSize.textContent = formatFileSize(originalImageFile.size);
             imageFormat.textContent = originalImageFile.type.split('/')[1].toUpperCase();
             
             const ratio = calculateAspectRatio(originalImage.width, originalImage.height);
-            aspectRatio.textContent = `${ratio.width}:${ratio.height}`;
+            aspectRatio.textContent = ratio.width + ':' + ratio.height;
         }
 
         // Setup resize controls with original dimensions
         function setupResizeControls() {
             newWidth.value = originalImage.width;
             newHeight.value = originalImage.height;
-            
-            const newW = Math.round(originalImage.width * (scaleSlider.value / 100));
-            const newH = Math.round(originalImage.height * (scaleSlider.value / 100));
-            scaledDimensions.textContent = `${newW} × ${newH}`;
         }
 
         // Update aspect ratio
@@ -422,17 +316,8 @@
         resizeBtn.addEventListener('click', function() {
             if (!originalImage) return;
 
-            const resizeMethod = document.querySelector('input[name="resizeMethod"]:checked').value;
-            let targetWidth, targetHeight;
-
-            if (resizeMethod === 'pixels') {
-                targetWidth = parseInt(newWidth.value);
-                targetHeight = parseInt(newHeight.value);
-            } else {
-                const scale = scaleSlider.value / 100;
-                targetWidth = Math.round(originalImage.width * scale);
-                targetHeight = Math.round(originalImage.height * scale);
-            }
+            const targetWidth = parseInt(newWidth.value);
+            const targetHeight = parseInt(newHeight.value);
 
             if (!targetWidth || !targetHeight) {
                 alert('Please enter valid dimensions.');
@@ -452,41 +337,18 @@
             
             ctx.drawImage(originalImage, 0, 0, width, height);
 
-            // Get output format
-            let format = outputFormat.value;
-            if (format === 'original') {
-                format = originalImageFile.type.split('/')[1];
-            }
-
-            let mimeType;
-            let quality = qualitySlider.value / 100;
-
-            switch (format) {
-                case 'png':
-                    mimeType = 'image/png';
-                    break;
-                case 'jpg':
-                    mimeType = 'image/jpeg';
-                    break;
-                case 'webp':
-                    mimeType = 'image/webp';
-                    break;
-                default:
-                    mimeType = originalImageFile.type;
-            }
-
-            resizedImageDataUrl = canvas.toDataURL(mimeType, quality);
+            resizedImageDataUrl = canvas.toDataURL('image/png', 0.9);
             
             // Update preview
             resizedPreview.src = resizedImageDataUrl;
-            originalInfo.textContent = `${originalImage.width} × ${originalImage.height} (${formatFileSize(originalImageFile.size)})`;
+            originalInfo.textContent = originalImage.width + ' × ' + originalImage.height + ' (' + formatFileSize(originalImageFile.size) + ')';
             
             // Calculate new file size (approximate)
-            const newSize = Math.round(resizedImageDataUrl.length * 0.75); // Base64 overhead
-            resizedInfo.textContent = `${width} × ${height} (${formatFileSize(newSize)})`;
+            const newSize = Math.round(resizedImageDataUrl.length * 0.75);
+            resizedInfo.textContent = width + ' × ' + height + ' (' + formatFileSize(newSize) + ')';
             
             previewSection.classList.remove('hidden');
-        });
+        }
 
         // Download resized image
         downloadBtn.addEventListener('click', function() {
@@ -494,14 +356,7 @@
 
             const link = document.createElement('a');
             link.href = resizedImageDataUrl;
-            
-            let format = outputFormat.value;
-            if (format === 'original') {
-                format = originalImageFile.type.split('/')[1];
-            }
-            
-            const filename = `resized-image.${format}`;
-            link.download = filename;
+            link.download = 'resized-image.png';
             
             document.body.appendChild(link);
             link.click();
@@ -516,6 +371,26 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
