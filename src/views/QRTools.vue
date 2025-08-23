@@ -290,10 +290,10 @@ export default {
         return
       }
       
-      // Load QR code library from local files
+      // Load QR code library from public folder
       try {
         const script = document.createElement('script')
-        script.src = '/assets/js/vendor/qrcode.min.js'
+        script.src = '/js/qrcode.min.js'
         script.onload = () => {
           console.log('QR code library loaded successfully')
         }
@@ -471,7 +471,7 @@ export default {
         }
         
         const script = document.createElement('script')
-        script.src = '/assets/js/vendor/simple-qr-reader.js'
+        script.src = '/js/simple-qr-reader.js'
         script.onload = () => {
           console.log('jsQR library loaded successfully')
           resolve()
