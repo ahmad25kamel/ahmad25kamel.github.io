@@ -11,22 +11,22 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* Tool card hover effects - Enhanced with better shadows */
+/* Tool card hover effects - Enhanced with better shadows and consistency */
 .tool-card {
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tool-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
 }
 
-/* Floating support button - Enhanced design */
+/* Floating support button - Enhanced design with better positioning */
 .floating-btn {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 1.5rem;
+    right: 1.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -35,15 +35,25 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     backdrop-filter: blur(10px);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
 }
 
 .floating-btn:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px) scale(1.02);
     box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-    scale: 1.05;
+}
+
+@media (max-width: 640px) {
+    .floating-btn {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 10px 16px;
+        font-size: 0.8rem;
+    }
 }
 
 /* Support modal styles */
@@ -72,28 +82,44 @@
 
 /* Responsive design helpers - Enhanced for better desktop/mobile balance */
 .container { 
-  max-width: 1200px; /* Prevent too wide on large screens */
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
 }
 
 @media (max-width: 768px) {
     .tool-card {
         margin-bottom: 1rem;
     }
-    
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
 }
 
 /* Better spacing for desktop */
 @media (min-width: 1024px) {
     .container {
-        max-width: 1100px; /* Slightly smaller max width for better readability */
+        max-width: 1100px;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
     
     .tool-card {
-        min-height: 200px; /* Consistent card heights */
+        min-height: 220px; /* Consistent card heights with better proportions */
+    }
+}
+
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1200px;
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 }
 

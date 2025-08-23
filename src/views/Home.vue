@@ -11,9 +11,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 lg:py-12">
+    <main class="container mx-auto py-8 lg:py-12">
       <!-- Tools Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12 lg:mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12 lg:mb-16 auto-rows-fr">
         <!-- PDF Tools -->
         <ToolCard
           icon="📄"
@@ -67,71 +67,71 @@
       </div>
 
       <!-- Features Section -->
-      <div class="bg-white rounded-xl shadow-xl p-6 lg:p-8 mb-12 lg:mb-16 border border-gray-100">
-        <h2 class="text-2xl lg:text-3xl font-bold text-center text-gray-800 mb-6 lg:mb-8">Why Choose Our Tools?</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
-          <div class="text-center p-4">
-            <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg">
-              <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-white rounded-xl shadow-lg p-6 lg:p-8 mb-12 lg:mb-16 border border-gray-100">
+        <h2 class="text-2xl lg:text-3xl font-bold text-center text-gray-800 mb-8 lg:mb-10">Why Choose Our Tools?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
+          <div class="text-center p-4 flex flex-col">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">100% Private</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">All processing happens in your browser. No files are ever uploaded to our servers.</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">100% Private</h3>
+            <p class="text-gray-600 text-sm leading-relaxed flex-grow">All processing happens in your browser. No files are ever uploaded to our servers.</p>
           </div>
           
-          <div class="text-center p-4">
-            <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-lg">
-              <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center p-4 flex flex-col">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Lightning Fast</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">No upload/download delays. Process files instantly using modern web technologies.</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Lightning Fast</h3>
+            <p class="text-gray-600 text-sm leading-relaxed flex-grow">No upload/download delays. Process files instantly using modern web technologies.</p>
           </div>
           
-          <div class="text-center p-4">
-            <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center shadow-lg">
-              <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center p-4 flex flex-col">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Always Free</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">No subscriptions, no limits. All tools are completely free to use forever.</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Always Free</h3>
+            <p class="text-gray-600 text-sm leading-relaxed flex-grow">No subscriptions, no limits. All tools are completely free to use forever.</p>
           </div>
           
-          <div class="text-center p-4">
-            <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center shadow-lg">
-              <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="text-center p-4 flex flex-col">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center shadow-lg">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">No Ads</h3>
-            <p class="text-gray-600 text-sm leading-relaxed">Clean, distraction-free interface. Focus on your work without interruptions.</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">No Ads</h3>
+            <p class="text-gray-600 text-sm leading-relaxed flex-grow">Clean, distraction-free interface. Focus on your work without interruptions.</p>
           </div>
         </div>
       </div>
 
       <!-- Categories Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-12 lg:mb-16">
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-          <h3 class="text-lg font-bold text-gray-800 mb-3">📄 PDF Tools</h3>
-          <p class="text-gray-600 text-sm">Convert, merge, split, and manipulate PDF files</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12 lg:mb-16 auto-rows-fr">
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">📄 PDF Tools</h3>
+          <p class="text-gray-600 text-sm flex-grow">Convert, merge, split, and manipulate PDF files</p>
         </div>
         
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-          <h3 class="text-lg font-bold text-gray-800 mb-3">🖼️ Image Tools</h3>
-          <p class="text-gray-600 text-sm">Resize, compress, and optimize images</p>
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">🖼️ Image Tools</h3>
+          <p class="text-gray-600 text-sm flex-grow">Resize, compress, and optimize images</p>
         </div>
         
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-          <h3 class="text-lg font-bold text-gray-800 mb-3">📊 Office & Data</h3>
-          <p class="text-gray-600 text-sm">Document processing and data conversion</p>
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Office & Data</h3>
+          <p class="text-gray-600 text-sm flex-grow">Document processing and data conversion</p>
         </div>
         
-        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-shadow">
-          <h3 class="text-lg font-bold text-gray-800 mb-3">🔐 Privacy & Advanced</h3>
-          <p class="text-gray-600 text-sm">QR codes and security-focused tools</p>
+        <div class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">🔐 Privacy & Advanced</h3>
+          <p class="text-gray-600 text-sm flex-grow">QR codes and security-focused tools</p>
         </div>
       </div>
     </main>
