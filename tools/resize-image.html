@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resize Image - Private Online Tools</title>
+    <meta name="description" content="Change image dimensions by pixels or percentage with preview. 100% client-side, no uploads required.">
+    <meta name="keywords" content="image resizer, resize image online, image dimensions, image resize tool, bulk image resize, photo resize, picture resize, image size change, free image resizer, online image editor">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Resize Image</h1>
+                    <p class="text-sm md:text-base opacity-90">Change image dimensions with preview</p>
+                </div>
+                <a href="../index.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                    ← Back to Tools
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload Image</h2>
+            
+            <!-- Drop Zone -->
+            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
+                <div class="mb-4">
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-600 mb-2">Drag and drop your image here</p>
+                <p class="text-sm text-gray-500 mb-4">or</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <label for="fileInput" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
+                    Choose Image File
+                </label>
+            </div>
+            
+            <p class="text-sm text-gray-500 text-center">
+                Supported formats: JPG, PNG, GIF, WebP, BMP
+            </p>
+        </div>
+
+        <!-- Image Info Section -->
+        <div id="imageInfoSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Image Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Original Size</p>
+                    <p class="font-semibold" id="originalSize">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">File Size</p>
+                    <p class="font-semibold" id="fileSize">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Format</p>
+                    <p class="font-semibold" id="imageFormat">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Aspect Ratio</p>
+                    <p class="font-semibold" id="aspectRatio">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resize Controls -->
+        <div id="resizeControls" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Resize Settings</h2>
+            
+            <!-- Resize by pixels -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Dimensions</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Width (px)</label>
+                        <input type="number" id="newWidth" class="w-full p-2 border border-gray-300 rounded" placeholder="Width">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Height (px)</label>
+                        <input type="number" id="newHeight" class="w-full p-2 border border-gray-300 rounded" placeholder="Height">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="maintainAspectRatio" checked class="mr-2">
+                        <span class="text-sm text-gray-700">Maintain aspect ratio</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Resize Button -->
+            <button id="resizeBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded transition-colors">
+                🔄 Resize Image
+            </button>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Preview</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Original Image -->
+                <div>
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Original</h3>
+                    <div class="border rounded-lg overflow-hidden bg-gray-50">
+                        <img id="originalPreview" class="w-full" alt="Original">
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2" id="originalInfo">-</p>
+                </div>
+                
+                <!-- Resized Image -->
+                <div>
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Resized</h3>
+                    <div class="border rounded-lg overflow-hidden bg-gray-50">
+                        <img id="resizedPreview" class="w-full" alt="Resized">
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2" id="resizedInfo">-</p>
+                </div>
+            </div>
+            
+            <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded mt-4 transition-colors">
+                📥 Download Resized Image
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
+        ☕ Support
+    </button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
+                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
+                <div class="space-y-3">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
+                        🎁 Saweria (Indonesia)
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
+                        ❤️ GitHub Sponsors
+                    </a>
+                </div>
+                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const imageInfoSection = document.getElementById('imageInfoSection');
+        const originalSize = document.getElementById('originalSize');
+        const fileSize = document.getElementById('fileSize');
+        const imageFormat = document.getElementById('imageFormat');
+        const aspectRatio = document.getElementById('aspectRatio');
+        const resizeControls = document.getElementById('resizeControls');
+        const newWidth = document.getElementById('newWidth');
+        const newHeight = document.getElementById('newHeight');
+        const maintainAspectRatio = document.getElementById('maintainAspectRatio');
+        const resizeBtn = document.getElementById('resizeBtn');
+        const previewSection = document.getElementById('previewSection');
+        const originalPreview = document.getElementById('originalPreview');
+        const resizedPreview = document.getElementById('resizedPreview');
+        const originalInfo = document.getElementById('originalInfo');
+        const resizedInfo = document.getElementById('resizedInfo');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let originalImage = null;
+        let originalImageFile = null;
+        let resizedImageDataUrl = null;
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                loadImage(files[0]);
+            }
+        });
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                loadImage(e.target.files[0]);
+            }
+        });
+
+        // Maintain aspect ratio
+        maintainAspectRatio.addEventListener('change', function() {
+            if (this.checked && originalImage) {
+                updateAspectRatio();
+            }
+        });
+
+        // Width/Height input handlers
+        newWidth.addEventListener('input', function() {
+            if (maintainAspectRatio.checked && originalImage && this.value) {
+                const ratio = originalImage.height / originalImage.width;
+                newHeight.value = Math.round(this.value * ratio);
+            }
+        });
+
+        newHeight.addEventListener('input', function() {
+            if (maintainAspectRatio.checked && originalImage && this.value) {
+                const ratio = originalImage.width / originalImage.height;
+                newWidth.value = Math.round(this.value * ratio);
+            }
+        });
+
+        // Load image
+        function loadImage(file) {
+            originalImageFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    displayImageInfo();
+                    setupResizeControls();
+                    originalPreview.src = e.target.result;
+                    
+                    imageInfoSection.classList.remove('hidden');
+                    resizeControls.classList.remove('hidden');
+                };
+                originalImage.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Display image information
+        function displayImageInfo() {
+            originalSize.textContent = originalImage.width + ' × ' + originalImage.height;
+            fileSize.textContent = formatFileSize(originalImageFile.size);
+            imageFormat.textContent = originalImageFile.type.split('/')[1].toUpperCase();
+            
+            const ratio = calculateAspectRatio(originalImage.width, originalImage.height);
+            aspectRatio.textContent = ratio.width + ':' + ratio.height;
+        }
+
+        // Setup resize controls with original dimensions
+        function setupResizeControls() {
+            newWidth.value = originalImage.width;
+            newHeight.value = originalImage.height;
+        }
+
+        // Update aspect ratio
+        function updateAspectRatio() {
+            if (newWidth.value) {
+                const ratio = originalImage.height / originalImage.width;
+                newHeight.value = Math.round(newWidth.value * ratio);
+            }
+        }
+
+        // Calculate aspect ratio
+        function calculateAspectRatio(width, height) {
+            function gcd(a, b) {
+                return b === 0 ? a : gcd(b, a % b);
+            }
+            const divisor = gcd(width, height);
+            return {
+                width: width / divisor,
+                height: height / divisor
+            };
+        }
+
+        // Resize image
+        resizeBtn.addEventListener('click', function() {
+            if (!originalImage) return;
+
+            const targetWidth = parseInt(newWidth.value);
+            const targetHeight = parseInt(newHeight.value);
+
+            if (!targetWidth || !targetHeight) {
+                alert('Please enter valid dimensions.');
+                return;
+            }
+
+            resizeImage(targetWidth, targetHeight);
+        });
+
+        // Resize image function
+        function resizeImage(width, height) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            ctx.drawImage(originalImage, 0, 0, width, height);
+
+            resizedImageDataUrl = canvas.toDataURL('image/png', 0.9);
+            
+            // Update preview
+            resizedPreview.src = resizedImageDataUrl;
+            originalInfo.textContent = originalImage.width + ' × ' + originalImage.height + ' (' + formatFileSize(originalImageFile.size) + ')';
+            
+            // Calculate new file size (approximate)
+            const newSize = Math.round(resizedImageDataUrl.length * 0.75);
+            resizedInfo.textContent = width + ' × ' + height + ' (' + formatFileSize(newSize) + ')';
+            
+            previewSection.classList.remove('hidden');
+        }
+
+        // Download resized image
+        downloadBtn.addEventListener('click', function() {
+            if (!resizedImageDataUrl) return;
+
+            const link = document.createElement('a');
+            link.href = resizedImageDataUrl;
+            link.download = 'resized-image.png';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

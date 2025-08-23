@@ -279,7 +279,33 @@ export default {
       isDragOver: false
     }
   },
+  mounted() {
+    // Load QR code library
+    this.loadQRLibrary()
+  },
   methods: {
+    async loadQRLibrary() {
+      // Check if QRCode is already available
+      if (window.QRCode) {
+        return
+      }
+      
+      // Load QR code library from local files
+      try {
+        const script = document.createElement('script')
+        script.src = '/assets/js/vendor/qrcode.min.js'
+        script.onload = () => {
+          console.log('QR code library loaded successfully')
+        }
+        script.onerror = (error) => {
+          console.error('Failed to load QR code library:', error)
+        }
+        document.head.appendChild(script)
+      } catch (error) {
+        console.error('Error loading QR library:', error)
+      }
+    },
+
     generateQRCode() {
       if (!this.qrText.trim()) {
         this.generatedQR = null
@@ -287,59 +313,43 @@ export default {
       }
 
       try {
-        // Simple QR code generation - this would need a real QR library
+        // Wait for QRCode library to be available
+        if (!window.QRCode) {
+          console.log('QRCode library not yet loaded, retrying...')
+          setTimeout(() => this.generateQRCode(), 100)
+          return
+        }
+
         const canvas = this.$refs.qrCanvas
         if (!canvas) return
         
-        const ctx = canvas.getContext('2d')
-        const size = parseInt(this.qrSize)
-        
-        canvas.width = size
-        canvas.height = size
-        
-        // Clear canvas
-        ctx.fillStyle = this.backgroundColor
-        ctx.fillRect(0, 0, size, size)
-        
-        // Simple placeholder pattern - in real implementation, use qrcode library
-        ctx.fillStyle = this.foregroundColor
-        const cellSize = size / 21 // QR code is typically 21x21 for version 1
-        
-        // Draw finder patterns (corners)
-        this.drawFinderPattern(ctx, 0, 0, cellSize)
-        this.drawFinderPattern(ctx, 14 * cellSize, 0, cellSize)
-        this.drawFinderPattern(ctx, 0, 14 * cellSize, cellSize)
-        
-        // Draw some data pattern (simplified)
-        for (let i = 0; i < 21; i++) {
-          for (let j = 0; j < 21; j++) {
-            if (Math.random() > 0.5 && !this.isFinderPattern(i, j)) {
-              ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize)
-            }
+        const options = {
+          width: parseInt(this.qrSize),
+          height: parseInt(this.qrSize),
+          errorCorrectionLevel: this.errorCorrection,
+          margin: this.margin,
+          color: {
+            dark: this.foregroundColor,
+            light: this.backgroundColor
           }
         }
+
+        // Clear previous content
+        const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
         
-        this.generatedQR = canvas.toDataURL()
+        // Generate QR code using the actual library
+        window.QRCode.toCanvas(canvas, this.qrText, options, (error) => {
+          if (error) {
+            console.error('Error generating QR code:', error)
+            return
+          }
+          
+          this.generatedQR = canvas.toDataURL()
+        })
       } catch (error) {
         console.error('Error generating QR code:', error)
       }
-    },
-
-    drawFinderPattern(ctx, x, y, cellSize) {
-      // Outer square
-      ctx.fillRect(x, y, 7 * cellSize, 7 * cellSize)
-      
-      // Inner white square
-      ctx.fillStyle = this.backgroundColor
-      ctx.fillRect(x + cellSize, y + cellSize, 5 * cellSize, 5 * cellSize)
-      
-      // Inner black square
-      ctx.fillStyle = this.foregroundColor
-      ctx.fillRect(x + 2 * cellSize, y + 2 * cellSize, 3 * cellSize, 3 * cellSize)
-    },
-
-    isFinderPattern(x, y) {
-      return (x < 9 && y < 9) || (x > 12 && y < 9) || (x < 9 && y > 12)
     },
 
     downloadQR(format) {
@@ -408,16 +418,70 @@ export default {
       this.qrResult = null
       
       try {
-        // Placeholder for QR reading - would need jsQR or similar library
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate processing
+        // Load jsQR library if not already loaded
+        if (!window.jsQR) {
+          await this.loadJsQRLibrary()
+        }
         
-        // For demo purposes, show a placeholder result
-        this.qrResult = 'Demo QR content: https://example.com\n\nNote: This is a placeholder. Real implementation would use jsQR library.'
+        // Create image element
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        
+        img.onload = () => {
+          // Create canvas to extract image data
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          
+          canvas.width = img.width
+          canvas.height = img.height
+          ctx.drawImage(img, 0, 0)
+          
+          // Get image data
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          
+          // Try to read QR code
+          const code = window.jsQR(imageData.data, imageData.width, imageData.height)
+          
+          if (code) {
+            this.qrResult = code.data
+          } else {
+            this.errorMessage = 'No QR code found in the image. Please ensure the image contains a clear, visible QR code.'
+          }
+          
+          this.isReading = false
+        }
+        
+        img.onerror = () => {
+          this.errorMessage = 'Could not load the image. Please try a different image.'
+          this.isReading = false
+        }
+        
+        img.src = this.selectedImage
       } catch (error) {
         this.errorMessage = 'Could not read QR code from the image. Please ensure the image contains a clear, visible QR code.'
-      } finally {
         this.isReading = false
       }
+    },
+
+    async loadJsQRLibrary() {
+      return new Promise((resolve, reject) => {
+        if (window.jsQR) {
+          resolve()
+          return
+        }
+        
+        const script = document.createElement('script')
+        script.src = '/assets/js/vendor/simple-qr-reader.js'
+        script.onload = () => {
+          console.log('jsQR library loaded successfully')
+          resolve()
+        }
+        script.onerror = (error) => {
+          console.error('Failed to load jsQR library:', error)
+          reject(error)
+        }
+        document.head.appendChild(script)
+      })
     },
 
     isURL(text) {
