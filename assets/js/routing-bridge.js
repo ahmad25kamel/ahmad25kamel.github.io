@@ -79,8 +79,8 @@ class RoutingBridge {
      * Redirect to Vue SPA route
      */
     redirectToSPA() {
-        // Convert static HTML path to SPA path
-        let spaPath = this.currentPath.replace('.html', '');
+        // Now SPA paths also use .html extensions
+        let spaPath = this.currentPath; // Keep the .html extension
         
         // Show loading indicator
         this.showTransitionLoader();
@@ -162,13 +162,15 @@ class RoutingBridge {
     navigateToTool(targetPath, originalHref) {
         const toolName = targetPath.replace('/tools/', '').replace('.html', '');
         
+        // Now both SPA and static use .html paths
+        const toolPath = `/tools/${toolName}.html`;
+        
         // If Vue SPA is available and user prefers it, use SPA route
         if (this.isVueSPAAvailable && this.shouldPreferSPA()) {
-            this.navigateToSPA(`/tools/${toolName}`);
+            this.navigateToSPA(toolPath);
         } else {
             // Navigate to static HTML file
-            const staticUrl = targetPath.endsWith('.html') ? originalHref : `${originalHref}.html`;
-            window.location.href = staticUrl;
+            window.location.href = toolPath;
         }
     }
 
@@ -396,7 +398,7 @@ class RoutingBridge {
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Related Tools</h3>
             <div class="grid grid-cols-1 md:grid-cols-${suggestions.length > 2 ? '3' : suggestions.length} gap-4">
                 ${suggestions.map(tool => `
-                    <a href="/tools/${tool}" class="group block p-4 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
+                    <a href="/tools/${tool}.html" class="group block p-4 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
                         <div class="text-blue-600 group-hover:text-blue-700 font-medium">${this.formatToolName(tool)}</div>
                         <div class="text-sm text-gray-600 mt-1">${this.getToolDescription(tool)}</div>
                     </a>

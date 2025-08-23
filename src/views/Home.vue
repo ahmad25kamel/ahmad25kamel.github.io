@@ -19,7 +19,7 @@
           icon="📄"
           title="PDF to Image"
           description="Convert PDF pages to PNG/JPG images. Download individually or as ZIP."
-          tool-path="/tools/pdf-to-image"
+          tool-path="/tools/pdf-to-image.html"
           color-scheme="blue"
         />
         
@@ -27,7 +27,7 @@
           icon="📑"
           title="Merge PDF"
           description="Combine multiple PDF files into a single document."
-          tool-path="/tools/merge-pdf"
+          tool-path="/tools/merge-pdf.html"
           color-scheme="green"
         />
         
@@ -35,7 +35,7 @@
           icon="✂️"
           title="Split PDF"
           description="Extract specific pages or split PDF into multiple documents."
-          tool-path="/tools/split-pdf"
+          tool-path="/tools/split-pdf.html"
           color-scheme="purple"
         />
 
@@ -44,7 +44,7 @@
           icon="🖼️"
           title="Resize Image"
           description="Change image dimensions by pixels or percentage with preview."
-          tool-path="/tools/resize-image"
+          tool-path="/tools/resize-image.html"
           color-scheme="yellow"
         />
         
@@ -52,7 +52,7 @@
           icon="🗜️"
           title="Compress Image"
           description="Reduce image file size with quality slider and before/after preview."
-          tool-path="/tools/compress-image"
+          tool-path="/tools/compress-image.html"
           color-scheme="red"
         />
 
@@ -61,7 +61,7 @@
           icon="📱"
           title="QR Code Tools"
           description="Generate QR codes from text or decode QR codes from images."
-          tool-path="/tools/qr-tools"
+          tool-path="/tools/qr-tools.html"
           color-scheme="indigo"
         />
       </div>

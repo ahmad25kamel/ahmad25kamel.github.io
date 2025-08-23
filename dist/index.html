@@ -59,15 +59,15 @@
         
         // Handle direct URL access to tools
         const currentPath = window.location.pathname;
-        if (currentPath.startsWith('/tools/') && !currentPath.endsWith('.html')) {
-            // This is a Vue SPA route, make sure the router handles it
-            console.log('SPA handling tool route:', currentPath);
+        if (currentPath.startsWith('/tools/') && currentPath.endsWith('.html')) {
+            // This could be either a Vue SPA route or static HTML file
+            console.log('Handling tool route:', currentPath);
         }
     </script>
 
     <!-- Routing Bridge for enhanced navigation -->
     <script src="/assets/js/routing-bridge.js"></script>
-  <script type="module" crossorigin src="/assets/main-aSj7m82x.js"></script>
+  <script type="module" crossorigin src="/assets/main-i0StbHN9.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/main-BfCA3JEV.css">
 </head>
 <body>
