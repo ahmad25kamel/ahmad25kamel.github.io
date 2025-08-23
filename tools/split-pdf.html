@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split PDF - Private Online Tools</title>
+    <meta name="description" content="Extract specific pages or split PDF into multiple documents. 100% client-side, no uploads required.">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PDF-lib CDN -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    
+    <!-- JSZip CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #8b5cf6;
+            background-color: #f3e8ff;
+        }
+        .page-checkbox {
+            cursor: pointer;
+        }
+        .page-preview {
+            transition: all 0.2s ease;
+        }
+        .page-preview.selected {
+            ring: 2px solid #8b5cf6;
+            background-color: #f3e8ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Split PDF</h1>
+                    <p class="text-sm md:text-base opacity-90">Extract specific pages or split into multiple documents</p>
+                </div>
+                <a href="../index.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                    ← Back to Tools
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload PDF File</h2>
+            
+            <!-- Drop Zone -->
+            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
+                <div class="mb-4">
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-600 mb-2">Drag and drop your PDF file here</p>
+                <p class="text-sm text-gray-500 mb-4">or</p>
+                <input type="file" id="fileInput" accept=".pdf" class="hidden">
+                <label for="fileInput" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
+                    Choose PDF File
+                </label>
+            </div>
+        </div>
+
+        <!-- Processing Status -->
+        <div id="processingStatus" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 hidden">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                <span class="text-blue-800">Loading PDF... <span id="progressText">Please wait</span></span>
+            </div>
+        </div>
+
+        <!-- Page Selection Section -->
+        <div id="pageSelectionSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Select Pages to Extract</h2>
+                    <p class="text-gray-600">Total pages: <span id="totalPages">0</span></p>
+                </div>
+                
+                <div class="mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-2 flex flex-col md:flex-row">
+                    <button id="selectAll" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition-colors">
+                        Select All
+                    </button>
+                    <button id="selectNone" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition-colors">
+                        Select None
+                    </button>
+                    <button id="selectRange" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors">
+                        Select Range
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Range Selection -->
+            <div id="rangeSelector" class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6 hidden">
+                <h3 class="text-lg font-medium text-purple-800 mb-3">Quick Range Selection</h3>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">From Page</label>
+                        <input type="number" id="rangeFrom" min="1" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">To Page</label>
+                        <input type="number" id="rangeTo" min="1" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    </div>
+                    <div class="flex items-end">
+                        <button id="applyRange" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Preview Grid -->
+            <div id="pageGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+                <!-- Page previews will be added here -->
+            </div>
+
+            <!-- Split Options -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Split Options</h3>
+                <div class="space-y-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="splitOption" value="extract" checked class="mr-3">
+                        <span>Extract selected pages into a single PDF</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="splitOption" value="individual" class="mr-3">
+                        <span>Extract each selected page as individual PDF files</span>
+                    </label>
+                </div>
+                
+                <div class="mt-6">
+                    <button id="splitBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded transition-colors">
+                        🔪 Split PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Split Results</h2>
+            <div id="resultList" class="space-y-3">
+                <!-- Results will be added here -->
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">🔒 Privacy & Security</h3>
+            <ul class="text-gray-600 space-y-2">
+                <li>• Your PDF files are processed entirely in your browser</li>
+                <li>• No files are uploaded to any server</li>
+                <li>• All processing happens offline on your device</li>
+                <li>• Perfect for confidential documents</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
+        </div>
+    </footer>
+
+    <script>
+        // Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processingStatus = document.getElementById('processingStatus');
+        const progressText = document.getElementById('progressText');
+        const pageSelectionSection = document.getElementById('pageSelectionSection');
+        const totalPages = document.getElementById('totalPages');
+        const pageGrid = document.getElementById('pageGrid');
+        const selectAll = document.getElementById('selectAll');
+        const selectNone = document.getElementById('selectNone');
+        const selectRange = document.getElementById('selectRange');
+        const rangeSelector = document.getElementById('rangeSelector');
+        const rangeFrom = document.getElementById('rangeFrom');
+        const rangeTo = document.getElementById('rangeTo');
+        const applyRange = document.getElementById('applyRange');
+        const splitBtn = document.getElementById('splitBtn');
+        const resultSection = document.getElementById('resultSection');
+        const resultList = document.getElementById('resultList');
+
+        let currentPdf = null;
+        let selectedPages = new Set();
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                processPDF(files[0]);
+            }
+        });
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                processPDF(e.target.files[0]);
+            }
+        });
+
+        // Process PDF
+        async function processPDF(file) {
+            try {
+                processingStatus.classList.remove('hidden');
+                pageSelectionSection.classList.add('hidden');
+                resultSection.classList.add('hidden');
+
+                const arrayBuffer = await file.arrayBuffer();
+                currentPdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                const pageCount = currentPdf.getPageCount();
+                
+                totalPages.textContent = pageCount;
+                rangeFrom.max = pageCount;
+                rangeTo.max = pageCount;
+                rangeTo.value = pageCount;
+
+                generatePagePreviews(pageCount);
+                
+                processingStatus.classList.add('hidden');
+                pageSelectionSection.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error processing PDF:', error);
+                alert('Error processing PDF. Please try again.');
+                processingStatus.classList.add('hidden');
+            }
+        }
+
+        // Generate page previews
+        function generatePagePreviews(pageCount) {
+            pageGrid.innerHTML = '';
+            selectedPages.clear();
+
+            for (let i = 1; i <= pageCount; i++) {
+                const pagePreview = document.createElement('div');
+                pagePreview.className = 'page-preview border rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50';
+                pagePreview.dataset.page = i;
+                
+                pagePreview.innerHTML = `
+                    <div class="w-full h-24 bg-gray-100 rounded mb-2 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <input type="checkbox" class="page-checkbox mb-1" data-page="${i}">
+                    <p class="text-sm font-medium">Page ${i}</p>
+                `;
+
+                pagePreview.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('.page-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                        togglePageSelection(i, checkbox.checked);
+                    }
+                });
+
+                const checkbox = pagePreview.querySelector('.page-checkbox');
+                checkbox.addEventListener('change', function() {
+                    togglePageSelection(i, this.checked);
+                });
+
+                pageGrid.appendChild(pagePreview);
+            }
+        }
+
+        // Toggle page selection
+        function togglePageSelection(pageNum, selected) {
+            const pagePreview = document.querySelector(`[data-page="${pageNum}"]`);
+            
+            if (selected) {
+                selectedPages.add(pageNum);
+                pagePreview.classList.add('selected');
+            } else {
+                selectedPages.delete(pageNum);
+                pagePreview.classList.remove('selected');
+            }
+        }
+
+        // Select all pages
+        selectAll.addEventListener('click', function() {
+            document.querySelectorAll('.page-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+                togglePageSelection(parseInt(checkbox.dataset.page), true);
+            });
+        });
+
+        // Select no pages
+        selectNone.addEventListener('click', function() {
+            document.querySelectorAll('.page-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                togglePageSelection(parseInt(checkbox.dataset.page), false);
+            });
+        });
+
+        // Range selection
+        selectRange.addEventListener('click', function() {
+            rangeSelector.classList.toggle('hidden');
+        });
+
+        applyRange.addEventListener('click', function() {
+            const from = parseInt(rangeFrom.value);
+            const to = parseInt(rangeTo.value);
+            
+            if (from && to && from <= to) {
+                // Clear all selections first
+                document.querySelectorAll('.page-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                    togglePageSelection(parseInt(checkbox.dataset.page), false);
+                });
+
+                // Select range
+                for (let i = from; i <= to; i++) {
+                    const checkbox = document.querySelector(`[data-page="${i}"] .page-checkbox`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        togglePageSelection(i, true);
+                    }
+                }
+                
+                rangeSelector.classList.add('hidden');
+            } else {
+                alert('Please enter a valid range.');
+            }
+        });
+
+        // Split PDF
+        splitBtn.addEventListener('click', async function() {
+            if (selectedPages.size === 0) {
+                alert('Please select at least one page.');
+                return;
+            }
+
+            const splitOption = document.querySelector('input[name="splitOption"]:checked').value;
+            
+            try {
+                processingStatus.classList.remove('hidden');
+                progressText.textContent = 'Splitting PDF...';
+
+                if (splitOption === 'extract') {
+                    await extractSelectedPages();
+                } else {
+                    await extractIndividualPages();
+                }
+
+                processingStatus.classList.add('hidden');
+                resultSection.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error splitting PDF:', error);
+                alert('Error splitting PDF. Please try again.');
+                processingStatus.classList.add('hidden');
+            }
+        });
+
+        // Extract selected pages into single PDF
+        async function extractSelectedPages() {
+            const newPdf = await PDFLib.PDFDocument.create();
+            const pages = Array.from(selectedPages).sort((a, b) => a - b);
+            
+            const copiedPages = await newPdf.copyPages(currentPdf, pages.map(p => p - 1));
+            copiedPages.forEach(page => newPdf.addPage(page));
+
+            const pdfBytes = await newPdf.save();
+            addResult(`extracted-pages.pdf`, pdfBytes, `${pages.length} pages`);
+        }
+
+        // Extract individual pages
+        async function extractIndividualPages() {
+            const pages = Array.from(selectedPages).sort((a, b) => a - b);
+            
+            for (const pageNum of pages) {
+                const newPdf = await PDFLib.PDFDocument.create();
+                const [copiedPage] = await newPdf.copyPages(currentPdf, [pageNum - 1]);
+                newPdf.addPage(copiedPage);
+
+                const pdfBytes = await newPdf.save();
+                addResult(`page-${pageNum}.pdf`, pdfBytes, '1 page');
+            }
+        }
+
+        // Add result to list
+        function addResult(filename, pdfBytes, info) {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'flex items-center justify-between p-4 bg-purple-50 border border-purple-200 rounded-lg';
+            
+            resultItem.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-medium text-purple-800">${filename}</p>
+                        <p class="text-sm text-purple-600">${info} • ${formatFileSize(pdfBytes.length)}</p>
+                    </div>
+                </div>
+                <button onclick="downloadFile('${filename}', ${pdfBytes.length})" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors">
+                    📥 Download
+                </button>
+            `;
+
+            // Store the PDF bytes in the element
+            resultItem.pdfBytes = pdfBytes;
+            resultList.appendChild(resultItem);
+        }
+
+        // Download file
+        function downloadFile(filename, size) {
+            const resultItem = Array.from(resultList.children).find(item => 
+                item.querySelector('p').textContent === filename
+            );
+            
+            if (resultItem && resultItem.pdfBytes) {
+                const blob = new Blob([resultItem.pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
