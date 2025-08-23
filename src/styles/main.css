@@ -215,6 +215,84 @@ button:focus, input:focus, textarea:focus, select:focus {
     outline-offset: 2px;
 }
 
+/* Enhanced button styling with better contrast - force color specificity */
+.bg-blue-600 {
+    background-color: #2563eb !important;
+    color: white !important;
+}
+
+.bg-blue-600:hover {
+    background-color: #1d4ed8 !important;
+}
+
+.bg-green-600 {
+    background-color: #16a34a !important;
+    color: white !important;
+}
+
+.bg-green-600:hover {
+    background-color: #15803d !important;
+}
+
+.bg-purple-600 {
+    background-color: #9333ea !important;
+    color: white !important;
+}
+
+.bg-purple-600:hover {
+    background-color: #7c3aed !important;
+}
+
+.bg-yellow-600 {
+    background-color: #ca8a04 !important;
+    color: white !important;
+}
+
+.bg-yellow-600:hover {
+    background-color: #a16207 !important;
+}
+
+.bg-red-600 {
+    background-color: #dc2626 !important;
+    color: white !important;
+}
+
+.bg-red-600:hover {
+    background-color: #b91c1c !important;
+}
+
+.bg-indigo-600 {
+    background-color: #4f46e5 !important;
+    color: white !important;
+}
+
+.bg-indigo-600:hover {
+    background-color: #4338ca !important;
+}
+
+.bg-indigo-700 {
+    background-color: #4338ca !important;
+}
+
+.bg-gray-600 {
+    background-color: #4b5563 !important;
+    color: white !important;
+}
+
+.bg-gray-600:hover {
+    background-color: #374151 !important;
+}
+
+/* Support button styling */
+.bg-yellow-500 {
+    background-color: #eab308 !important;
+    color: white !important;
+}
+
+.bg-yellow-500:hover {
+    background-color: #ca8a04 !important;
+}
+
 /* Language selector styles */
 .language-selector {
     position: relative;
