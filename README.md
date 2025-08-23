@@ -79,9 +79,9 @@ Visit my portfolio at: [https://ahmad25kamel.github.io](https://ahmad25kamel.git
 
 ## 📞 Contact Information
 
-- **Email**: ahmad.kamel.dev@gmail.com
-- **Phone**: +20 1XX-XXX-XXXX
-- **Location**: Cairo, Egypt
+- **Email**: ahmad25kamel@gmail.com
+- **Phone**: +62 896-2796-9579
+- **Location**: Pontianak, Indonesia
 - **LinkedIn**: [ahmad25kamel](https://linkedin.com/in/ahmad25kamel)
 - **Twitter**: [@ahmad25kamel](https://twitter.com/ahmad25kamel)
 - **Facebook**: [ahmadkamel25](https://facebook.com/ahmadkamel25)
