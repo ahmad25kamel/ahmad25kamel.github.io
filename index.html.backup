@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ahmad Kamel - Expert Web & Mobile Developer | Full Stack Development Services</title>
+  <meta name="description" content="Ahmad Kamel is an experienced web and mobile developer specializing in full-stack development, e-commerce solutions, and modern web applications. Based in Cairo, Egypt, offering professional development services worldwide.">
+  <meta name="keywords" content="web developer, mobile developer, full stack developer, Ahmad Kamel, Cairo developer, Egypt developer, JavaScript, web development, mobile app development, e-commerce development">
+  <meta name="author" content="Ahmad Kamel">
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Ahmad Kamel - Expert Web & Mobile Developer">
+  <meta property="og:description" content="Experienced full-stack developer specializing in web and mobile applications. Professional development services from Cairo, Egypt.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ahmad25kamel.github.io">
+  <meta property="og:image" content="https://ahmad25kamel.github.io/assets/img/banner/home-right.png">
+  <meta property="og:site_name" content="Ahmad Kamel Portfolio">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ahmad Kamel - Expert Web & Mobile Developer">
+  <meta name="twitter:description" content="Experienced full-stack developer specializing in web and mobile applications.">
+  <meta name="twitter:image" content="https://ahmad25kamel.github.io/assets/img/banner/home-right.png">
+  <meta name="twitter:creator" content="@ahmad25kamel">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://ahmad25kamel.github.io">
+  
+  <base href="/">
+  <link rel="icon" type="image/x-icon" href="assets/img/favicon.png">
+  
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ahmad Kamel",
+    "jobTitle": "Web & Mobile Developer",
+    "description": "Experienced full-stack developer specializing in web and mobile applications, e-commerce solutions, and modern web development.",
+    "url": "https://ahmad25kamel.github.io",
+    "sameAs": [
+      "https://www.linkedin.com/in/ahmad25kamel",
+      "https://twitter.com/ahmad25kamel",
+      "https://www.facebook.com/ahmadkamel25",
+      "https://www.instagram.com/ahmadkamel25"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cairo",
+      "addressCountry": "Egypt"
+    },
+    "knowsAbout": [
+      "Web Development",
+      "Mobile App Development",
+      "Full Stack Development",
+      "JavaScript",
+      "E-commerce Development",
+      "Information Systems Development",
+      "Single Page Applications"
+    ]
+  }
+  </script>
+  
+  <!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="assets/css/bootstrap.css">
+	<link rel="stylesheet" href="assets/vendors/linericon/style.css">
+	<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+	<link rel="stylesheet" href="assets/vendors/owl-carousel/owl.carousel.min.css">
+	<link rel="stylesheet" href="assets/css/magnific-popup.css">
+	<link rel="stylesheet" href="assets/vendors/nice-select/css/nice-select.css">
+	<!-- main css -->
+	<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="/dist/styles.09e2c710755c8867a460.css"></head>
+<body>
+  <app-root></app-root>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-41168925-4"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+	gtag('config', 'UA-41168925-4');
+	</script>
+
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="assets/js/jquery-3.2.1.min.js"></script>
+	<script>
+		$('.yearsExperience').text(new Date().getFullYear() - 2016);
+	</script>
+	<!-- Optional JavaScript -->
+	<script src="assets/js/popper.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/js/stellar.js"></script>
+	<script src="assets/js/jquery.magnific-popup.min.js"></script>
+	<script src="assets/vendors/nice-select/js/jquery.nice-select.min.js"></script>
+	<script src="assets/vendors/isotope/imagesloaded.pkgd.min.js"></script>
+	<script src="assets/vendors/isotope/isotope-min.js"></script>
+	<script src="assets/vendors/owl-carousel/owl.carousel.min.js"></script>
+	<script src="assets/js/jquery.ajaxchimp.min.js"></script>
+	<script src="assets/js/mail-script.js"></script>
+	<!--gmaps Js-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
+	<script src="assets/js/gmaps.min.js"></script>
+	<script src="assets/js/theme.js"></script>
+<script src="/dist/runtime-es2015.937c657f0fca53d26eae.js" type="module"></script><script src="/dist/polyfills-es2015.2c9e058b9bd89eb6bb60.js" type="module"></script><script src="/dist/runtime-es5.68e2defd500903cd6db9.js" nomodule></script><script src="/dist/polyfills-es5.05c7bc655d7ad99efce7.js" nomodule></script><script src="/dist/scripts.9ddf727ecc94cd123172.js"></script><script src="/dist/main-es2015.43bfb8fb495b9718a4e9.js" type="module"></script><script src="/dist/main-es5.6455397b8b4b08adff37.js" nomodule></script></body>
+</html>
