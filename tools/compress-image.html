@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress Image - Private Online Tools</title>
+    <meta name="description" content="Reduce image file size with quality slider and before/after preview. 100% client-side, no uploads required.">
+    <meta name="keywords" content="compress image, image compression, reduce image size, optimize images, image optimizer, shrink image, image compressor, reduce file size, free image compressor, online image compression">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- Routing Bridge for seamless navigation -->
+    <script src="../assets/js/routing-bridge.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        /* Breadcrumb styling */
+        .breadcrumb-container {
+            font-size: 0.875rem;
+        }
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .breadcrumb-link:hover {
+            color: white;
+        }
+        .breadcrumb-separator {
+            margin: 0 8px;
+            opacity: 0.6;
+        }
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+        .preview-container {
+            max-height: 400px;
+            overflow: hidden;
+        }
+        .image-compare {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .compression-info {
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Compress Image</h1>
+                    <p class="text-sm md:text-base opacity-90">Reduce image file size with quality control</p>
+                </div>
+                <div class="navigation-wrapper">
+                    <!-- Breadcrumb container for dynamic breadcrumbs -->
+                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
+                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                        ← Back to Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload Image</h2>
+            
+            <!-- Drop Zone -->
+            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
+                <div class="mb-4">
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-600 mb-2">Drag and drop your image here</p>
+                <p class="text-sm text-gray-500 mb-4">or</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <label for="fileInput" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
+                    Choose Image File
+                </label>
+            </div>
+            
+            <p class="text-sm text-gray-500 text-center">
+                Supported formats: JPG, PNG, WebP (PNG will be converted to JPG for compression)
+            </p>
+        </div>
+
+        <!-- Image Info Section -->
+        <div id="imageInfoSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Image Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Dimensions</p>
+                    <p class="font-semibold" id="imageDimensions">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Original Size</p>
+                    <p class="font-semibold" id="originalFileSize">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Format</p>
+                    <p class="font-semibold" id="imageFormat">-</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded">
+                    <p class="text-sm text-gray-600">Color Depth</p>
+                    <p class="font-semibold" id="colorDepth">24-bit</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compression Controls -->
+        <div id="compressionControls" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Compression Settings</h2>
+            
+            <!-- Output Format -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
+                <select id="outputFormat" class="w-full md:w-48 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <option value="jpg">JPG (Best compression)</option>
+                    <option value="webp">WebP (Modern, smaller)</option>
+                    <option value="png">PNG (Lossless, larger)</option>
+                </select>
+                <p class="text-sm text-gray-500 mt-1">JPG and WebP offer the best compression for photos</p>
+            </div>
+
+            <!-- Quality Slider -->
+            <div id="qualityControls" class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Compression Quality</label>
+                <div class="space-y-3">
+                    <input type="range" id="qualitySlider" min="10" max="100" value="80" class="w-full">
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Smaller file (10%)</span>
+                        <span class="font-semibold">Quality: <span id="qualityValue">80</span>%</span>
+                        <span>Best quality (100%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Quick Presets</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <button class="preset-btn bg-gray-100 hover:bg-gray-200 p-2 rounded text-sm transition-colors" data-quality="90">
+                        High Quality (90%)
+                    </button>
+                    <button class="preset-btn bg-gray-100 hover:bg-gray-200 p-2 rounded text-sm transition-colors" data-quality="80">
+                        Good Quality (80%)
+                    </button>
+                    <button class="preset-btn bg-gray-100 hover:bg-gray-200 p-2 rounded text-sm transition-colors" data-quality="60">
+                        Medium (60%)
+                    </button>
+                    <button class="preset-btn bg-gray-100 hover:bg-gray-200 p-2 rounded text-sm transition-colors" data-quality="40">
+                        Small Size (40%)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compress Button -->
+            <button id="compressBtn" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded transition-colors">
+                🗜️ Compress Image
+            </button>
+        </div>
+
+        <!-- Compression Progress -->
+        <div id="compressionProgress" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 hidden">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                <span class="text-blue-800">Compressing image...</span>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Compression Results</h2>
+            
+            <!-- Compression Statistics -->
+            <div class="compression-info p-4 rounded-lg mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-sm text-gray-600">Original Size</p>
+                        <p class="text-xl font-bold text-gray-800" id="resultOriginalSize">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Compressed Size</p>
+                        <p class="text-xl font-bold text-green-600" id="resultCompressedSize">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Size Reduction</p>
+                        <p class="text-xl font-bold text-blue-600" id="resultReduction">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Before/After Preview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Original Image -->
+                <div>
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Before (Original)</h3>
+                    <div class="preview-container image-compare">
+                        <img id="originalPreview" src="" alt="Original" class="w-full h-auto">
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2 text-center" id="originalInfo">-</p>
+                </div>
+
+                <!-- Compressed Image -->
+                <div>
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">After (Compressed)</h3>
+                    <div class="preview-container image-compare">
+                        <img id="compressedPreview" src="" alt="Compressed" class="w-full h-auto">
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2 text-center" id="compressedInfo">-</p>
+                </div>
+            </div>
+
+            <!-- Download Button -->
+            <div class="text-center">
+                <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded transition-colors mr-4">
+                    📥 Download Compressed Image
+                </button>
+                <button id="tryDifferentBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded transition-colors">
+                    🔄 Try Different Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">💡 Compression Tips</h3>
+            <ul class="text-gray-600 space-y-2">
+                <li>• <strong>JPG:</strong> Best for photos with many colors</li>
+                <li>• <strong>WebP:</strong> Modern format with better compression than JPG</li>
+                <li>• <strong>PNG:</strong> Best for images with text, logos, or transparency</li>
+                <li>• Quality 80-90% usually provides good balance between size and quality</li>
+                <li>• For web use, quality 70-80% is often sufficient</li>
+            </ul>
+        </div>
+
+        <!-- Info Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">🔒 Privacy & Security</h3>
+            <ul class="text-gray-600 space-y-2">
+                <li>• Your images are processed entirely in your browser</li>
+                <li>• No images are uploaded to any server</li>
+                <li>• All processing happens offline on your device</li>
+                <li>• Perfect for sensitive or personal images</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
+        ☕ Support
+    </button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
+                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
+                <div class="space-y-3">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
+                        🎁 Saweria (Indonesia)
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
+                        ❤️ GitHub Sponsors
+                    </a>
+                </div>
+                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const imageInfoSection = document.getElementById('imageInfoSection');
+        const imageDimensions = document.getElementById('imageDimensions');
+        const originalFileSize = document.getElementById('originalFileSize');
+        const imageFormat = document.getElementById('imageFormat');
+        const compressionControls = document.getElementById('compressionControls');
+        const outputFormat = document.getElementById('outputFormat');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const compressBtn = document.getElementById('compressBtn');
+        const compressionProgress = document.getElementById('compressionProgress');
+        const resultsSection = document.getElementById('resultsSection');
+        const originalPreview = document.getElementById('originalPreview');
+        const compressedPreview = document.getElementById('compressedPreview');
+        const originalInfo = document.getElementById('originalInfo');
+        const compressedInfo = document.getElementById('compressedInfo');
+        const resultOriginalSize = document.getElementById('resultOriginalSize');
+        const resultCompressedSize = document.getElementById('resultCompressedSize');
+        const resultReduction = document.getElementById('resultReduction');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const tryDifferentBtn = document.getElementById('tryDifferentBtn');
+        const qualityControls = document.getElementById('qualityControls');
+
+        let originalImage = null;
+        let originalImageFile = null;
+        let compressedImageDataUrl = null;
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                loadImage(files[0]);
+            }
+        });
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                loadImage(e.target.files[0]);
+            }
+        });
+
+        // Quality slider
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value;
+        });
+
+        // Output format change
+        outputFormat.addEventListener('change', function() {
+            if (this.value === 'png') {
+                qualityControls.classList.add('hidden');
+            } else {
+                qualityControls.classList.remove('hidden');
+            }
+        });
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const quality = this.dataset.quality;
+                qualitySlider.value = quality;
+                qualityValue.textContent = quality;
+                
+                // Visual feedback
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('bg-red-100', 'border-red-300'));
+                this.classList.add('bg-red-100', 'border-red-300');
+            });
+        });
+
+        // Try different settings
+        tryDifferentBtn.addEventListener('click', function() {
+            resultsSection.classList.add('hidden');
+            compressionControls.classList.remove('hidden');
+        });
+
+        // Load image
+        function loadImage(file) {
+            originalImageFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    displayImageInfo();
+                    originalPreview.src = e.target.result;
+                    
+                    imageInfoSection.classList.remove('hidden');
+                    compressionControls.classList.remove('hidden');
+                };
+                originalImage.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Display image information
+        function displayImageInfo() {
+            imageDimensions.textContent = `${originalImage.width} × ${originalImage.height}`;
+            originalFileSize.textContent = formatFileSize(originalImageFile.size);
+            imageFormat.textContent = originalImageFile.type.split('/')[1].toUpperCase();
+        }
+
+        // Compress image
+        compressBtn.addEventListener('click', function() {
+            if (!originalImage) return;
+
+            compressionProgress.classList.remove('hidden');
+            compressionControls.classList.add('hidden');
+
+            // Small delay to show progress indicator
+            setTimeout(() => {
+                compressImage();
+            }, 100);
+        });
+
+        // Compress image function
+        function compressImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = originalImage.width;
+            canvas.height = originalImage.height;
+            
+            ctx.drawImage(originalImage, 0, 0);
+
+            // Get output format and quality
+            const format = outputFormat.value;
+            const quality = qualitySlider.value / 100;
+
+            let mimeType;
+            switch (format) {
+                case 'png':
+                    mimeType = 'image/png';
+                    break;
+                case 'jpg':
+                    mimeType = 'image/jpeg';
+                    break;
+                case 'webp':
+                    mimeType = 'image/webp';
+                    break;
+                default:
+                    mimeType = 'image/jpeg';
+            }
+
+            // Create compressed image
+            if (format === 'png') {
+                compressedImageDataUrl = canvas.toDataURL(mimeType);
+            } else {
+                compressedImageDataUrl = canvas.toDataURL(mimeType, quality);
+            }
+            
+            // Calculate sizes
+            const originalSize = originalImageFile.size;
+            const compressedSize = Math.round(compressedImageDataUrl.length * 0.75); // Approximate
+            const reduction = Math.round((1 - compressedSize / originalSize) * 100);
+
+            // Update results
+            compressedPreview.src = compressedImageDataUrl;
+            originalInfo.textContent = `${originalImage.width} × ${originalImage.height} • ${formatFileSize(originalSize)}`;
+            compressedInfo.textContent = `${originalImage.width} × ${originalImage.height} • ${formatFileSize(compressedSize)}`;
+            
+            resultOriginalSize.textContent = formatFileSize(originalSize);
+            resultCompressedSize.textContent = formatFileSize(compressedSize);
+            
+            if (reduction > 0) {
+                resultReduction.textContent = `${reduction}% smaller`;
+                resultReduction.className = 'text-xl font-bold text-green-600';
+            } else {
+                resultReduction.textContent = `${Math.abs(reduction)}% larger`;
+                resultReduction.className = 'text-xl font-bold text-red-600';
+            }
+
+            compressionProgress.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+        }
+
+        // Download compressed image
+        downloadBtn.addEventListener('click', function() {
+            if (!compressedImageDataUrl) return;
+
+            const link = document.createElement('a');
+            link.href = compressedImageDataUrl;
+            
+            const format = outputFormat.value;
+            const filename = `compressed-image.${format}`;
+            link.download = filename;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

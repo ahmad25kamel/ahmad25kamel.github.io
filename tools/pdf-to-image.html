@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Image Converter - Private Online Tools</title>
+    <meta name="description" content="Convert PDF pages to PNG/JPG images. Download individually or as ZIP. 100% client-side, no uploads required.">
+    <meta name="keywords" content="PDF to image, PDF to PNG, PDF to JPG, convert PDF, PDF converter, PDF to picture, extract images from PDF, PDF image extractor, free PDF converter, online PDF to image">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-EK4W85EF5F');
+    </script>
+    
+    <!-- Local CSS -->
+    
+    <!-- Routing Bridge for seamless navigation -->
+    <script src="../assets/js/routing-bridge.js"></script>
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <!-- JSZip CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+        }
+        .drop-zone.dragover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        
+        /* Breadcrumb styling */
+        .breadcrumb-container {
+            font-size: 0.875rem;
+        }
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .breadcrumb-link:hover {
+            color: white;
+        }
+        .breadcrumb-separator {
+            margin: 0 8px;
+            opacity: 0.6;
+        }
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">PDF to Image Converter</h1>
+                    <p class="text-sm md:text-base opacity-90">Convert PDF pages to PNG/JPG images</p>
+                </div>
+                <div class="navigation-wrapper"><div class="breadcrumb-container text-sm opacity-75 mb-2"></div><a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                    ← Back to Tools
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload PDF File</h2>
+            
+            <!-- Drop Zone -->
+            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
+                <div class="mb-4">
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-600 mb-2">Drag and drop your PDF file here</p>
+                <p class="text-sm text-gray-500 mb-4">or</p>
+                <input type="file" id="fileInput" accept=".pdf" class="hidden">
+                <label for="fileInput" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
+                    Choose PDF File
+                </label>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
+                    <select id="outputFormat" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="png">PNG (Lossless)</option>
+                        <option value="jpg">JPG (Smaller file size)</option>
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Image Quality (for JPG)</label>
+                    <input type="range" id="qualitySlider" min="10" max="100" value="90" class="w-full">
+                    <div class="text-sm text-gray-600 text-center mt-1">Quality: <span id="qualityValue">90</span>%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Status -->
+        <div id="processingStatus" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 hidden">
+            <div class="flex items-center">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                <span class="text-blue-800">Processing PDF... <span id="progressText">0%</span></span>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Converted Images</h2>
+                    <button id="downloadAllZip" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors">
+                        📦 Download All as ZIP
+                    </button>
+                </div>
+                <div id="imageGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Images will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">🔒 Privacy & Security</h3>
+            <ul class="text-gray-600 space-y-2">
+                <li>• Your PDF files are processed entirely in your browser</li>
+                <li>• No files are uploaded to any server</li>
+                <li>• All processing happens offline on your device</li>
+                <li>• Perfect for confidential documents</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-4 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
+        ☕ Support
+    </button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
+                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
+                <div class="space-y-3">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
+                        🎁 Saweria (Indonesia)
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
+                        ❤️ GitHub Sponsors
+                    </a>
+                </div>
+                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PDF.js worker setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const outputFormat = document.getElementById('outputFormat');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const processingStatus = document.getElementById('processingStatus');
+        const progressText = document.getElementById('progressText');
+        const resultsSection = document.getElementById('resultsSection');
+        const imageGrid = document.getElementById('imageGrid');
+        const downloadAllZip = document.getElementById('downloadAllZip');
+
+        let convertedImages = [];
+
+        // Quality slider update
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = this.value;
+        });
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                processPDF(files[0]);
+            }
+        });
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                processPDF(e.target.files[0]);
+            }
+        });
+
+        // Process PDF function
+        async function processPDF(file) {
+            try {
+                convertedImages = [];
+                imageGrid.innerHTML = '';
+                resultsSection.classList.add('hidden');
+                processingStatus.classList.remove('hidden');
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const totalPages = pdf.numPages;
+
+                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                    progressText.textContent = `${Math.round((pageNum / totalPages) * 100)}%`;
+                    
+                    const page = await pdf.getPage(pageNum);
+                    const viewport = page.getViewport({ scale: 2 });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: viewport
+                    }).promise;
+
+                    // Convert to desired format
+                    const format = outputFormat.value;
+                    const quality = qualitySlider.value / 100;
+                    const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
+                    const dataUrl = canvas.toDataURL(mimeType, quality);
+
+                    convertedImages.push({
+                        dataUrl: dataUrl,
+                        filename: `page-${pageNum}.${format}`,
+                        pageNum: pageNum
+                    });
+
+                    // Add to grid
+                    addImageToGrid(dataUrl, pageNum, format);
+                }
+
+                processingStatus.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error processing PDF:', error);
+                alert('Error processing PDF. Please try again.');
+                processingStatus.classList.add('hidden');
+            }
+        }
+
+        // Add image to grid
+        function addImageToGrid(dataUrl, pageNum, format) {
+            const imageCard = document.createElement('div');
+            imageCard.className = 'bg-gray-50 rounded-lg p-4 border';
+            imageCard.innerHTML = `
+                <div class="mb-3">
+                    <img src="${dataUrl}" alt="Page ${pageNum}" class="w-full h-48 object-contain border rounded">
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600 mb-2">Page ${pageNum}</p>
+                    <button onclick="downloadImage('${dataUrl}', 'page-${pageNum}.${format}')" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                        📥 Download
+                    </button>
+                </div>
+            `;
+            imageGrid.appendChild(imageCard);
+        }
+
+        // Download single image
+        function downloadImage(dataUrl, filename) {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Download all as ZIP
+        downloadAllZip.addEventListener('click', async function() {
+            if (convertedImages.length === 0) return;
+
+            const zip = new JSZip();
+            
+            for (const image of convertedImages) {
+                // Convert data URL to blob
+                const response = await fetch(image.dataUrl);
+                const blob = await response.blob();
+                zip.file(image.filename, blob);
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = 'pdf-images.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', () => {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', () => {
+            supportModal.classList.add('hidden');
+        });
+
+        supportModal.addEventListener('click', (e) => {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

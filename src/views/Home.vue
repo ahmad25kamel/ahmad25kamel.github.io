@@ -1,13 +1,14 @@
 <template>
   <div class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <AppHeader
-      title="Private Online Tools"
-      subtitle="All tools run 100% in your browser. No files are ever uploaded. Fast, private, and free."
-      :show-back-button="false"
-      :show-language-selector="true"
-      @language-changed="handleLanguageChange"
-    />
+    <header class="gradient-bg text-white py-6 lg:py-8">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-4">Private Online Tools</h1>
+          <p class="text-xl md:text-2xl font-light">All tools run 100% in your browser. No files are ever uploaded. Fast, private, and free.</p>
+        </div>
+      </div>
+    </header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 lg:py-12">
@@ -18,21 +19,24 @@
           icon="📄"
           title="PDF to Image"
           description="Convert PDF pages to PNG/JPG images. Download individually or as ZIP."
-          tool-path="/tools/pdf-to-image"
+          tool-path="/tools/pdf-to-image.html"
+          color-scheme="blue"
         />
         
         <ToolCard
           icon="📑"
           title="Merge PDF"
           description="Combine multiple PDF files into a single document."
-          tool-path="/tools/merge-pdf"
+          tool-path="/tools/merge-pdf.html"
+          color-scheme="green"
         />
         
         <ToolCard
           icon="✂️"
           title="Split PDF"
           description="Extract specific pages or split PDF into multiple documents."
-          tool-path="/tools/split-pdf"
+          tool-path="/tools/split-pdf.html"
+          color-scheme="purple"
         />
 
         <!-- Image Tools -->
@@ -40,14 +44,16 @@
           icon="🖼️"
           title="Resize Image"
           description="Change image dimensions by pixels or percentage with preview."
-          tool-path="/tools/resize-image"
+          tool-path="/tools/resize-image.html"
+          color-scheme="yellow"
         />
         
         <ToolCard
           icon="🗜️"
           title="Compress Image"
           description="Reduce image file size with quality slider and before/after preview."
-          tool-path="/tools/compress-image"
+          tool-path="/tools/compress-image.html"
+          color-scheme="red"
         />
 
         <!-- Privacy & Advanced Tools -->
@@ -55,7 +61,8 @@
           icon="📱"
           title="QR Code Tools"
           description="Generate QR codes from text or decode QR codes from images."
-          tool-path="/tools/qr-tools"
+          tool-path="/tools/qr-tools.html"
+          color-scheme="indigo"
         />
       </div>
 
