@@ -1,4 +1,7 @@
-/* TailwindCSS */
+/* Local TailwindCSS fallback - imported first for better compatibility */
+@import url('/assets/css/minimal-tailwind.css');
+
+/* TailwindCSS Build System */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
