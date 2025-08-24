@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Online Tools - 100% Client-Side Privacy Tools</title>
+    <meta name="description" content="Collection of privacy-first online tools that run 100% in your browser. PDF tools, image processing, QR codes - all client-side, no uploads, fast and free.">
+    <meta name="keywords" content="privacy tools, PDF tools, image processing, QR codes, client-side, no upload, browser tools">
+    <meta name="author" content="Ahmad Kamel">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Private Online Tools - 100% Client-Side Privacy Tools">
+    <meta property="og:description" content="Collection of privacy-first online tools that run 100% in your browser. No files uploaded, completely private.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ahmad25kamel.github.io">
+    <meta property="og:image" content="https://ahmad25kamel.github.io/assets/img/favicon.png">
+    <meta property="og:site_name" content="Private Online Tools">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Private Online Tools - 100% Client-Side Privacy Tools">
+    <meta name="twitter:description" content="Collection of privacy-first online tools that run 100% in your browser.">
+    <meta name="twitter:image" content="https://ahmad25kamel.github.io/assets/img/favicon.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ahmad25kamel.github.io">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/img/favicon.png">
+
+    <!-- Local CSS - Self-hosted TailwindCSS fallback -->
+    <link rel="stylesheet" href="/assets/css/minimal-tailwind.css">
+
+    <!-- Google Analytics -->
+    <script>
+        // Only load Google Analytics if not blocked by privacy tools
+        if (!navigator.doNotTrack && !window.doNotTrack) {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F';
+            document.head.appendChild(script);
+            
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-EK4W85EF5F');
+        }
+    </script>
+
+    <script>
+        // SPA-Static Integration Bridge
+        // This script helps coordinate between Vue SPA and static HTML files
+        
+        // Set initial SPA preference flag
+        if (!localStorage.getItem('prefer-spa')) {
+            localStorage.setItem('prefer-spa', 'true');
+        }
+        
+        // Handle direct URL access to tools
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/tools/') && currentPath.endsWith('.html')) {
+            // This could be either a Vue SPA route or static HTML file
+            console.log('Handling tool route:', currentPath);
+        }
+    </script>
+
+    <!-- Routing Bridge for enhanced navigation -->
+    <script src="/assets/js/routing-bridge.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
