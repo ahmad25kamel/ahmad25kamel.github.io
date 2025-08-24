@@ -32,9 +32,244 @@
     <!-- Local CSS - Self-hosted TailwindCSS fallback -->
     <link rel="stylesheet" href="/assets/css/minimal-tailwind.css">
 
-    <!-- Google Analytics -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .tool-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.2s ease;
+        }
+        .floating-btn:hover {
+            transform: scale(1.05);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center text-center">
+                <h1 class="text-4xl font-bold mb-2">🔒 Private Online Tools</h1>
+                <p class="text-xl opacity-90">100% Client-Side • No Uploads • Fast & Free</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <!-- Features Section -->
+        <section class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Why Choose Our Tools?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">🔒</div>
+                    <h3 class="text-xl font-semibold mb-2">100% Private</h3>
+                    <p class="text-gray-600">All processing happens in your browser. No files uploaded to servers.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-semibold mb-2">Lightning Fast</h3>
+                    <p class="text-gray-600">No waiting for uploads or downloads. Process files instantly.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">🚫</div>
+                    <h3 class="text-xl font-semibold mb-2">No Ads</h3>
+                    <p class="text-gray-600">Clean, distraction-free interface. Focus on your work.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Grid -->
+        <section>
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Available Tools</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- QR Code Tools -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-xl font-semibold mb-2">QR Code Tools</h3>
+                    <p class="text-gray-600 mb-4">Generate QR codes from text or scan QR codes from images. Perfect for sharing links, contact info, and more.</p>
+                    <a href="/tools/qr-tools.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- PDF to Image -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">📄</div>
+                    <h3 class="text-xl font-semibold mb-2">PDF to Image</h3>
+                    <p class="text-gray-600 mb-4">Convert PDF pages to PNG or JPG images. Extract images from documents with high quality output.</p>
+                    <a href="/tools/pdf-to-image.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Image Compression -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">🖼️</div>
+                    <h3 class="text-xl font-semibold mb-2">Compress Images</h3>
+                    <p class="text-gray-600 mb-4">Reduce image file sizes while maintaining quality. Support for JPG, PNG, and WebP formats.</p>
+                    <a href="/tools/compress-image.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Image Resize -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">📐</div>
+                    <h3 class="text-xl font-semibold mb-2">Resize Images</h3>
+                    <p class="text-gray-600 mb-4">Change image dimensions, crop, or scale images to exact specifications with preview.</p>
+                    <a href="/tools/resize-image.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Split PDF -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">✂️</div>
+                    <h3 class="text-xl font-semibold mb-2">Split PDF</h3>
+                    <p class="text-gray-600 mb-4">Extract specific pages from PDF documents or split into individual page files.</p>
+                    <a href="/tools/split-pdf.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Merge PDF -->
+                <div class="tool-card bg-white rounded-lg shadow-md p-6">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-semibold mb-2">Merge PDF</h3>
+                    <p class="text-gray-600 mb-4">Combine multiple PDF files into a single document with custom page ordering.</p>
+                    <a href="/tools/merge-pdf.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition-colors">
+                        Open Tool →
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Coming Soon -->
+        <section class="mt-16 text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">More Tools Coming Soon</h3>
+            <p class="text-gray-600 mb-6">We're constantly adding new privacy-focused tools. All suggestions welcome!</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-600">📝 Text Converter</span>
+                <span class="bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-600">🎨 Color Palette Generator</span>
+                <span class="bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-600">🔐 Password Generator</span>
+                <span class="bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-600">📊 CSV Converter</span>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">If these tools saved your time, consider supporting the development ❤️</p>
+            <div class="flex justify-center space-x-4 mb-6">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded transition-colors">
+                    🇮🇩 Saweria
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer"
+                   class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <div class="text-sm text-gray-400">
+                <p class="mb-2">Made with ❤️ in Indonesia by <a href="https://github.com/ahmad25kamel" class="text-indigo-400 hover:text-indigo-300">Ahmad Kamel</a></p>
+                <p>&copy; 2024 Private Online Tools. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">Support This Project</h2>
+            <p class="text-gray-600 mb-6">These tools are completely free and privacy-focused. If they saved your time, consider supporting the development!</p>
+            <div class="space-y-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded transition-colors">
+                    🇮🇩 Support via Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer"
+                   class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Only load Google Analytics if not blocked by privacy tools
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeModal = document.querySelector('.close');
+
+        supportBtn.addEventListener('click', () => {
+            supportModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            supportModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === supportModal) {
+                supportModal.style.display = 'none';
+            }
+        });
+
+        // Simple analytics (privacy-friendly)
         if (!navigator.doNotTrack && !window.doNotTrack) {
             const script = document.createElement('script');
             script.async = true;
@@ -47,29 +282,5 @@
             gtag('config', 'G-EK4W85EF5F');
         }
     </script>
-
-    <script>
-        // SPA-Static Integration Bridge
-        // This script helps coordinate between Vue SPA and static HTML files
-        
-        // Set initial SPA preference flag
-        if (!localStorage.getItem('prefer-spa')) {
-            localStorage.setItem('prefer-spa', 'true');
-        }
-        
-        // Handle direct URL access to tools
-        const currentPath = window.location.pathname;
-        if (currentPath.startsWith('/tools/') && currentPath.endsWith('.html')) {
-            // This could be either a Vue SPA route or static HTML file
-            console.log('Handling tool route:', currentPath);
-        }
-    </script>
-
-    <!-- Routing Bridge for enhanced navigation -->
-    <script src="/assets/js/routing-bridge.js"></script>
-</head>
-<body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
 </body>
 </html>
