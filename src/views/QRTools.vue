@@ -64,7 +64,7 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Size</label>
                 <select v-model="qrSize" @change="generateQRCode" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
-                  <option value="200">Small (200x200)</option>
+                  <option value="200" selected>Small (200x200)</option>
                   <option value="300">Medium (300x300)</option>
                   <option value="400">Large (400x400)</option>
                   <option value="500">Extra Large (500x500)</option>
@@ -263,7 +263,7 @@ export default {
       
       // QR Generation
       qrText: '',
-      qrSize: '300',
+      qrSize: '200',
       errorCorrection: 'M',
       foregroundColor: '#000000',
       backgroundColor: '#ffffff',
