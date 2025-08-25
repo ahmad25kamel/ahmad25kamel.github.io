@@ -62,6 +62,68 @@
             max-width: 250px;
             margin: 0 auto;
         }
+        
+        /* Notification styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success { border-left-color: #10b981; }
+        .notification.error { border-left-color: #ef4444; }
+        .notification.warning { border-left-color: #f59e0b; }
+        .notification.info { border-left-color: #3b82f6; }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-message {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .notification.success .notification-title { color: #059669; }
+        .notification.error .notification-title { color: #dc2626; }
+        .notification.warning .notification-title { color: #d97706; }
+        .notification.info .notification-title { color: #2563eb; }
+        
+        .notification.success .notification-message { color: #047857; }
+        .notification.error .notification-message { color: #991b1b; }
+        .notification.warning .notification-message { color: #92400e; }
+        .notification.info .notification-message { color: #1d4ed8; }
+        
+        /* Loading animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -83,6 +145,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
@@ -394,7 +459,122 @@
         let currentStream = null;
         let generatedQRDataUrl = null;
 
-        // Advanced settings toggle
+        // Notification System
+        function showNotification(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            const icons = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+            
+            const titles = {
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Info'
+            };
+            
+            notification.innerHTML = `
+                <div class="notification-title">
+                    <span style="margin-right: 8px;">${icons[type]}</span>
+                    ${titles[type]}
+                </div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Trigger show animation
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Input validation functions
+        function validateQRInput(text) {
+            const validationResults = {
+                isValid: true,
+                type: 'text',
+                suggestions: []
+            };
+
+            // URL validation
+            if (text.startsWith('http://') || text.startsWith('https://')) {
+                validationResults.type = 'url';
+                try {
+                    new URL(text);
+                } catch (e) {
+                    validationResults.isValid = false;
+                    validationResults.suggestions.push('URL format appears invalid. Please check the URL.');
+                }
+            }
+            // Email validation
+            else if (text.startsWith('mailto:')) {
+                validationResults.type = 'email';
+                const emailPattern = /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+/;
+                if (!emailPattern.test(text)) {
+                    validationResults.suggestions.push('Email format may be incorrect.');
+                }
+            }
+            // Phone validation
+            else if (text.startsWith('tel:')) {
+                validationResults.type = 'phone';
+                if (text.length < 8) {
+                    validationResults.suggestions.push('Phone number appears too short.');
+                }
+            }
+            // WiFi validation
+            else if (text.startsWith('WIFI:')) {
+                validationResults.type = 'wifi';
+                if (!text.includes('S:') || !text.includes('T:')) {
+                    validationResults.suggestions.push('WiFi QR format may be incomplete. Include network name (S:) and security type (T:).');
+                }
+            }
+            // General text validation
+            else {
+                if (text.length > 300) {
+                    validationResults.suggestions.push('Long text works better with SVG format and higher error correction.');
+                }
+            }
+
+            return validationResults;
+        }
+
+        function optimizeQRSettings(text, currentOptions) {
+            const validation = validateQRInput(text);
+            const optimizedOptions = { ...currentOptions };
+
+            // Optimize based on content type and length
+            if (text.length > 200) {
+                optimizedOptions.errorCorrectionLevel = 'L'; // Use low error correction for long text
+            } else if (text.length > 100) {
+                optimizedOptions.errorCorrectionLevel = 'M'; // Use medium for medium text
+            }
+
+            // Size recommendations
+            if (text.length > 500) {
+                if (parseInt(optimizedOptions.width) < 300) {
+                    optimizedOptions.width = 300;
+                    optimizedOptions.height = 300;
+                }
+            }
+
+            return optimizedOptions;
+        }
         toggleAdvanced.addEventListener('click', function() {
             const isHidden = advancedSettings.classList.contains('hidden');
             if (isHidden) {
@@ -467,15 +647,32 @@
             });
         });
 
-        // Generate QR Code
+        // Generate QR Code with improved error handling
         generateBtn.addEventListener('click', function() {
             const text = qrText.value.trim();
             if (!text) {
-                alert('Please enter some text to generate QR code.');
+                showNotification('Please enter some text to generate QR code.', 'warning');
                 return;
             }
 
-            const options = {
+            // Validate input
+            const validation = validateQRInput(text);
+            if (validation.suggestions.length > 0) {
+                showNotification(`Tip: ${validation.suggestions[0]}`, 'info', 7000);
+            }
+
+            // Validate input length
+            if (text.length > 2000) {
+                showNotification('Text is too long. Please keep it under 2000 characters for best results.', 'warning');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '⏳ Generating...';
+            qrCodeContainer.innerHTML = '<div class="text-center py-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div><p class="text-sm text-gray-600 mt-2">Generating QR code...</p></div>';
+
+            let options = {
                 width: parseInt(qrSize.value),
                 height: parseInt(qrSize.value),
                 errorCorrectionLevel: errorCorrection.value,
@@ -485,31 +682,84 @@
                 }
             };
 
-            qrCodeContainer.innerHTML = '';
+            // Optimize settings based on content
+            options = optimizeQRSettings(text, options);
 
-            if (qrFormat.value === 'svg') {
+            // Helper function to handle errors with fallback
+            const handleQRError = (err, retryCallback) => {
+                console.warn('QR generation error:', err);
+                
+                // Check if error is related to high error correction levels
+                if (err.message && err.message.includes('bad rs block')) {
+                    if (options.errorCorrectionLevel === 'H' || options.errorCorrectionLevel === 'Q') {
+                        showNotification('High error correction failed. Trying with medium error correction...', 'info');
+                        options.errorCorrectionLevel = 'M';
+                        setTimeout(retryCallback, 500);
+                        return;
+                    } else if (options.errorCorrectionLevel === 'M') {
+                        showNotification('Medium error correction failed. Trying with low error correction...', 'info');
+                        options.errorCorrectionLevel = 'L';
+                        setTimeout(retryCallback, 500);
+                        return;
+                    }
+                }
+                
+                // Final fallback - show user-friendly error
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '🏗️ Generate QR Code';
+                qrCodeContainer.innerHTML = '';
+                
+                let errorMessage = 'Unable to generate QR code. ';
+                if (text.length > 100) {
+                    errorMessage += 'Try with shorter text or switch to SVG format.';
+                } else {
+                    errorMessage += 'Please try again or contact support if the issue persists.';
+                }
+                
+                showNotification(errorMessage, 'error');
+            };
+
+            const generateSVG = () => {
                 QRCode.toString(text, {
                     ...options,
                     type: 'svg'
                 }, function(err, string) {
                     if (err) {
-                        alert('Error generating QR code: ' + err);
+                        handleQRError(err, generateSVG);
                         return;
                     }
+                    
                     qrCodeContainer.innerHTML = string;
                     generatedQRDataUrl = 'data:image/svg+xml;base64,' + btoa(string);
                     qrResult.classList.remove('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '🏗️ Generate QR Code';
+                    showNotification('QR code generated successfully!', 'success');
                 });
-            } else {
+            };
+
+            const generateCanvas = () => {
                 QRCode.toCanvas(text, options, function(err, canvas) {
                     if (err) {
-                        alert('Error generating QR code: ' + err);
+                        handleQRError(err, generateCanvas);
                         return;
                     }
+                    
+                    qrCodeContainer.innerHTML = '';
                     qrCodeContainer.appendChild(canvas);
                     generatedQRDataUrl = canvas.toDataURL('image/png');
                     qrResult.classList.remove('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '🏗️ Generate QR Code';
+                    showNotification('QR code generated successfully!', 'success');
                 });
+            };
+
+            // Execute generation based on format
+            if (qrFormat.value === 'svg') {
+                generateSVG();
+            } else {
+                generateCanvas();
             }
         });
 
@@ -527,7 +777,10 @@
 
         // Copy QR Code to clipboard
         copyQR.addEventListener('click', async function() {
-            if (!generatedQRDataUrl) return;
+            if (!generatedQRDataUrl) {
+                showNotification('No QR code to copy. Please generate one first.', 'warning');
+                return;
+            }
 
             try {
                 const response = await fetch(generatedQRDataUrl);
@@ -535,10 +788,11 @@
                 await navigator.clipboard.write([
                     new ClipboardItem({ [blob.type]: blob })
                 ]);
-                alert('QR code copied to clipboard!');
+                showNotification('QR code copied to clipboard successfully!', 'success');
             } catch (err) {
                 console.error('Failed to copy QR code: ', err);
-                alert('Failed to copy QR code to clipboard.');
+                // Fallback for browsers that don't support clipboard API
+                showNotification('Copy to clipboard not supported. Try using the download button instead.', 'warning');
             }
         });
 
