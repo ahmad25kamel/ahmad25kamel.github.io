@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Tools Unit Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .summary {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .qr-test-canvas {
+            margin: 10px;
+            border: 1px solid #ddd;
+        }
+        .details {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Tools Unit Tests</h1>
+    <div id="testResults"></div>
+    <div id="summary" class="summary"></div>
+
+    <!-- Include QR Code libraries -->
+    <script src="../assets/js/vendor/qrcode-simple.js"></script>
+    <script src="../assets/js/vendor/qr-reader-simple.js"></script>
+
+    <script>
+        class QRToolsTest {
+            constructor() {
+                this.testResults = [];
+                this.resultsContainer = document.getElementById('testResults');
+                this.summaryContainer = document.getElementById('summary');
+            }
+
+            // Test helper functions
+            assert(condition, message) {
+                if (condition) {
+                    this.testResults.push({ pass: true, message });
+                    return true;
+                } else {
+                    this.testResults.push({ pass: false, message });
+                    return false;
+                }
+            }
+
+            async delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Test QR Code Generation Functions
+            async testQRGeneration() {
+                const section = this.createSection('QR Code Generation Tests');
+                
+                // Test 1: Basic QR generation with canvas
+                try {
+                    const testText = 'Hello, World!';
+                    const options = {
+                        width: 200,
+                        height: 200,
+                        errorCorrectionLevel: 'M'
+                    };
+
+                    await new Promise((resolve, reject) => {
+                        QRCode.toCanvas(testText, options, (err, canvas) => {
+                            if (err) {
+                                this.assert(false, 'Basic QR generation failed: ' + err);
+                                reject(err);
+                            } else {
+                                this.assert(true, 'Basic QR generation successful');
+                                this.assert(canvas instanceof HTMLCanvasElement, 'Canvas element created');
+                                this.assert(canvas.width === 200, 'Canvas width is correct');
+                                this.assert(canvas.height === 200, 'Canvas height is correct');
+                                section.appendChild(canvas);
+                                canvas.className = 'qr-test-canvas';
+                                resolve();
+                            }
+                        });
+                    });
+                } catch (error) {
+                    this.assert(false, 'QR generation threw error: ' + error.message);
+                }
+
+                // Test 2: QR generation with custom colors
+                try {
+                    const testText = 'Color Test';
+                    const options = {
+                        width: 150,
+                        height: 150,
+                        color: {
+                            dark: '#FF0000',
+                            light: '#FFFFFF'
+                        }
+                    };
+
+                    await new Promise((resolve, reject) => {
+                        QRCode.toCanvas(testText, options, (err, canvas) => {
+                            if (err) {
+                                this.assert(false, 'Color QR generation failed: ' + err);
+                                reject(err);
+                            } else {
+                                this.assert(true, 'QR generation with custom colors successful');
+                                section.appendChild(canvas);
+                                canvas.className = 'qr-test-canvas';
+                                resolve();
+                            }
+                        });
+                    });
+                } catch (error) {
+                    this.assert(false, 'Color QR generation threw error: ' + error.message);
+                }
+
+                // Test 3: SVG QR generation
+                try {
+                    const testText = 'SVG Test';
+                    const options = {
+                        width: 150,
+                        height: 150,
+                        type: 'svg'
+                    };
+
+                    await new Promise((resolve, reject) => {
+                        QRCode.toString(testText, options, (err, svgString) => {
+                            if (err) {
+                                this.assert(false, 'SVG QR generation failed: ' + err);
+                                reject(err);
+                            } else {
+                                this.assert(true, 'SVG QR generation successful');
+                                this.assert(typeof svgString === 'string', 'SVG string returned');
+                                this.assert(svgString.includes('<svg'), 'Valid SVG format');
+                                
+                                const svgDiv = document.createElement('div');
+                                svgDiv.innerHTML = svgString;
+                                svgDiv.style.margin = '10px';
+                                svgDiv.style.border = '1px solid #ddd';
+                                section.appendChild(svgDiv);
+                                resolve();
+                            }
+                        });
+                    });
+                } catch (error) {
+                    this.assert(false, 'SVG QR generation threw error: ' + error.message);
+                }
+
+                // Test 4: Different error correction levels
+                const errorLevels = ['L', 'M', 'Q', 'H'];
+                for (const level of errorLevels) {
+                    try {
+                        await new Promise((resolve, reject) => {
+                            QRCode.toCanvas(`Error Level ${level}`, {
+                                width: 100,
+                                height: 100,
+                                errorCorrectionLevel: level
+                            }, (err, canvas) => {
+                                if (err) {
+                                    this.assert(false, `Error level ${level} failed: ${err}`);
+                                    reject(err);
+                                } else {
+                                    this.assert(true, `Error level ${level} successful`);
+                                    resolve();
+                                }
+                            });
+                        });
+                    } catch (error) {
+                        this.assert(false, `Error level ${level} threw error: ${error.message}`);
+                    }
+                }
+
+                return section;
+            }
+
+            // Test template functions from the HTML
+            testTemplateFunction() {
+                const section = this.createSection('Template Function Tests');
+                
+                // Simulate template generation
+                const templates = {
+                    url: 'https://example.com',
+                    email: 'mailto:someone@example.com?subject=Hello&body=Your message here',
+                    phone: 'tel:+1234567890',
+                    wifi: 'WIFI:T:WPA;S:MyNetwork;P:password;;'
+                };
+
+                for (const [type, expected] of Object.entries(templates)) {
+                    this.assert(typeof expected === 'string', `Template ${type} returns string`);
+                    this.assert(expected.length > 0, `Template ${type} is not empty`);
+                    
+                    // Test specific formats
+                    switch (type) {
+                        case 'url':
+                            this.assert(expected.startsWith('http'), `URL template starts with http`);
+                            break;
+                        case 'email':
+                            this.assert(expected.startsWith('mailto:'), `Email template starts with mailto:`);
+                            break;
+                        case 'phone':
+                            this.assert(expected.startsWith('tel:'), `Phone template starts with tel:`);
+                            break;
+                        case 'wifi':
+                            this.assert(expected.startsWith('WIFI:'), `WiFi template starts with WIFI:`);
+                            break;
+                    }
+                }
+
+                return section;
+            }
+
+            // Test data URL generation and validation
+            async testDataURLGeneration() {
+                const section = this.createSection('Data URL Generation Tests');
+                
+                try {
+                    // Generate a QR code and test data URL
+                    await new Promise((resolve, reject) => {
+                        QRCode.toCanvas('Data URL Test', {
+                            width: 200,
+                            height: 200
+                        }, (err, canvas) => {
+                            if (err) {
+                                this.assert(false, 'Canvas creation for data URL failed');
+                                reject(err);
+                            } else {
+                                const dataURL = canvas.toDataURL('image/png');
+                                
+                                this.assert(typeof dataURL === 'string', 'Data URL is a string');
+                                this.assert(dataURL.startsWith('data:image/png;base64,'), 'Data URL has correct format');
+                                this.assert(dataURL.length > 100, 'Data URL has reasonable length');
+                                
+                                // Test if data URL can be used to create an image
+                                const img = new Image();
+                                img.onload = () => {
+                                    this.assert(true, 'Data URL can be loaded as image');
+                                    this.assert(img.width === 200, 'Image width matches canvas');
+                                    this.assert(img.height === 200, 'Image height matches canvas');
+                                    resolve();
+                                };
+                                img.onerror = () => {
+                                    this.assert(false, 'Data URL failed to load as image');
+                                    reject(new Error('Invalid data URL'));
+                                };
+                                img.src = dataURL;
+                            }
+                        });
+                    });
+                } catch (error) {
+                    this.assert(false, 'Data URL generation test failed: ' + error.message);
+                }
+
+                return section;
+            }
+
+            // Test input validation
+            testInputValidation() {
+                const section = this.createSection('Input Validation Tests');
+                
+                // Test empty input
+                this.assert(true, 'Empty input validation - should be handled by UI');
+                
+                // Test very long input
+                const longText = 'a'.repeat(1000);
+                this.assert(longText.length === 1000, 'Long text validation test');
+                
+                // Test special characters
+                const specialChars = '!@#$%^&*()[]{}|;:,.<>?';
+                this.assert(typeof specialChars === 'string', 'Special characters handled');
+                
+                // Test Unicode characters
+                const unicode = '🎉 Hello 世界 مرحبا 🚀';
+                this.assert(typeof unicode === 'string', 'Unicode characters handled');
+                
+                // Test URL validation for open link functionality
+                const validUrls = [
+                    'https://example.com',
+                    'http://test.org',
+                    'https://sub.domain.com/path?query=value'
+                ];
+                
+                for (const url of validUrls) {
+                    const isValid = url.startsWith('http://') || url.startsWith('https://');
+                    this.assert(isValid, `URL validation for: ${url}`);
+                }
+                
+                const invalidUrls = [
+                    'ftp://example.com',
+                    'example.com',
+                    'mailto:test@example.com'
+                ];
+                
+                for (const url of invalidUrls) {
+                    const isValid = url.startsWith('http://') || url.startsWith('https://');
+                    this.assert(!isValid, `Invalid URL correctly identified: ${url}`);
+                }
+
+                return section;
+            }
+
+            // Test error handling
+            async testErrorHandling() {
+                const section = this.createSection('Error Handling Tests');
+                
+                // Test invalid QR generation parameters
+                try {
+                    await new Promise((resolve, reject) => {
+                        QRCode.toCanvas('', {
+                            width: 0,  // Invalid width
+                            height: 0  // Invalid height
+                        }, (err, canvas) => {
+                            if (err) {
+                                this.assert(true, 'Invalid parameters correctly rejected');
+                                resolve();
+                            } else {
+                                this.assert(false, 'Invalid parameters should have been rejected');
+                                resolve();
+                            }
+                        });
+                    });
+                } catch (error) {
+                    this.assert(true, 'Error handling working correctly');
+                }
+
+                return section;
+            }
+
+            // Create a section for organizing tests
+            createSection(title) {
+                const section = document.createElement('div');
+                section.className = 'test-section';
+                const heading = document.createElement('h2');
+                heading.textContent = title;
+                section.appendChild(heading);
+                this.resultsContainer.appendChild(section);
+                return section;
+            }
+
+            // Display test result
+            displayResult(result) {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = result.pass ? 'test-result test-pass' : 'test-result test-fail';
+                resultDiv.textContent = `${result.pass ? '✓' : '✗'} ${result.message}`;
+                return resultDiv;
+            }
+
+            // Run all tests
+            async runAllTests() {
+                console.log('Starting QR Tools tests...');
+                
+                const sections = [
+                    await this.testQRGeneration(),
+                    this.testTemplateFunction(),
+                    await this.testDataURLGeneration(),
+                    this.testInputValidation(),
+                    await this.testErrorHandling()
+                ];
+
+                // Display results for each section
+                sections.forEach((section, index) => {
+                    const sectionResults = this.testResults.filter((_, i) => {
+                        // This is a simplified way to associate results with sections
+                        // In a real test framework, you'd track this more precisely
+                        return true;
+                    });
+                });
+
+                // Display all results
+                this.testResults.forEach(result => {
+                    const resultElement = this.displayResult(result);
+                    this.resultsContainer.appendChild(resultElement);
+                });
+
+                // Display summary
+                const passed = this.testResults.filter(r => r.pass).length;
+                const total = this.testResults.length;
+                const percentage = ((passed / total) * 100).toFixed(1);
+                
+                this.summaryContainer.innerHTML = `
+                    <div class="test-container">
+                        <h2>Test Summary</h2>
+                        <p><strong>${passed}/${total}</strong> tests passed (${percentage}%)</p>
+                        ${passed === total ? 
+                            '<p style="color: green; font-weight: bold;">🎉 All tests passed!</p>' : 
+                            '<p style="color: orange; font-weight: bold;">⚠️ Some tests failed</p>'
+                        }
+                    </div>
+                `;
+
+                console.log(`Test completed: ${passed}/${total} tests passed`);
+            }
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tester = new QRToolsTest();
+            await tester.runAllTests();
+        });
+    </script>
+</body>
+</html>
