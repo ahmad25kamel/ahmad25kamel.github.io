@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Runner - Private Online Tools</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .test-suite {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        .back-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="../index.html" class="back-link">← Back to Tools</a>
+        <h1>Test Runner</h1>
+        <p>Unit tests for Private Online Tools</p>
+    </div>
+
+    <div class="info">
+        <h3>📋 About Testing</h3>
+        <p>These tests verify that the HTML-based tools function correctly in the browser. All tests run client-side and include:</p>
+        <ul>
+            <li><strong>Functional Tests:</strong> Core functionality of each tool</li>
+            <li><strong>UI Tests:</strong> Interface elements and user interactions</li>
+            <li><strong>Error Handling:</strong> Proper handling of edge cases</li>
+            <li><strong>Browser Compatibility:</strong> Cross-browser functionality</li>
+        </ul>
+    </div>
+
+    <div class="test-suite">
+        <h2>QR Code Tools Tests</h2>
+        <p>Tests for QR code generation and reading functionality</p>
+        <a href="qr-tools.test.html" class="test-link" target="_blank">🔍 Run QR Tools Tests</a>
+        
+        <h4>Test Coverage:</h4>
+        <ul>
+            <li>QR code generation (Canvas and SVG)</li>
+            <li>Custom colors and error correction</li>
+            <li>Template generation (URL, Email, Phone, WiFi)</li>
+            <li>Data URL generation and validation</li>
+            <li>Input validation and error handling</li>
+        </ul>
+    </div>
+
+    <div class="test-suite">
+        <h2>Future Test Suites</h2>
+        <p>Additional test suites can be added here for other tools:</p>
+        <ul>
+            <li>📄 PDF Tools Tests (Split, Merge, Convert)</li>
+            <li>🖼️ Image Tools Tests (Resize, Compress)</li>
+            <li>🔧 General UI/UX Tests</li>
+            <li>🌐 Browser Compatibility Tests</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <h3>🧪 How to Use</h3>
+        <ol>
+            <li>Click on any test suite link to run the tests</li>
+            <li>Tests will open in a new tab and run automatically</li>
+            <li>Results will show passed/failed tests with details</li>
+            <li>Check browser console for additional debugging information</li>
+        </ol>
+        
+        <h4>🔧 Running Tests Locally</h4>
+        <p>To run tests locally, serve this directory with a local web server:</p>
+        <code>python3 -m http.server 8000</code>
+        <p>Then visit: <code>http://localhost:8000/tests/</code></p>
+    </div>
+
+    <script>
+        // Log test runner access
+        console.log('Test Runner loaded for Private Online Tools');
+        console.log('Available test suites:', ['QR Tools']);
+        
+        // Add timestamp to track when tests were accessed
+        document.addEventListener('DOMContentLoaded', function() {
+            const timestamp = new Date().toLocaleString();
+            console.log('Test session started at:', timestamp);
+        });
+    </script>
+</body>
+</html>
