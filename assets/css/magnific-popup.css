@@ -168,13 +168,13 @@ button::-moz-focus-inner {
   opacity: 0.65;
   margin: 0;
   top: 50%;
-  margin-top: -30px;
+  margin-top: -55px;
   padding: 0;
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 110px;
   -webkit-tap-highlight-color: transparent; }
   .mfp-arrow:active {
-    margin-top: -29px; }
+    margin-top: -54px; }
   .mfp-arrow:hover,
   .mfp-arrow:focus {
     opacity: 1; }
