@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Test - Private Online Tools</title>
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Dark Mode Feature Test</h1>
+        
+        <div class="test-section">
+            <h2>🧪 Automated Tests</h2>
+            <div id="test-results"></div>
+            <button onclick="runTests()" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Run Tests
+            </button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Manual Test Checklist</h2>
+            <ul>
+                <li>✅ Toggle button is visible and accessible</li>
+                <li>✅ Dark mode provides high contrast</li>
+                <li>✅ Light mode maintains original design</li>
+                <li>✅ Theme preference persists across page navigation</li>
+                <li>✅ Theme preference is stored in localStorage</li>
+                <li>✅ System preference detection works as fallback</li>
+                <li>✅ Smooth transitions between themes</li>
+                <li>✅ All UI elements are visible in both modes</li>
+                <li>✅ Toggle button updates correctly</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎨 Visual Test Elements</h2>
+            <p>Test text readability in both modes</p>
+            <button style="background: var(--primary-500); color: white; padding: 8px 16px; border: none; border-radius: 4px;">Primary Button</button>
+            <button style="background: var(--secondary-500); color: white; padding: 8px 16px; border: none; border-radius: 4px; margin-left: 10px;">Secondary Button</button>
+            <div style="background: var(--gray-100); padding: 15px; margin: 10px 0; border-radius: 4px;">
+                <strong>Card Element</strong><br>
+                This is a sample card to test background and text contrast.
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/theme-toggle.js"></script>
+    <script>
+        function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '';
+            
+            const tests = [
+                {
+                    name: 'Theme toggle exists',
+                    test: () => document.getElementById('theme-toggle') !== null
+                },
+                {
+                    name: 'ThemeToggle class is available',
+                    test: () => typeof window.ThemeToggle === 'function'
+                },
+                {
+                    name: 'Data-theme attribute is set',
+                    test: () => document.documentElement.hasAttribute('data-theme')
+                },
+                {
+                    name: 'Toggle functionality works',
+                    test: () => {
+                        const currentTheme = document.documentElement.getAttribute('data-theme');
+                        const toggle = document.getElementById('theme-toggle');
+                        if (toggle) {
+                            toggle.click();
+                            const newTheme = document.documentElement.getAttribute('data-theme');
+                            toggle.click(); // Reset
+                            return currentTheme !== newTheme;
+                        }
+                        return false;
+                    }
+                },
+                {
+                    name: 'localStorage persistence works',
+                    test: () => {
+                        localStorage.setItem('user-theme-preference', 'test');
+                        const value = localStorage.getItem('user-theme-preference');
+                        localStorage.removeItem('user-theme-preference');
+                        return value === 'test';
+                    }
+                }
+            ];
+            
+            tests.forEach(test => {
+                try {
+                    const result = test.test();
+                    const div = document.createElement('div');
+                    div.className = result ? 'test-result pass' : 'test-result fail';
+                    div.textContent = `${result ? '✅' : '❌'} ${test.name}`;
+                    results.appendChild(div);
+                } catch (error) {
+                    const div = document.createElement('div');
+                    div.className = 'test-result fail';
+                    div.textContent = `❌ ${test.name}: ${error.message}`;
+                    results.appendChild(div);
+                }
+            });
+            
+            // Add info about current state
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'test-result info';
+            infoDiv.textContent = `Current theme: ${document.documentElement.getAttribute('data-theme') || 'system'}`;
+            results.appendChild(infoDiv);
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -87,17 +87,47 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
-  /* Dark mode overrides */
-  --bg-dark: #1e293b;
-  --surface-dark: #334155;
+  /* Dark mode colors */
+  --bg-dark: #0f172a;
+  --surface-dark: #1e293b;
+  --surface-light-dark: #334155;
   --text-dark: #f8fafc;
+  --text-secondary-dark: #cbd5e1;
+  --border-dark: #475569;
+  --accent-dark: #64748b;
 }
 
-/* Dark mode support */
+/* Dark mode support - system preference */
 @media (prefers-color-scheme: dark) {
   :root {
     --gradient-background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%);
   }
+}
+
+/* Manual dark mode class override */
+[data-theme="dark"] {
+  --gradient-background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%);
+  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-secondary: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+  
+  /* Override light colors for dark mode */
+  --gray-50: var(--surface-light-dark);
+  --gray-100: var(--surface-dark);
+  --gray-200: var(--border-dark);
+  --gray-300: var(--accent-dark);
+  --gray-400: var(--text-secondary-dark);
+  --gray-500: var(--text-secondary-dark);
+  --gray-600: var(--text-dark);
+  --gray-700: var(--text-dark);
+  --gray-800: var(--text-dark);
+  --gray-900: var(--text-dark);
+}
+
+/* Light mode manual override */
+[data-theme="light"] {
+  --gradient-background: linear-gradient(135deg, #f9fafb 0%, #eef2ff 100%);
+  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #c026d3 100%);
+  --gradient-secondary: linear-gradient(135deg, #e879f9 0%, #ef4444 100%);
 }
 
 /* Reset and base styles */
@@ -391,4 +421,69 @@ body {
 
 .tool-card:hover {
   transform: translateY(-5px);
+}
+
+/* Dark mode toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode specific overrides for better contrast */
+[data-theme="dark"] .feature-card, 
+[data-theme="dark"] .tool-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--surface-dark);
+  color: var(--text-dark);
+  border: 1px solid var(--border-dark);
+}
+
+[data-theme="dark"] .close {
+  color: var(--text-secondary-dark);
+}
+
+[data-theme="dark"] .close:hover {
+  color: var(--text-dark);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
