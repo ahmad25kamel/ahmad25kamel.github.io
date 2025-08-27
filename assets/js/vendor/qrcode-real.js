@@ -686,12 +686,18 @@
         this.dataCount = dataCount;
     }
     
+    // Reed-Solomon block table [blocks, total, data] for each version and error correction level
     QRRSBlock.RS_BLOCK_TABLE = [
-        [1, 26, 19],  // [blocks, total, data] for type 1
-        [1, 44, 34],  // type 2
-        [1, 70, 55],  // type 3
-        [1, 100, 80], // type 4
-        [1, 134, 108] // type 5
+        // Version 1 (L, M, Q, H)
+        [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
+        // Version 2 (L, M, Q, H)  
+        [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
+        // Version 3 (L, M, Q, H)
+        [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
+        // Version 4 (L, M, Q, H)
+        [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9],
+        // Version 5 (L, M, Q, H)
+        [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12]
     ];
     
     QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
