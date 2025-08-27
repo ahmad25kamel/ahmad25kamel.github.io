@@ -283,16 +283,17 @@
         .stagger-5 { animation-delay: 0.5s; }
         .stagger-6 { animation-delay: 0.6s; }
         
-        /* Dark mode support */
+        /* Dark mode support - System preference fallback */
         @media (prefers-color-scheme: dark) {
-            .feature-card, .tool-card {
+            body:not([data-theme]) .feature-card, 
+            body:not([data-theme]) .tool-card {
                 background: rgba(255, 255, 255, 0.1);
                 backdrop-filter: blur(20px);
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 color: white;
             }
             
-            .modal-content {
+            body:not([data-theme]) .modal-content {
                 background: var(--surface-dark);
                 color: var(--text-dark);
             }
@@ -674,5 +675,8 @@
             });
         });
     </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="/assets/js/theme-toggle.js"></script>
 </body>
 </html>
