@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple QR Test</title>
+    <script src="../assets/js/vendor/qrcode-minimal.js"></script>
+</head>
+<body>
+    <h1>Simple QR Code Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        try {
+            QRCode.toCanvas('Hello World', { width: 200 }, function(err, canvas) {
+                const result = document.getElementById('result');
+                if (err) {
+                    result.innerHTML = 'Error: ' + err.message;
+                } else {
+                    result.innerHTML = 'QR Generated Successfully!';
+                    result.appendChild(canvas);
+                }
+            });
+        } catch (error) {
+            document.getElementById('result').innerHTML = 'Exception: ' + error.message;
+        }
+    </script>
+</body>
+</html>
