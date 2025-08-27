@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Validity Test</title>
+    <script src="../assets/js/vendor/qrcode-fixed.js"></script>
+</head>
+<body>
+    <h1>QR Code Validity Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        function runQRValidityTests() {
+            const results = document.getElementById('test-results');
+            const testCases = [
+                { text: 'Hello World', error: 'L' },
+                { text: 'Hello World', error: 'M' },
+                { text: 'Hello World', error: 'Q' },
+                { text: 'Hello World', error: 'H' },
+                { text: 'https://example.com', error: 'M' },
+                { text: 'mailto:test@example.com', error: 'M' },
+                { text: 'tel:+1234567890', error: 'M' },
+                { text: 'WIFI:T:WPA;S:MyNetwork;P:password;;', error: 'M' }
+            ];
+            
+            let passCount = 0;
+            let totalCount = testCases.length;
+            
+            testCases.forEach((testCase, index) => {
+                try {
+                    QRCode.toCanvas(testCase.text, {
+                        width: 200,
+                        errorCorrectionLevel: testCase.error
+                    }, (err, canvas) => {
+                        const div = document.createElement('div');
+                        div.style.marginBottom = '10px';
+                        
+                        if (err) {
+                            div.innerHTML = `<span style="color: red;">❌ FAIL: ${testCase.text} (${testCase.error}): ${err.message}</span>`;
+                        } else {
+                            passCount++;
+                            div.innerHTML = `<span style="color: green;">✅ PASS: ${testCase.text} (${testCase.error})</span>`;
+                            div.appendChild(canvas);
+                            canvas.style.marginLeft = '10px';
+                            canvas.style.border = '1px solid #ccc';
+                        }
+                        
+                        results.appendChild(div);
+                        
+                        // Show summary after all tests
+                        if (index === testCases.length - 1) {
+                            const summary = document.createElement('div');
+                            summary.style.marginTop = '20px';
+                            summary.style.fontWeight = 'bold';
+                            summary.style.fontSize = '18px';
+                            
+                            if (passCount === totalCount) {
+                                summary.innerHTML = `<span style="color: green;">🎉 ALL TESTS PASSED: ${passCount}/${totalCount}</span>`;
+                            } else {
+                                summary.innerHTML = `<span style="color: orange;">⚠️ PARTIAL SUCCESS: ${passCount}/${totalCount} tests passed</span>`;
+                            }
+                            
+                            results.appendChild(summary);
+                        }
+                    });
+                } catch (err) {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '10px';
+                    div.innerHTML = `<span style="color: red;">❌ EXCEPTION: ${testCase.text} (${testCase.error}): ${err.message}</span>`;
+                    results.appendChild(div);
+                }
+            });
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runQRValidityTests);
+    </script>
+</body>
+</html>

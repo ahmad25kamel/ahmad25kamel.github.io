@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Generation Test</title>
+    <script src="../assets/js/vendor/qrcode-real.js"></script>
+</head>
+<body>
+    <h1>QR Code Generation Test</h1>
+    <p>Testing if the fixed QR library can generate codes without errors.</p>
+    <div id="test-results"></div>
+    
+    <script>
+        function runGenerationTests() {
+            const results = document.getElementById('test-results');
+            const testCases = [
+                { text: 'Hello World', error: 'L' },
+                { text: 'Hello World', error: 'M' },
+                { text: 'Hello World', error: 'Q' },
+                { text: 'Hello World', error: 'H' },
+                { text: 'https://example.com', error: 'M' },
+                { text: 'mailto:test@example.com', error: 'M' },
+                { text: 'tel:+1234567890', error: 'M' },
+                { text: 'Test text for QR', error: 'M' }
+            ];
+            
+            let passCount = 0;
+            let completedTests = 0;
+            
+            testCases.forEach((testCase, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.style.margin = '10px 0';
+                testDiv.style.padding = '10px';
+                testDiv.style.border = '1px solid #ccc';
+                testDiv.innerHTML = `<strong>Testing:</strong> "${testCase.text}" (Error Level: ${testCase.error})<br>`;
+                results.appendChild(testDiv);
+                
+                try {
+                    QRCode.toCanvas(testCase.text, {
+                        width: 200,
+                        errorCorrectionLevel: testCase.error
+                    }, (err, canvas) => {
+                        completedTests++;
+                        
+                        if (err) {
+                            testDiv.style.borderColor = 'red';
+                            testDiv.style.backgroundColor = '#ffebee';
+                            testDiv.innerHTML += `<span style="color: red;">❌ FAILED: ${err.message}</span>`;
+                        } else {
+                            testDiv.style.borderColor = 'green';
+                            testDiv.style.backgroundColor = '#e8f5e8';
+                            testDiv.innerHTML += `<span style="color: green;">✅ GENERATED SUCCESSFULLY</span>`;
+                            testDiv.appendChild(canvas);
+                            canvas.style.marginLeft = '10px';
+                            canvas.style.border = '1px solid #ccc';
+                            passCount++;
+                        }
+                        
+                        // Show summary after all tests
+                        if (completedTests === testCases.length) {
+                            const summary = document.createElement('div');
+                            summary.style.marginTop = '20px';
+                            summary.style.padding = '15px';
+                            summary.style.border = '2px solid #333';
+                            summary.style.borderRadius = '5px';
+                            summary.style.fontWeight = 'bold';
+                            summary.style.fontSize = '18px';
+                            summary.style.textAlign = 'center';
+                            
+                            if (passCount === testCases.length) {
+                                summary.style.backgroundColor = '#d4edda';
+                                summary.style.borderColor = '#28a745';
+                                summary.innerHTML = `<span style="color: #155724;">🎉 ALL QR CODES GENERATED SUCCESSFULLY: ${passCount}/${testCases.length}</span>`;
+                            } else if (passCount > 0) {
+                                summary.style.backgroundColor = '#fff3cd';
+                                summary.style.borderColor = '#ffc107';
+                                summary.innerHTML = `<span style="color: #856404;">⚠️ PARTIAL SUCCESS: ${passCount}/${testCases.length} generated</span>`;
+                            } else {
+                                summary.style.backgroundColor = '#f8d7da';
+                                summary.style.borderColor = '#dc3545';
+                                summary.innerHTML = `<span style="color: #721c24;">❌ ALL FAILED: 0/${testCases.length} generated</span>`;
+                            }
+                            
+                            results.appendChild(summary);
+                        }
+                    });
+                } catch (err) {
+                    completedTests++;
+                    testDiv.style.borderColor = 'red';
+                    testDiv.style.backgroundColor = '#ffebee';
+                    testDiv.innerHTML += `<span style="color: red;">❌ EXCEPTION: ${err.message}</span>`;
+                }
+            });
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runGenerationTests);
+    </script>
+</body>
+</html>

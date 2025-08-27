@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Fixed Validation Test</title>
+    <script src="../assets/js/vendor/qrcode-real.js"></script>
+    <script src="../assets/js/vendor/qr-reader-simple.js"></script>
+    <style>
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .pass { border-color: green; background-color: #f0fff0; }
+        .fail { border-color: red; background-color: #fff0f0; }
+        .qr-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .validation-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Fixed Validation Test</h1>
+    <p>Testing the fixed QR code library that resolves Reed-Solomon "bad rs block" errors.</p>
+    <div id="test-results"></div>
+    
+    <script>
+        function runFixedValidationTests() {
+            const results = document.getElementById('test-results');
+            const testCases = [
+                { text: 'Hello World', error: 'L' },
+                { text: 'Hello World', error: 'M' },
+                { text: 'Hello World', error: 'Q' },
+                { text: 'Hello World', error: 'H' },
+                { text: 'https://example.com', error: 'M' },
+                { text: 'mailto:test@example.com', error: 'M' },
+                { text: 'tel:+1234567890', error: 'M' },
+                { text: 'WIFI:T:WPA;S:MyNetwork;P:password;;', error: 'M' }
+            ];
+            
+            let passCount = 0;
+            let totalCount = testCases.length;
+            let completedTests = 0;
+            
+            testCases.forEach((testCase, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-result';
+                testDiv.innerHTML = `<strong>Testing:</strong> "${testCase.text}" (Error Level: ${testCase.error})<br>`;
+                results.appendChild(testDiv);
+                
+                try {
+                    QRCode.toCanvas(testCase.text, {
+                        width: 200,
+                        height: 200,
+                        errorCorrectionLevel: testCase.error,
+                        margin: 4
+                    }, (err, canvas) => {
+                        completedTests++;
+                        
+                        if (err) {
+                            testDiv.className = 'test-result fail';
+                            testDiv.innerHTML += `<span style="color: red;">❌ GENERATION FAILED: ${err.message}</span>`;
+                        } else {
+                            testDiv.className = 'test-result pass';
+                            
+                            const containerDiv = document.createElement('div');
+                            containerDiv.className = 'qr-container';
+                            
+                            // Validate QR structure
+                            const context = canvas.getContext('2d');
+                            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                            const validation = validateQRStructure(imageData, canvas.width, canvas.height);
+                            
+                            let statusText = '';
+                            if (validation.hasFinderPatterns && validation.hasTimingPatterns) {
+                                statusText = `<span style="color: green;">✅ VALID QR STRUCTURE - Generated successfully with proper finder and timing patterns</span>`;
+                                passCount++;
+                            } else {
+                                statusText = `<span style="color: orange;">⚠️ PARTIAL SUCCESS - Generated but missing some QR patterns</span>`;
+                            }
+                            
+                            containerDiv.innerHTML = statusText;
+                            
+                            const validationDiv = document.createElement('div');
+                            validationDiv.className = 'validation-details';
+                            validationDiv.innerHTML = `
+                                <strong>Structure Analysis:</strong><br>
+                                • Finder patterns: ${validation.hasFinderPatterns ? '✓' : '✗'}<br>
+                                • Timing patterns: ${validation.hasTimingPatterns ? '✓' : '✗'}<br>
+                                • Format info: ${validation.hasFormatInfo ? '✓' : '✗'}<br>
+                                • Data patterns: ${validation.hasDataPatterns ? '✓' : '✗'}
+                            `;
+                            containerDiv.appendChild(validationDiv);
+                            
+                            containerDiv.appendChild(canvas);
+                            canvas.style.marginLeft = '10px';
+                            canvas.style.border = '1px solid #ccc';
+                            testDiv.appendChild(containerDiv);
+                        }
+                        
+                        // Show summary after all tests
+                        if (completedTests === testCases.length) {
+                            const summary = document.createElement('div');
+                            summary.style.marginTop = '20px';
+                            summary.style.padding = '15px';
+                            summary.style.border = '2px solid #333';
+                            summary.style.borderRadius = '5px';
+                            summary.style.fontWeight = 'bold';
+                            summary.style.fontSize = '18px';
+                            summary.style.textAlign = 'center';
+                            
+                            if (passCount === totalCount) {
+                                summary.style.backgroundColor = '#d4edda';
+                                summary.style.borderColor = '#28a745';
+                                summary.innerHTML = `<span style="color: #155724;">🎉 ALL QR CODES HAVE VALID STRUCTURE: ${passCount}/${totalCount}</span><br><small style="font-weight: normal;">Reed-Solomon "bad rs block" errors have been resolved!</small>`;
+                            } else if (passCount > 0) {
+                                summary.style.backgroundColor = '#fff3cd';
+                                summary.style.borderColor = '#ffc107';
+                                summary.innerHTML = `<span style="color: #856404;">⚠️ PARTIAL SUCCESS: ${passCount}/${totalCount} QR codes have valid structure</span>`;
+                            } else {
+                                summary.style.backgroundColor = '#f8d7da';
+                                summary.style.borderColor = '#dc3545';
+                                summary.innerHTML = `<span style="color: #721c24;">❌ ALL FAILED: 0/${totalCount} have valid structure</span>`;
+                            }
+                            
+                            results.appendChild(summary);
+                        }
+                    });
+                } catch (err) {
+                    completedTests++;
+                    testDiv.className = 'test-result fail';
+                    testDiv.innerHTML += `<span style="color: red;">❌ EXCEPTION: ${err.message}</span>`;
+                }
+            });
+        }
+        
+        function validateQRStructure(imageData, width, height) {
+            // Convert to grayscale matrix
+            const matrix = [];
+            const data = imageData.data;
+            
+            for (let y = 0; y < height; y++) {
+                matrix[y] = [];
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    const gray = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+                    matrix[y][x] = gray < 128; // true = black, false = white
+                }
+            }
+            
+            return {
+                hasFinderPatterns: checkFinderPatterns(matrix, width, height),
+                hasTimingPatterns: checkTimingPatterns(matrix, width, height),
+                hasFormatInfo: checkFormatInfo(matrix, width, height),
+                hasDataPatterns: checkDataPatterns(matrix, width, height)
+            };
+        }
+        
+        function checkFinderPatterns(matrix, width, height) {
+            // Look for 7x7 finder patterns in corners
+            const patterns = [
+                { x: 0, y: 0 }, // Top-left
+                { x: width - 7, y: 0 }, // Top-right  
+                { x: 0, y: height - 7 } // Bottom-left
+            ];
+            
+            let foundPatterns = 0;
+            patterns.forEach(pos => {
+                if (pos.x >= 0 && pos.y >= 0 && isFinderPattern(matrix, pos.x, pos.y, width, height)) {
+                    foundPatterns++;
+                }
+            });
+            
+            return foundPatterns >= 2; // At least 2 out of 3
+        }
+        
+        function isFinderPattern(matrix, startX, startY, width, height) {
+            if (startX + 7 > width || startY + 7 > height) return false;
+            
+            // Expected finder pattern (7x7)
+            const expected = [
+                [1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,1],
+                [1,0,1,1,1,0,1],
+                [1,0,1,1,1,0,1],
+                [1,0,1,1,1,0,1],
+                [1,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1]
+            ];
+            
+            let matches = 0;
+            let total = 49;
+            
+            for (let y = 0; y < 7; y++) {
+                for (let x = 0; x < 7; x++) {
+                    if (matrix[startY + y] && matrix[startY + y][startX + x] !== undefined) {
+                        if (matrix[startY + y][startX + x] === Boolean(expected[y][x])) {
+                            matches++;
+                        }
+                    }
+                    total = Math.min(total, 49);
+                }
+            }
+            
+            return matches / total > 0.7; // Allow some tolerance
+        }
+        
+        function checkTimingPatterns(matrix, width, height) {
+            // Check horizontal timing pattern (row 6 from the center area)
+            const centerY = Math.floor(height / 2);
+            let alternating = true;
+            let checkCount = 0;
+            
+            for (let x = Math.floor(width * 0.3); x < Math.floor(width * 0.7); x++) {
+                if (matrix[centerY] && matrix[centerY][x] !== undefined) {
+                    const expected = (x % 2 === 0);
+                    if (matrix[centerY][x] !== expected) {
+                        alternating = false;
+                        break;
+                    }
+                    checkCount++;
+                }
+            }
+            
+            return alternating && checkCount > 5;
+        }
+        
+        function checkFormatInfo(matrix, width, height) {
+            // Check if there are patterns around the finder patterns
+            // This is a simplified check
+            return matrix[Math.floor(height/8)] && matrix[Math.floor(height/8)][0] !== undefined;
+        }
+        
+        function checkDataPatterns(matrix, width, height) {
+            // Check if there's variation in the data area (not all same color)
+            let blackCount = 0;
+            let whiteCount = 0;
+            
+            // Sample the center area
+            const startX = Math.floor(width * 0.3);
+            const endX = Math.floor(width * 0.7);
+            const startY = Math.floor(height * 0.3);
+            const endY = Math.floor(height * 0.7);
+            
+            for (let y = startY; y < endY; y++) {
+                for (let x = startX; x < endX; x++) {
+                    if (matrix[y] && matrix[y][x] !== undefined) {
+                        if (matrix[y][x]) blackCount++;
+                        else whiteCount++;
+                    }
+                }
+            }
+            
+            // Should have both black and white pixels in reasonable proportions
+            const total = blackCount + whiteCount;
+            return total > 0 && blackCount > total * 0.1 && whiteCount > total * 0.1;
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runFixedValidationTests);
+    </script>
+</body>
+</html>

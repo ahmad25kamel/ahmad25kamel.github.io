@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Test - Minimal</title>
+    <script src="../assets/js/vendor/qrcode-minimal.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f0f0f0; }
+        .test { margin: 20px 0; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .result { margin: 15px 0; display: flex; align-items: center; gap: 15px; }
+        canvas { border: 2px solid #ddd; border-radius: 4px; }
+        .info { font-family: monospace; font-size: 14px; line-height: 1.4; }
+        .status { font-weight: bold; padding: 8px 12px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .instructions { background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196f3; }
+    </style>
+</head>
+<body>
+    <h1>QR Code Test - Minimal Implementation</h1>
+    
+    <div class="instructions">
+        <h3>📱 Manual Testing Instructions:</h3>
+        <p>Scan each QR code below with your smartphone camera to verify it works correctly.</p>
+        <p><strong>Expected:</strong> Each QR code should scan to the exact text shown.</p>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        const testCases = [
+            { text: 'Hello World', level: 'M', description: 'Simple text' },
+            { text: 'https://github.com/ahmad25kamel/ahmad25kamel.github.io', level: 'M', description: 'Long URL' },
+            { text: 'mailto:test@example.com', level: 'M', description: 'Email address' },
+            { text: 'Test123!@#', level: 'H', description: 'Mixed characters with high error correction' }
+        ];
+        
+        function runTests() {
+            const results = document.getElementById('results');
+            
+            testCases.forEach((test, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test';
+                testDiv.innerHTML = `
+                    <h3>Test ${index + 1}: ${test.description}</h3>
+                    <div class="info">
+                        <strong>Input:</strong> "${test.text}"<br>
+                        <strong>Error Level:</strong> ${test.level}<br>
+                        <strong>Length:</strong> ${test.text.length} characters
+                    </div>
+                    <div class="result" id="result-${index}">
+                        <div class="status">Generating QR code...</div>
+                    </div>
+                `;
+                results.appendChild(testDiv);
+                
+                // Generate QR code
+                setTimeout(() => {
+                    try {
+                        QRCode.toCanvas(test.text, {
+                            width: 200,
+                            height: 200,
+                            errorCorrectionLevel: test.level,
+                            margin: 4
+                        }, (err, canvas) => {
+                            const resultDiv = document.getElementById(`result-${index}`);
+                            
+                            if (err) {
+                                resultDiv.innerHTML = `
+                                    <div class="status error">❌ Generation Failed: ${err.message}</div>
+                                `;
+                            } else {
+                                resultDiv.innerHTML = `
+                                    <canvas></canvas>
+                                    <div class="info">
+                                        <div class="status success">✅ QR Code Generated Successfully!</div>
+                                        <br><strong>Canvas Info:</strong><br>
+                                        Size: ${canvas.width}x${canvas.height}px<br>
+                                        Data URL: ${canvas.toDataURL().substring(0, 50)}...<br>
+                                        <br><strong>📱 Please scan this QR code with your phone</strong><br>
+                                        <strong>Expected result:</strong> "${test.text}"
+                                    </div>
+                                `;
+                                
+                                // Replace the placeholder canvas with the actual one
+                                const canvasPlaceholder = resultDiv.querySelector('canvas');
+                                canvasPlaceholder.parentNode.replaceChild(canvas, canvasPlaceholder);
+                            }
+                        });
+                    } catch (error) {
+                        const resultDiv = document.getElementById(`result-${index}`);
+                        resultDiv.innerHTML = `
+                            <div class="status error">❌ Exception: ${error.message}</div>
+                        `;
+                    }
+                }, index * 100); // Stagger the generation slightly
+            });
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

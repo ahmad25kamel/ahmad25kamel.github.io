@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Quick Test</title>
+    <script src="../assets/js/vendor/qrcode-working.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-item { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .qr-container { display: flex; align-items: flex-start; gap: 20px; }
+        .qr-info { font-family: monospace; font-size: 14px; }
+        canvas { border: 1px solid #ccc; }
+        .status { font-weight: bold; margin-top: 10px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>QR Code Quick Test</h1>
+    <p>Testing QR code generation with working library...</p>
+    
+    <div id="results"></div>
+    
+    <script>
+        function runQuickTest() {
+            const results = document.getElementById('results');
+            
+            const tests = [
+                { text: 'Hello World', level: 'M' },
+                { text: 'https://github.com/ahmad25kamel', level: 'M' },
+                { text: 'Test QR Code', level: 'H' }
+            ];
+            
+            tests.forEach((test, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-item';
+                
+                testDiv.innerHTML = `
+                    <h3>Test ${index + 1}</h3>
+                    <div class="qr-info">
+                        <strong>Text:</strong> "${test.text}"<br>
+                        <strong>Error Level:</strong> ${test.level}
+                    </div>
+                    <div class="qr-container" id="container-${index}">
+                        <div id="status-${index}" class="status">Generating...</div>
+                    </div>
+                `;
+                
+                results.appendChild(testDiv);
+                
+                try {
+                    QRCode.toCanvas(test.text, {
+                        width: 200,
+                        height: 200,
+                        errorCorrectionLevel: test.level,
+                        margin: 4
+                    }, (err, canvas) => {
+                        const container = document.getElementById(`container-${index}`);
+                        const status = document.getElementById(`status-${index}`);
+                        
+                        if (err) {
+                            status.textContent = `❌ ERROR: ${err.message}`;
+                            status.className = 'status error';
+                        } else {
+                            container.insertBefore(canvas, status);
+                            status.textContent = '✅ Generated successfully! Please scan with phone to verify.';
+                            status.className = 'status success';
+                            
+                            // Add some info about the generated QR
+                            const info = document.createElement('div');
+                            info.className = 'qr-info';
+                            info.innerHTML = `
+                                <br><strong>Canvas Info:</strong><br>
+                                Size: ${canvas.width}x${canvas.height}px<br>
+                                Version: ${canvas.qrVersion || 'Unknown'}<br>
+                                Error Level: ${canvas.qrErrorLevel || test.level}
+                            `;
+                            status.appendChild(info);
+                        }
+                    });
+                } catch (error) {
+                    const status = document.getElementById(`status-${index}`);
+                    status.textContent = `❌ EXCEPTION: ${error.message}`;
+                    status.className = 'status error';
+                }
+            });
+        }
+        
+        // Run test when page loads
+        document.addEventListener('DOMContentLoaded', runQuickTest);
+    </script>
+</body>
+</html>

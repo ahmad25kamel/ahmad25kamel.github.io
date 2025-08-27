@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Real Test with Screenshot</title>
+    <script src="../assets/js/vendor/qrcode-proven.js"></script>
+    <style>
+        .test-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .pass { border-color: green; background-color: #f0fff0; }
+        .fail { border-color: red; background-color: #fff0f0; }
+        .warning { border-color: orange; background-color: #fff8f0; }
+        .qr-display {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        .qr-info {
+            font-family: monospace;
+            font-size: 12px;
+        }
+        canvas {
+            border: 1px solid #ddd;
+        }
+        .test-summary {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Real Test with Manual Validation</h1>
+    
+    <div class="instructions">
+        <h3>📱 Manual Testing Instructions:</h3>
+        <ol>
+            <li>Use your smartphone's camera or QR code scanning app</li>
+            <li>Scan each QR code below</li>
+            <li>Verify that the scanned result matches the expected text</li>
+            <li>Report any codes that don't scan properly</li>
+        </ol>
+        <p><strong>Expected Results:</strong> All QR codes should scan and return the exact text shown.</p>
+    </div>
+    
+    <div id="test-results"></div>
+    <div id="test-summary"></div>
+    
+    <script>
+        function runRealQRTests() {
+            const results = document.getElementById('test-results');
+            const summary = document.getElementById('test-summary');
+            
+            const testCases = [
+                { text: 'Hello World', error: 'L', description: 'Simple text - Low error correction' },
+                { text: 'Hello World', error: 'M', description: 'Simple text - Medium error correction' },
+                { text: 'Hello World', error: 'Q', description: 'Simple text - Quartile error correction' },
+                { text: 'Hello World', error: 'H', description: 'Simple text - High error correction' },
+                { text: 'https://github.com/ahmad25kamel/ahmad25kamel.github.io', error: 'M', description: 'URL - GitHub repository' },
+                { text: 'mailto:test@example.com', error: 'M', description: 'Email address' },
+                { text: 'tel:+1234567890', error: 'M', description: 'Phone number' },
+                { text: 'WIFI:T:WPA;S:TestNetwork;P:password123;;', error: 'M', description: 'WiFi credentials' }
+            ];
+            
+            let successCount = 0;
+            let failCount = 0;
+            let warningCount = 0;
+            
+            testCases.forEach((testCase, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-container';
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.innerHTML = `
+                    <h3>Test ${index + 1}: ${testCase.description}</h3>
+                    <div class="qr-info">
+                        <strong>Input Text:</strong> "${testCase.text}"<br>
+                        <strong>Error Correction:</strong> ${testCase.error}<br>
+                        <strong>Expected Output:</strong> QR code should scan to exactly: "${testCase.text}"
+                    </div>
+                `;
+                testDiv.appendChild(headerDiv);
+                
+                try {
+                    const qrDisplayDiv = document.createElement('div');
+                    qrDisplayDiv.className = 'qr-display';
+                    
+                    // Generate QR code
+                    QRCode.toCanvas(testCase.text, {
+                        width: 200,
+                        height: 200,
+                        errorCorrectionLevel: testCase.error,
+                        margin: 4,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff'
+                        }
+                    }, (err, canvas) => {
+                        if (err) {
+                            testDiv.className += ' fail';
+                            qrDisplayDiv.innerHTML = `<span style="color: red;">❌ GENERATION FAILED: ${err.message}</span>`;
+                            failCount++;
+                        } else {
+                            // Generation successful - now needs manual verification
+                            qrDisplayDiv.appendChild(canvas);
+                            
+                            const infoDiv = document.createElement('div');
+                            infoDiv.innerHTML = `
+                                <div style="color: blue;">✅ QR Code Generated Successfully</div>
+                                <div style="color: orange; margin-top: 10px;">
+                                    <strong>⚠️ MANUAL VERIFICATION REQUIRED:</strong><br>
+                                    Please scan this QR code with your smartphone<br>
+                                    Expected result: "${testCase.text}"
+                                </div>
+                                <div style="margin-top: 10px; font-size: 10px; color: #666;">
+                                    Canvas size: ${canvas.width}x${canvas.height}<br>
+                                    Data URL length: ${canvas.toDataURL().length} chars
+                                </div>
+                            `;
+                            qrDisplayDiv.appendChild(infoDiv);
+                            
+                            testDiv.className += ' warning'; // Pending manual verification
+                            warningCount++;
+                        }
+                        
+                        updateSummary();
+                    });
+                    
+                    testDiv.appendChild(qrDisplayDiv);
+                    
+                } catch (error) {
+                    testDiv.className += ' fail';
+                    const errorDiv = document.createElement('div');
+                    errorDiv.innerHTML = `<span style="color: red;">❌ UNEXPECTED ERROR: ${error.message}</span>`;
+                    testDiv.appendChild(errorDiv);
+                    failCount++;
+                    updateSummary();
+                }
+                
+                results.appendChild(testDiv);
+            });
+            
+            function updateSummary() {
+                const total = testCases.length;
+                const completed = successCount + failCount + warningCount;
+                
+                if (completed === total) {
+                    summary.className = 'test-summary';
+                    summary.innerHTML = `
+                        <h3>Test Summary</h3>
+                        <div>Total Tests: ${total}</div>
+                        <div>✅ Generated Successfully: ${warningCount} (awaiting manual verification)</div>
+                        <div>❌ Generation Failed: ${failCount}</div>
+                        <div style="margin-top: 10px; color: #666;">
+                            <strong>Next Step:</strong> Manually scan each QR code above with your smartphone 
+                            to verify they produce the correct output text.
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runRealQRTests);
+    </script>
+</body>
+</html>
