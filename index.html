@@ -313,7 +313,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50" style="opacity: 0; transition: opacity 0.5s ease-in;">
+<body class="bg-gray-50">
     <!-- Header -->
     <header class="gradient-bg text-white py-16 relative">
         <div class="container mx-auto px-4">
@@ -659,11 +659,8 @@
             gtag('config', 'G-EK4W85EF5F');
         }
 
-        // Progressive enhancement: Add loading states
+        // Progressive enhancement: Preload critical images
         document.addEventListener('DOMContentLoaded', () => {
-            // Add a subtle loading animation completion
-            document.body.style.opacity = '1';
-            
             // Preload critical images
             const criticalImages = [
                 '/assets/img/favicon.png'
