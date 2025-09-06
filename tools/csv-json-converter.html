@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV & JSON Converter - Private Online Tools</title>
+    <meta name="description" content="Convert between CSV and JSON formats. Parse, validate, and transform data. Support for custom delimiters, headers, and formatting. 100% client-side.">
+    <meta name="keywords" content="csv converter, json converter, csv to json, json to csv, data converter, file converter, parse csv, parse json, data transformation">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .back-to-tools-btn {
+            transition: all 0.3s ease;
+        }
+        .back-to-tools-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .data-editor {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+        
+        .preview-table {
+            max-height: 400px;
+            overflow: auto;
+        }
+        
+        .preview-table table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        .preview-table th,
+        .preview-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        
+        .preview-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .preview-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+            min-height: 150px;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #6366f1;
+            background-color: #f8fafc;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* Notification styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #10b981;
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">CSV & JSON Converter</h1>
+                    <p class="text-sm md:text-base opacity-90">Convert between CSV and JSON formats</p>
+                </div>
+                <div class="navigation-wrapper">
+                    <!-- Breadcrumb container for dynamic breadcrumbs -->
+                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
+                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                        ← Back to Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <button id="csvToJsonTab" class="tab-button active flex-1 py-3 px-6 rounded-lg font-medium transition-colors">
+                    📊 CSV to JSON
+                </button>
+                <button id="jsonToCsvTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    🔄 JSON to CSV
+                </button>
+                <button id="validatorTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    ✅ Data Validator
+                </button>
+            </div>
+        </div>
+
+        <!-- CSV to JSON Section -->
+        <div id="csvToJsonSection" class="space-y-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Convert CSV to JSON</h2>
+                
+                <div class="space-y-6">
+                    <!-- File Upload / Drop Zone -->
+                    <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center" id="csvDropZone">
+                        <div>
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Drop CSV file here or paste CSV data below</p>
+                            <p class="text-sm text-gray-500">Supports .csv, .tsv, and .txt files</p>
+                            <input type="file" id="csvFileInput" accept=".csv,.tsv,.txt" class="hidden">
+                            <button id="selectCsvFile" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">
+                                Select File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- CSV Input -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">CSV Data Input</label>
+                            <textarea id="csvInput" placeholder="name,age,city&#10;John,30,New York&#10;Jane,25,Los Angeles&#10;Bob,35,Chicago" 
+                                      class="w-full h-64 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical data-editor"></textarea>
+                            
+                            <!-- CSV Options -->
+                            <div class="mt-4 space-y-3">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="csvDelimiter" class="block text-sm font-medium text-gray-700 mb-1">Delimiter</label>
+                                        <select id="csvDelimiter" class="w-full border border-gray-300 rounded px-3 py-2">
+                                            <option value=",">Comma (,)</option>
+                                            <option value=";">Semicolon (;)</option>
+                                            <option value="\t">Tab</option>
+                                            <option value="|">Pipe (|)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="csvQuote" class="block text-sm font-medium text-gray-700 mb-1">Quote Character</label>
+                                        <select id="csvQuote" class="w-full border border-gray-300 rounded px-3 py-2">
+                                            <option value='"'>Double Quote (")</option>
+                                            <option value="'">Single Quote (')</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="csvHasHeaders" checked class="mr-2">
+                                        <span class="text-sm">First row contains headers</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="csvTrimSpaces" checked class="mr-2">
+                                        <span class="text-sm">Trim whitespace</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button id="clearCsvInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                                <button id="loadCsvSample" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Load Sample</button>
+                                <button id="convertCsvToJson" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Convert to JSON</button>
+                            </div>
+                        </div>
+                        
+                        <!-- JSON Output -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">JSON Output</label>
+                            <textarea id="jsonOutput" readonly 
+                                      class="w-full h-64 p-3 border border-gray-300 rounded bg-gray-50 resize-vertical data-editor"></textarea>
+                            
+                            <!-- JSON Options -->
+                            <div class="mt-4 space-y-3">
+                                <div>
+                                    <label for="jsonFormat" class="block text-sm font-medium text-gray-700 mb-1">Output Format</label>
+                                    <select id="jsonFormat" class="w-full border border-gray-300 rounded px-3 py-2">
+                                        <option value="array">Array of Objects</option>
+                                        <option value="object">Object with Arrays</option>
+                                        <option value="nested">Nested Object Structure</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="jsonPretty" checked class="mr-2">
+                                        <span class="text-sm">Pretty print (formatted)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="jsonMinify" class="mr-2">
+                                        <span class="text-sm">Minify output</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button id="copyJsonOutput" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Copy JSON</button>
+                                <button id="downloadJsonOutput" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download .json</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Preview -->
+                    <div id="csvPreviewSection" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Preview</h3>
+                        <div id="csvDataStats" class="stats-grid mb-4"></div>
+                        <div id="csvPreview" class="preview-table border border-gray-300 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON to CSV Section -->
+        <div id="jsonToCsvSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Convert JSON to CSV</h2>
+                
+                <div class="space-y-6">
+                    <!-- File Upload / Drop Zone -->
+                    <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center" id="jsonDropZone">
+                        <div>
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Drop JSON file here or paste JSON data below</p>
+                            <p class="text-sm text-gray-500">Supports .json files and JSON arrays</p>
+                            <input type="file" id="jsonFileInput" accept=".json" class="hidden">
+                            <button id="selectJsonFile" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">
+                                Select File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- JSON Input -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">JSON Data Input</label>
+                            <textarea id="jsonInput" placeholder='[&#10;  {"name": "John", "age": 30, "city": "New York"},&#10;  {"name": "Jane", "age": 25, "city": "Los Angeles"},&#10;  {"name": "Bob", "age": 35, "city": "Chicago"}&#10;]' 
+                                      class="w-full h-64 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical data-editor"></textarea>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button id="clearJsonInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                                <button id="loadJsonSample" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Load Sample</button>
+                                <button id="formatJson" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors">Format JSON</button>
+                                <button id="convertJsonToCsv" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Convert to CSV</button>
+                            </div>
+                        </div>
+                        
+                        <!-- CSV Output -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">CSV Output</label>
+                            <textarea id="csvOutput" readonly 
+                                      class="w-full h-64 p-3 border border-gray-300 rounded bg-gray-50 resize-vertical data-editor"></textarea>
+                            
+                            <!-- CSV Output Options -->
+                            <div class="mt-4 space-y-3">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="outputDelimiter" class="block text-sm font-medium text-gray-700 mb-1">Delimiter</label>
+                                        <select id="outputDelimiter" class="w-full border border-gray-300 rounded px-3 py-2">
+                                            <option value=",">Comma (,)</option>
+                                            <option value=";">Semicolon (;)</option>
+                                            <option value="\t">Tab</option>
+                                            <option value="|">Pipe (|)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="outputQuote" class="block text-sm font-medium text-gray-700 mb-1">Quote Character</label>
+                                        <select id="outputQuote" class="w-full border border-gray-300 rounded px-3 py-2">
+                                            <option value='"'>Double Quote (")</option>
+                                            <option value="'">Single Quote (')</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="includeHeaders" checked class="mr-2">
+                                        <span class="text-sm">Include headers</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="flattenNested" checked class="mr-2">
+                                        <span class="text-sm">Flatten nested objects</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button id="copyCsvOutput" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Copy CSV</button>
+                                <button id="downloadCsvOutput" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download .csv</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Preview -->
+                    <div id="jsonPreviewSection" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Preview</h3>
+                        <div id="jsonDataStats" class="stats-grid mb-4"></div>
+                        <div id="jsonPreview" class="preview-table border border-gray-300 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Validator Section -->
+        <div id="validatorSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Data Validator & Analyzer</h2>
+                
+                <div class="space-y-6">
+                    <!-- Data Input -->
+                    <div>
+                        <label for="validateData" class="block text-sm font-medium text-gray-700 mb-2">Data to Validate</label>
+                        <textarea id="validateData" placeholder="Paste your CSV or JSON data here for validation and analysis..." 
+                                  class="w-full h-32 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical data-editor"></textarea>
+                        
+                        <div class="flex gap-2 mt-4">
+                            <button id="detectFormat" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Auto-Detect Format</button>
+                            <button id="validateCsv" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Validate as CSV</button>
+                            <button id="validateJson" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Validate as JSON</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Validation Results -->
+                    <div id="validationResults" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Validation Results</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Status and Errors -->
+                            <div>
+                                <div id="validationStatus" class="p-4 border rounded mb-4">
+                                    <!-- Validation status will be displayed here -->
+                                </div>
+                                
+                                <div id="validationErrors" class="hidden">
+                                    <h4 class="font-semibold text-red-600 mb-2">Errors Found</h4>
+                                    <ul id="errorsList" class="space-y-1 text-sm text-red-600">
+                                        <!-- Errors will be listed here -->
+                                    </ul>
+                                </div>
+                                
+                                <div id="validationWarnings" class="hidden">
+                                    <h4 class="font-semibold text-yellow-600 mb-2">Warnings</h4>
+                                    <ul id="warningsList" class="space-y-1 text-sm text-yellow-600">
+                                        <!-- Warnings will be listed here -->
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Statistics -->
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Data Statistics</h4>
+                                <div id="dataStatistics" class="stats-grid">
+                                    <!-- Statistics will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Analysis -->
+                        <div id="dataAnalysis" class="mt-6">
+                            <h4 class="font-semibold text-gray-800 mb-2">Column Analysis</h4>
+                            <div id="columnAnalysis" class="overflow-x-auto">
+                                <!-- Column analysis table will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">Need these tools regularly? Support the project:</p>
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
+        </div>
+    </footer>
+
+    <!-- Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
+            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
+            <div class="space-y-3">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <button id="closeSupportModal" class="mt-4 w-full bg-gray-200 hover:bg-gray-300 py-2 rounded transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // CSV parsing function
+        function parseCSV(csvText, options = {}) {
+            const {
+                delimiter = ',',
+                quote = '"',
+                hasHeaders = true,
+                trimSpaces = true
+            } = options;
+            
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length === 0) throw new Error('No data to parse');
+            
+            const result = [];
+            const headers = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const values = parseCSVLine(line, delimiter, quote);
+                
+                if (trimSpaces) {
+                    values.forEach((val, idx) => values[idx] = val.trim());
+                }
+                
+                if (i === 0 && hasHeaders) {
+                    headers.push(...values);
+                } else {
+                    const row = {};
+                    if (hasHeaders) {
+                        values.forEach((value, index) => {
+                            const header = headers[index] || `column_${index + 1}`;
+                            row[header] = convertValue(value);
+                        });
+                    } else {
+                        values.forEach((value, index) => {
+                            row[`column_${index + 1}`] = convertValue(value);
+                        });
+                    }
+                    result.push(row);
+                }
+            }
+            
+            return { data: result, headers: hasHeaders ? headers : Object.keys(result[0] || {}) };
+        }
+
+        function parseCSVLine(line, delimiter, quote) {
+            const values = [];
+            let current = '';
+            let inQuoted = false;
+            let i = 0;
+            
+            while (i < line.length) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+                
+                if (char === quote) {
+                    if (inQuoted && nextChar === quote) {
+                        current += quote;
+                        i += 2;
+                    } else {
+                        inQuoted = !inQuoted;
+                        i++;
+                    }
+                } else if (char === delimiter && !inQuoted) {
+                    values.push(current);
+                    current = '';
+                    i++;
+                } else {
+                    current += char;
+                    i++;
+                }
+            }
+            
+            values.push(current);
+            return values;
+        }
+
+        function convertValue(value) {
+            // Try to convert to appropriate type
+            if (value === '') return '';
+            if (value.toLowerCase() === 'true') return true;
+            if (value.toLowerCase() === 'false') return false;
+            if (value.toLowerCase() === 'null') return null;
+            
+            // Try number conversion
+            if (!isNaN(value) && !isNaN(parseFloat(value))) {
+                return parseFloat(value);
+            }
+            
+            return value;
+        }
+
+        // JSON to CSV conversion
+        function jsonToCSV(jsonData, options = {}) {
+            const {
+                delimiter = ',',
+                quote = '"',
+                includeHeaders = true,
+                flattenNested = true
+            } = options;
+            
+            if (!Array.isArray(jsonData)) {
+                throw new Error('JSON data must be an array of objects');
+            }
+            
+            if (jsonData.length === 0) {
+                throw new Error('No data to convert');
+            }
+            
+            // Flatten nested objects if requested
+            const flatData = flattenNested ? jsonData.map(obj => flattenObject(obj)) : jsonData;
+            
+            // Get all unique headers
+            const allHeaders = new Set();
+            flatData.forEach(obj => {
+                Object.keys(obj).forEach(key => allHeaders.add(key));
+            });
+            const headers = Array.from(allHeaders);
+            
+            // Generate CSV
+            let csv = '';
+            
+            if (includeHeaders) {
+                csv += headers.map(header => escapeCSVValue(header, delimiter, quote)).join(delimiter) + '\n';
+            }
+            
+            flatData.forEach(obj => {
+                const row = headers.map(header => {
+                    const value = obj[header] !== undefined ? obj[header] : '';
+                    return escapeCSVValue(String(value), delimiter, quote);
+                });
+                csv += row.join(delimiter) + '\n';
+            });
+            
+            return csv.trim();
+        }
+
+        function flattenObject(obj, prefix = '') {
+            const flattened = {};
+            
+            Object.keys(obj).forEach(key => {
+                const value = obj[key];
+                const newKey = prefix ? `${prefix}.${key}` : key;
+                
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    Object.assign(flattened, flattenObject(value, newKey));
+                } else if (Array.isArray(value)) {
+                    flattened[newKey] = JSON.stringify(value);
+                } else {
+                    flattened[newKey] = value;
+                }
+            });
+            
+            return flattened;
+        }
+
+        function escapeCSVValue(value, delimiter, quote) {
+            const valueStr = String(value);
+            if (valueStr.includes(delimiter) || valueStr.includes(quote) || valueStr.includes('\n')) {
+                return quote + valueStr.replace(new RegExp(quote, 'g'), quote + quote) + quote;
+            }
+            return valueStr;
+        }
+
+        // Data validation functions
+        function validateCSV(csvText) {
+            const errors = [];
+            const warnings = [];
+            
+            try {
+                const lines = csvText.split('\n').filter(line => line.trim());
+                if (lines.length === 0) {
+                    errors.push('No data found');
+                    return { valid: false, errors, warnings };
+                }
+                
+                // Check for consistent column count
+                const columnCounts = lines.map(line => parseCSVLine(line, ',', '"').length);
+                const firstRowColumns = columnCounts[0];
+                
+                columnCounts.forEach((count, index) => {
+                    if (count !== firstRowColumns) {
+                        warnings.push(`Row ${index + 1} has ${count} columns, expected ${firstRowColumns}`);
+                    }
+                });
+                
+                // Try to parse the entire CSV
+                parseCSV(csvText);
+                
+                return { valid: true, errors, warnings };
+            } catch (error) {
+                errors.push(error.message);
+                return { valid: false, errors, warnings };
+            }
+        }
+
+        function validateJSON(jsonText) {
+            const errors = [];
+            const warnings = [];
+            
+            try {
+                const data = JSON.parse(jsonText);
+                
+                if (!Array.isArray(data)) {
+                    warnings.push('JSON is not an array - conversion to CSV may be limited');
+                } else if (data.length === 0) {
+                    warnings.push('JSON array is empty');
+                } else {
+                    // Check for consistent structure
+                    const firstKeys = Object.keys(data[0] || {});
+                    data.forEach((item, index) => {
+                        if (typeof item !== 'object' || item === null) {
+                            warnings.push(`Item ${index + 1} is not an object`);
+                        } else {
+                            const itemKeys = Object.keys(item);
+                            if (itemKeys.length !== firstKeys.length || !itemKeys.every(key => firstKeys.includes(key))) {
+                                warnings.push(`Item ${index + 1} has different structure than first item`);
+                            }
+                        }
+                    });
+                }
+                
+                return { valid: true, errors, warnings, data };
+            } catch (error) {
+                errors.push(`Invalid JSON: ${error.message}`);
+                return { valid: false, errors, warnings };
+            }
+        }
+
+        // Data analysis functions
+        function analyzeData(data, headers) {
+            const stats = {
+                rows: data.length,
+                columns: headers.length,
+                size: JSON.stringify(data).length
+            };
+            
+            const columnAnalysis = headers.map(header => {
+                const values = data.map(row => row[header]).filter(val => val !== null && val !== undefined && val !== '');
+                const types = new Set(values.map(val => typeof val));
+                
+                return {
+                    name: header,
+                    nonEmptyCount: values.length,
+                    emptyCount: data.length - values.length,
+                    types: Array.from(types),
+                    uniqueValues: new Set(values).size,
+                    sampleValues: values.slice(0, 3)
+                };
+            });
+            
+            return { stats, columnAnalysis };
+        }
+
+        // UI utility functions
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        async function copyToClipboard(text, successMessage) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(successMessage);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy to clipboard', 'error');
+            }
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification(`Downloaded ${filename}`);
+        }
+
+        function createDataPreview(data, headers, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center p-4">No data to preview</p>';
+                return;
+            }
+            
+            const maxRows = 100; // Limit preview rows for performance
+            const previewData = data.slice(0, maxRows);
+            
+            let html = '<table class="w-full"><thead><tr>';
+            headers.forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            previewData.forEach(row => {
+                html += '<tr>';
+                headers.forEach(header => {
+                    const value = row[header];
+                    const displayValue = value === null || value === undefined ? '' : String(value);
+                    html += `<td title="${displayValue}">${displayValue.length > 50 ? displayValue.substring(0, 50) + '...' : displayValue}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            if (data.length > maxRows) {
+                html += `<p class="text-sm text-gray-500 p-2">Showing first ${maxRows} of ${data.length} rows</p>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function createStatsDisplay(stats, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.rows.toLocaleString()}</div>
+                    <div class="stat-label">Rows</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.columns}</div>
+                    <div class="stat-label">Columns</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${(stats.size / 1024).toFixed(1)}KB</div>
+                    <div class="stat-label">Size</div>
+                </div>
+            `;
+        }
+
+        // Tab functionality
+        const tabs = {
+            'csvToJsonTab': 'csvToJsonSection',
+            'jsonToCsvTab': 'jsonToCsvSection',
+            'validatorTab': 'validatorSection'
+        };
+
+        Object.keys(tabs).forEach(tabId => {
+            document.getElementById(tabId).addEventListener('click', function() {
+                // Hide all sections
+                Object.values(tabs).forEach(sectionId => {
+                    document.getElementById(sectionId).classList.add('hidden');
+                });
+                
+                // Remove active class from all tabs
+                Object.keys(tabs).forEach(id => {
+                    const tab = document.getElementById(id);
+                    tab.classList.remove('active');
+                    tab.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                });
+                
+                // Show selected section
+                document.getElementById(tabs[tabId]).classList.remove('hidden');
+                
+                // Add active class to selected tab
+                this.classList.add('active');
+                this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            });
+        });
+
+        // CSV to JSON functionality
+        const csvInput = document.getElementById('csvInput');
+        const jsonOutput = document.getElementById('jsonOutput');
+
+        // File handling for CSV
+        const csvFileInput = document.getElementById('csvFileInput');
+        const csvDropZone = document.getElementById('csvDropZone');
+        
+        document.getElementById('selectCsvFile').addEventListener('click', () => csvFileInput.click());
+        csvDropZone.addEventListener('click', () => csvFileInput.click());
+
+        csvDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        csvDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        csvDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleCSVFile(files[0]);
+            }
+        });
+
+        csvFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleCSVFile(this.files[0]);
+            }
+        });
+
+        function handleCSVFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                csvInput.value = e.target.result;
+                showNotification(`Loaded ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('loadCsvSample').addEventListener('click', function() {
+            csvInput.value = `name,age,city,salary,department
+John Doe,30,New York,50000,Engineering
+Jane Smith,25,Los Angeles,45000,Marketing
+Bob Johnson,35,Chicago,55000,Engineering
+Alice Brown,28,Miami,48000,Sales
+Charlie Wilson,32,Seattle,52000,Engineering`;
+        });
+
+        document.getElementById('clearCsvInput').addEventListener('click', function() {
+            csvInput.value = '';
+            jsonOutput.value = '';
+            document.getElementById('csvPreviewSection').classList.add('hidden');
+        });
+
+        document.getElementById('convertCsvToJson').addEventListener('click', function() {
+            try {
+                const options = {
+                    delimiter: document.getElementById('csvDelimiter').value.replace('\\t', '\t'),
+                    quote: document.getElementById('csvQuote').value,
+                    hasHeaders: document.getElementById('csvHasHeaders').checked,
+                    trimSpaces: document.getElementById('csvTrimSpaces').checked
+                };
+                
+                const result = parseCSV(csvInput.value, options);
+                const format = document.getElementById('jsonFormat').value;
+                
+                let output;
+                switch (format) {
+                    case 'object':
+                        output = {};
+                        result.headers.forEach(header => {
+                            output[header] = result.data.map(row => row[header]);
+                        });
+                        break;
+                    case 'nested':
+                        output = { data: result.data, headers: result.headers, count: result.data.length };
+                        break;
+                    default:
+                        output = result.data;
+                }
+                
+                const pretty = document.getElementById('jsonPretty').checked;
+                const minify = document.getElementById('jsonMinify').checked;
+                
+                if (minify) {
+                    jsonOutput.value = JSON.stringify(output);
+                } else if (pretty) {
+                    jsonOutput.value = JSON.stringify(output, null, 2);
+                } else {
+                    jsonOutput.value = JSON.stringify(output);
+                }
+                
+                // Show preview
+                createDataPreview(result.data, result.headers, 'csvPreview');
+                const analysis = analyzeData(result.data, result.headers);
+                createStatsDisplay(analysis.stats, 'csvDataStats');
+                document.getElementById('csvPreviewSection').classList.remove('hidden');
+                
+                showNotification('CSV converted to JSON successfully!');
+                
+            } catch (error) {
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        });
+
+        document.getElementById('copyJsonOutput').addEventListener('click', function() {
+            copyToClipboard(jsonOutput.value, 'JSON copied to clipboard!');
+        });
+
+        document.getElementById('downloadJsonOutput').addEventListener('click', function() {
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            downloadFile(jsonOutput.value, `converted_${timestamp}.json`, 'application/json');
+        });
+
+        // JSON to CSV functionality
+        const jsonInput = document.getElementById('jsonInput');
+        const csvOutput = document.getElementById('csvOutput');
+
+        // File handling for JSON
+        const jsonFileInput = document.getElementById('jsonFileInput');
+        const jsonDropZone = document.getElementById('jsonDropZone');
+        
+        document.getElementById('selectJsonFile').addEventListener('click', () => jsonFileInput.click());
+        jsonDropZone.addEventListener('click', () => jsonFileInput.click());
+
+        jsonDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        jsonDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        jsonDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleJSONFile(files[0]);
+            }
+        });
+
+        jsonFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleJSONFile(this.files[0]);
+            }
+        });
+
+        function handleJSONFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                jsonInput.value = e.target.result;
+                showNotification(`Loaded ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('loadJsonSample').addEventListener('click', function() {
+            jsonInput.value = JSON.stringify([
+                {
+                    "name": "John Doe",
+                    "age": 30,
+                    "city": "New York",
+                    "salary": 50000,
+                    "department": "Engineering",
+                    "skills": ["JavaScript", "Python", "SQL"]
+                },
+                {
+                    "name": "Jane Smith",
+                    "age": 25,
+                    "city": "Los Angeles",
+                    "salary": 45000,
+                    "department": "Marketing",
+                    "skills": ["SEO", "Content Marketing"]
+                },
+                {
+                    "name": "Bob Johnson",
+                    "age": 35,
+                    "city": "Chicago",
+                    "salary": 55000,
+                    "department": "Engineering",
+                    "skills": ["Java", "C++", "Docker"]
+                }
+            ], null, 2);
+        });
+
+        document.getElementById('clearJsonInput').addEventListener('click', function() {
+            jsonInput.value = '';
+            csvOutput.value = '';
+            document.getElementById('jsonPreviewSection').classList.add('hidden');
+        });
+
+        document.getElementById('formatJson').addEventListener('click', function() {
+            try {
+                const data = JSON.parse(jsonInput.value);
+                jsonInput.value = JSON.stringify(data, null, 2);
+                showNotification('JSON formatted successfully!');
+            } catch (error) {
+                showNotification(`Error formatting JSON: ${error.message}`, 'error');
+            }
+        });
+
+        document.getElementById('convertJsonToCsv').addEventListener('click', function() {
+            try {
+                const data = JSON.parse(jsonInput.value);
+                
+                const options = {
+                    delimiter: document.getElementById('outputDelimiter').value.replace('\\t', '\t'),
+                    quote: document.getElementById('outputQuote').value,
+                    includeHeaders: document.getElementById('includeHeaders').checked,
+                    flattenNested: document.getElementById('flattenNested').checked
+                };
+                
+                const csv = jsonToCSV(data, options);
+                csvOutput.value = csv;
+                
+                // Show preview
+                const flatData = options.flattenNested ? data.map(obj => flattenObject(obj)) : data;
+                const headers = Object.keys(flatData[0] || {});
+                createDataPreview(flatData, headers, 'jsonPreview');
+                const analysis = analyzeData(flatData, headers);
+                createStatsDisplay(analysis.stats, 'jsonDataStats');
+                document.getElementById('jsonPreviewSection').classList.remove('hidden');
+                
+                showNotification('JSON converted to CSV successfully!');
+                
+            } catch (error) {
+                showNotification(`Error: ${error.message}`, 'error');
+            }
+        });
+
+        document.getElementById('copyCsvOutput').addEventListener('click', function() {
+            copyToClipboard(csvOutput.value, 'CSV copied to clipboard!');
+        });
+
+        document.getElementById('downloadCsvOutput').addEventListener('click', function() {
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+            downloadFile(csvOutput.value, `converted_${timestamp}.csv`, 'text/csv');
+        });
+
+        // Data validator functionality
+        const validateData = document.getElementById('validateData');
+
+        document.getElementById('detectFormat').addEventListener('click', function() {
+            const data = validateData.value.trim();
+            if (!data) {
+                showNotification('Please enter some data to analyze', 'warning');
+                return;
+            }
+            
+            // Try to detect format
+            if (data.startsWith('[') || data.startsWith('{')) {
+                showNotification('Detected JSON format', 'success');
+                validateAsJSON();
+            } else {
+                showNotification('Detected CSV format', 'success');
+                validateAsCSV();
+            }
+        });
+
+        document.getElementById('validateCsv').addEventListener('click', validateAsCSV);
+        document.getElementById('validateJson').addEventListener('click', validateAsJSON);
+
+        function validateAsCSV() {
+            const data = validateData.value.trim();
+            if (!data) {
+                showNotification('Please enter CSV data to validate', 'warning');
+                return;
+            }
+            
+            const validation = validateCSV(data);
+            displayValidationResults(validation, 'CSV');
+            
+            if (validation.valid) {
+                try {
+                    const result = parseCSV(data);
+                    const analysis = analyzeData(result.data, result.headers);
+                    displayDataAnalysis(analysis);
+                } catch (error) {
+                    console.error('Analysis error:', error);
+                }
+            }
+        }
+
+        function validateAsJSON() {
+            const data = validateData.value.trim();
+            if (!data) {
+                showNotification('Please enter JSON data to validate', 'warning');
+                return;
+            }
+            
+            const validation = validateJSON(data);
+            displayValidationResults(validation, 'JSON');
+            
+            if (validation.valid && validation.data) {
+                try {
+                    if (Array.isArray(validation.data)) {
+                        const flatData = validation.data.map(obj => flattenObject(obj));
+                        const headers = Object.keys(flatData[0] || {});
+                        const analysis = analyzeData(flatData, headers);
+                        displayDataAnalysis(analysis);
+                    }
+                } catch (error) {
+                    console.error('Analysis error:', error);
+                }
+            }
+        }
+
+        function displayValidationResults(validation, format) {
+            const statusDiv = document.getElementById('validationStatus');
+            const errorsDiv = document.getElementById('validationErrors');
+            const warningsDiv = document.getElementById('validationWarnings');
+            const errorsList = document.getElementById('errorsList');
+            const warningsList = document.getElementById('warningsList');
+            
+            // Update status
+            if (validation.valid) {
+                statusDiv.className = 'p-4 border rounded mb-4 bg-green-50 border-green-200';
+                statusDiv.innerHTML = `<div class="flex items-center"><span class="mr-2">✅</span><span class="font-semibold text-green-800">Valid ${format}</span></div>`;
+            } else {
+                statusDiv.className = 'p-4 border rounded mb-4 bg-red-50 border-red-200';
+                statusDiv.innerHTML = `<div class="flex items-center"><span class="mr-2">❌</span><span class="font-semibold text-red-800">Invalid ${format}</span></div>`;
+            }
+            
+            // Display errors
+            if (validation.errors.length > 0) {
+                errorsList.innerHTML = validation.errors.map(error => `<li>• ${error}</li>`).join('');
+                errorsDiv.classList.remove('hidden');
+            } else {
+                errorsDiv.classList.add('hidden');
+            }
+            
+            // Display warnings
+            if (validation.warnings.length > 0) {
+                warningsList.innerHTML = validation.warnings.map(warning => `<li>• ${warning}</li>`).join('');
+                warningsDiv.classList.remove('hidden');
+            } else {
+                warningsDiv.classList.add('hidden');
+            }
+            
+            document.getElementById('validationResults').classList.remove('hidden');
+        }
+
+        function displayDataAnalysis(analysis) {
+            const statsDiv = document.getElementById('dataStatistics');
+            const columnDiv = document.getElementById('columnAnalysis');
+            
+            // Display statistics
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${analysis.stats.rows.toLocaleString()}</div>
+                    <div class="stat-label">Rows</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${analysis.stats.columns}</div>
+                    <div class="stat-label">Columns</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${(analysis.stats.size / 1024).toFixed(1)}KB</div>
+                    <div class="stat-label">Size</div>
+                </div>
+            `;
+            
+            // Display column analysis
+            if (analysis.columnAnalysis.length > 0) {
+                let html = '<table class="w-full text-sm border"><thead><tr class="bg-gray-50">';
+                html += '<th class="border p-2">Column</th>';
+                html += '<th class="border p-2">Non-Empty</th>';
+                html += '<th class="border p-2">Empty</th>';
+                html += '<th class="border p-2">Types</th>';
+                html += '<th class="border p-2">Unique Values</th>';
+                html += '<th class="border p-2">Sample Values</th>';
+                html += '</tr></thead><tbody>';
+                
+                analysis.columnAnalysis.forEach(col => {
+                    html += '<tr>';
+                    html += `<td class="border p-2 font-medium">${col.name}</td>`;
+                    html += `<td class="border p-2">${col.nonEmptyCount}</td>`;
+                    html += `<td class="border p-2">${col.emptyCount}</td>`;
+                    html += `<td class="border p-2">${col.types.join(', ')}</td>`;
+                    html += `<td class="border p-2">${col.uniqueValues}</td>`;
+                    html += `<td class="border p-2">${col.sampleValues.slice(0, 2).join(', ')}${col.sampleValues.length > 2 ? '...' : ''}</td>`;
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                columnDiv.innerHTML = html;
+                document.getElementById('dataAnalysis').classList.remove('hidden');
+            }
+        }
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>
