@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text & Markdown Converter - Private Online Tools</title>
+    <meta name="description" content="Convert text to Markdown and Markdown to HTML. 100% client-side, no uploads required. Format text, create documentation, and convert between formats.">
+    <meta name="keywords" content="markdown converter, text to markdown, markdown to html, markdown editor, text formatter, documentation tool, client-side converter, no upload markdown">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .back-to-tools-btn {
+            transition: all 0.3s ease;
+        }
+        .back-to-tools-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .breadcrumb-separator {
+            margin: 0 8px;
+            opacity: 0.6;
+        }
+        .breadcrumb-current {
+            color: white;
+            font-weight: 500;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .editor-container {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .preview-container {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .preview-container h1 { font-size: 2rem; font-weight: bold; margin: 1rem 0; }
+        .preview-container h2 { font-size: 1.5rem; font-weight: bold; margin: 0.875rem 0; }
+        .preview-container h3 { font-size: 1.25rem; font-weight: bold; margin: 0.75rem 0; }
+        .preview-container h4 { font-size: 1.125rem; font-weight: bold; margin: 0.625rem 0; }
+        .preview-container h5 { font-size: 1rem; font-weight: bold; margin: 0.5rem 0; }
+        .preview-container h6 { font-size: 0.875rem; font-weight: bold; margin: 0.5rem 0; }
+        .preview-container p { margin: 1rem 0; line-height: 1.6; }
+        .preview-container ul, .preview-container ol { margin: 1rem 0; padding-left: 2rem; }
+        .preview-container li { margin: 0.25rem 0; }
+        .preview-container blockquote { 
+            border-left: 4px solid #e5e7eb; 
+            padding-left: 1rem; 
+            margin: 1rem 0; 
+            color: #6b7280; 
+            font-style: italic; 
+        }
+        .preview-container code { 
+            background: #f3f4f6; 
+            padding: 0.125rem 0.25rem; 
+            border-radius: 0.25rem; 
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; 
+        }
+        .preview-container pre { 
+            background: #f9fafb; 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            overflow-x: auto; 
+            margin: 1rem 0; 
+        }
+        .preview-container pre code { 
+            background: none; 
+            padding: 0; 
+        }
+        .preview-container table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 1rem 0; 
+        }
+        .preview-container th, .preview-container td { 
+            border: 1px solid #e5e7eb; 
+            padding: 0.5rem; 
+            text-align: left; 
+        }
+        .preview-container th { 
+            background: #f9fafb; 
+            font-weight: bold; 
+        }
+        .preview-container a { 
+            color: #3b82f6; 
+            text-decoration: underline; 
+        }
+        .preview-container strong { 
+            font-weight: bold; 
+        }
+        .preview-container em { 
+            font-style: italic; 
+        }
+        
+        /* Notification styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #10b981;
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Text & Markdown Converter</h1>
+                    <p class="text-sm md:text-base opacity-90">Convert between text, Markdown and HTML</p>
+                </div>
+                <div class="navigation-wrapper">
+                    <!-- Breadcrumb container for dynamic breadcrumbs -->
+                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
+                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                        ← Back to Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <button id="textToMarkdownTab" class="tab-button active flex-1 py-3 px-6 rounded-lg font-medium transition-colors">
+                    📝 Text to Markdown
+                </button>
+                <button id="markdownToHtmlTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    🔄 Markdown to HTML
+                </button>
+                <button id="markdownPreviewTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    👁️ Markdown Preview
+                </button>
+            </div>
+        </div>
+
+        <!-- Text to Markdown Section -->
+        <div id="textToMarkdownSection" class="space-y-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Convert Text to Markdown</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Plain Text Input</label>
+                        <textarea id="plainTextInput" placeholder="Enter your plain text here..." 
+                                  class="w-full h-64 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical font-mono text-sm"></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button id="clearTextInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                            <button id="formatAsHeaders" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Format as Headers</button>
+                            <button id="formatAsList" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Format as List</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Output -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Markdown Output</label>
+                        <textarea id="markdownOutput" readonly 
+                                  class="w-full h-64 p-3 border border-gray-300 rounded bg-gray-50 resize-vertical font-mono text-sm"></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button id="copyMarkdown" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Copy Markdown</button>
+                            <button id="downloadMarkdown" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download .md</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Markdown to HTML Section -->
+        <div id="markdownToHtmlSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Convert Markdown to HTML</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Markdown Input</label>
+                        <textarea id="markdownInput" placeholder="# Enter your Markdown here...&#10;&#10;This is a **sample** markdown text with:&#10;&#10;- Lists&#10;- *Emphasis*&#10;- [Links](https://example.com)&#10;&#10;```&#10;Code blocks&#10;```" 
+                                  class="w-full h-64 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical font-mono text-sm"></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button id="clearMarkdownInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                            <button id="loadSample" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Load Sample</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Output -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">HTML Output</label>
+                        <textarea id="htmlOutput" readonly 
+                                  class="w-full h-64 p-3 border border-gray-300 rounded bg-gray-50 resize-vertical font-mono text-sm"></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button id="copyHtml" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Copy HTML</button>
+                            <button id="downloadHtml" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download .html</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Markdown Preview Section -->
+        <div id="markdownPreviewSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Markdown Preview</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Markdown Editor</label>
+                        <textarea id="markdownEditor" placeholder="# Enter your Markdown here...&#10;&#10;This is a **sample** markdown text with:&#10;&#10;- Lists&#10;- *Emphasis*&#10;- [Links](https://example.com)&#10;&#10;```&#10;Code blocks&#10;```" 
+                                  class="w-full h-96 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical font-mono text-sm editor-container"></textarea>
+                    </div>
+                    
+                    <!-- Preview -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Live Preview</label>
+                        <div id="markdownPreview" class="w-full h-96 p-3 border border-gray-300 rounded bg-white overflow-y-auto preview-container"></div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-2 mt-4">
+                    <button id="clearPreviewInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                    <button id="copyPreviewMarkdown" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Copy Markdown</button>
+                    <button id="copyPreviewHtml" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Copy HTML</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">Need these tools regularly? Support the project:</p>
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
+        </div>
+    </footer>
+
+    <!-- Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
+            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
+            <div class="space-y-3">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <button id="closeSupportModal" class="mt-4 w-full bg-gray-200 hover:bg-gray-300 py-2 rounded transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Simple Markdown parser
+        function parseMarkdown(markdown) {
+            let html = markdown;
+            
+            // Headers
+            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // Bold
+            html = html.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>');
+            
+            // Italic
+            html = html.replace(/\*(.*)\*/gim, '<em>$1</em>');
+            
+            // Code blocks
+            html = html.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+            
+            // Inline code
+            html = html.replace(/`([^`]*)`/gim, '<code>$1</code>');
+            
+            // Links
+            html = html.replace(/\[([^\]]*)\]\(([^)]*)\)/gim, '<a href="$2">$1</a>');
+            
+            // Line breaks and paragraphs
+            html = html.replace(/\n\n/gim, '</p><p>');
+            html = html.replace(/\n/gim, '<br>');
+            
+            // Lists
+            html = html.replace(/^\* (.*)$/gim, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/gims, '<ul>$1</ul>');
+            html = html.replace(/^\d+\. (.*)$/gim, '<li>$1</li>');
+            
+            // Blockquotes
+            html = html.replace(/^> (.*)$/gim, '<blockquote>$1</blockquote>');
+            
+            // Wrap in paragraphs if not already wrapped
+            if (!html.startsWith('<')) {
+                html = '<p>' + html + '</p>';
+            }
+            
+            return html;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${type === 'success' ? '✅' : '❌'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard(text, successMessage) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(successMessage);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy to clipboard', 'error');
+            }
+        }
+
+        // Download file
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification(`Downloaded ${filename}`);
+        }
+
+        // Tab functionality
+        const tabs = {
+            'textToMarkdownTab': 'textToMarkdownSection',
+            'markdownToHtmlTab': 'markdownToHtmlSection',
+            'markdownPreviewTab': 'markdownPreviewSection'
+        };
+
+        Object.keys(tabs).forEach(tabId => {
+            document.getElementById(tabId).addEventListener('click', function() {
+                // Hide all sections
+                Object.values(tabs).forEach(sectionId => {
+                    document.getElementById(sectionId).classList.add('hidden');
+                });
+                
+                // Remove active class from all tabs
+                Object.keys(tabs).forEach(id => {
+                    const tab = document.getElementById(id);
+                    tab.classList.remove('active');
+                    tab.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                });
+                
+                // Show selected section
+                document.getElementById(tabs[tabId]).classList.remove('hidden');
+                
+                // Add active class to selected tab
+                this.classList.add('active');
+                this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            });
+        });
+
+        // Text to Markdown functionality
+        const plainTextInput = document.getElementById('plainTextInput');
+        const markdownOutput = document.getElementById('markdownOutput');
+
+        function convertTextToMarkdown(text, format = 'paragraph') {
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            switch (format) {
+                case 'headers':
+                    return lines.map(line => `# ${line.trim()}`).join('\n\n');
+                case 'list':
+                    return lines.map(line => `- ${line.trim()}`).join('\n');
+                default:
+                    return lines.join('\n\n');
+            }
+        }
+
+        plainTextInput.addEventListener('input', function() {
+            markdownOutput.value = convertTextToMarkdown(this.value);
+        });
+
+        document.getElementById('clearTextInput').addEventListener('click', function() {
+            plainTextInput.value = '';
+            markdownOutput.value = '';
+        });
+
+        document.getElementById('formatAsHeaders').addEventListener('click', function() {
+            markdownOutput.value = convertTextToMarkdown(plainTextInput.value, 'headers');
+        });
+
+        document.getElementById('formatAsList').addEventListener('click', function() {
+            markdownOutput.value = convertTextToMarkdown(plainTextInput.value, 'list');
+        });
+
+        document.getElementById('copyMarkdown').addEventListener('click', function() {
+            copyToClipboard(markdownOutput.value, 'Markdown copied to clipboard!');
+        });
+
+        document.getElementById('downloadMarkdown').addEventListener('click', function() {
+            downloadFile(markdownOutput.value, 'converted.md', 'text/markdown');
+        });
+
+        // Markdown to HTML functionality
+        const markdownInput = document.getElementById('markdownInput');
+        const htmlOutput = document.getElementById('htmlOutput');
+
+        markdownInput.addEventListener('input', function() {
+            htmlOutput.value = parseMarkdown(this.value);
+        });
+
+        document.getElementById('clearMarkdownInput').addEventListener('click', function() {
+            markdownInput.value = '';
+            htmlOutput.value = '';
+        });
+
+        document.getElementById('loadSample').addEventListener('click', function() {
+            const sample = `# Sample Markdown Document
+
+This is a **sample** markdown document with various formatting options.
+
+## Features
+
+- **Bold text**
+- *Italic text*
+- \`Inline code\`
+- [Links](https://example.com)
+
+### Code Block
+
+\`\`\`
+function hello() {
+    console.log("Hello, World!");
+}
+\`\`\`
+
+### Lists
+
+1. First item
+2. Second item
+3. Third item
+
+> This is a blockquote with important information.
+
+### Table Example
+
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| Data 1   | Data 2   | Data 3   |
+| Data 4   | Data 5   | Data 6   |
+`;
+            markdownInput.value = sample;
+            htmlOutput.value = parseMarkdown(sample);
+        });
+
+        document.getElementById('copyHtml').addEventListener('click', function() {
+            copyToClipboard(htmlOutput.value, 'HTML copied to clipboard!');
+        });
+
+        document.getElementById('downloadHtml').addEventListener('click', function() {
+            const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converted Markdown</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3, h4, h5, h6 { margin-top: 24px; margin-bottom: 16px; }
+        p { margin: 16px 0; }
+        code { background: #f3f4f6; padding: 2px 4px; border-radius: 4px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; }
+        pre { background: #f9fafb; padding: 16px; border-radius: 8px; overflow-x: auto; }
+        blockquote { border-left: 4px solid #e5e7eb; padding-left: 16px; margin: 16px 0; color: #6b7280; }
+        table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+        th { background: #f9fafb; }
+    </style>
+</head>
+<body>
+${htmlOutput.value}
+</body>
+</html>`;
+            downloadFile(fullHtml, 'converted.html', 'text/html');
+        });
+
+        // Markdown Preview functionality
+        const markdownEditor = document.getElementById('markdownEditor');
+        const markdownPreview = document.getElementById('markdownPreview');
+
+        markdownEditor.addEventListener('input', function() {
+            markdownPreview.innerHTML = parseMarkdown(this.value);
+        });
+
+        // Initialize preview with sample content
+        markdownEditor.value = `# Sample Markdown Document
+
+This is a **sample** markdown document with various formatting options.
+
+## Features
+
+- **Bold text**
+- *Italic text*
+- \`Inline code\`
+- [Links](https://example.com)
+
+### Code Block
+
+\`\`\`
+function hello() {
+    console.log("Hello, World!");
+}
+\`\`\``;
+        markdownPreview.innerHTML = parseMarkdown(markdownEditor.value);
+
+        document.getElementById('clearPreviewInput').addEventListener('click', function() {
+            markdownEditor.value = '';
+            markdownPreview.innerHTML = '';
+        });
+
+        document.getElementById('copyPreviewMarkdown').addEventListener('click', function() {
+            copyToClipboard(markdownEditor.value, 'Markdown copied to clipboard!');
+        });
+
+        document.getElementById('copyPreviewHtml').addEventListener('click', function() {
+            copyToClipboard(markdownPreview.innerHTML, 'HTML copied to clipboard!');
+        });
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+    </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>

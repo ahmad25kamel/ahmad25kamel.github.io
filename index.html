@@ -183,21 +183,7 @@
             box-shadow: 0 12px 35px rgba(240, 147, 251, 0.6);
         }
         
-        .coming-soon-badge {
-            background: linear-gradient(135deg, var(--warning-200) 0%, var(--warning-400) 100%);
-            color: var(--gray-800);
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .coming-soon-badge:hover {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-md);
-        }
+
         
         .modal {
             display: none;
@@ -472,21 +458,99 @@
             </div>
         </section>
 
-        <!-- Coming Soon -->
-        <section class="mt-20 text-center animate-fade-in">
-            <h3 class="text-3xl font-bold text-gray-800 mb-4">More Tools Coming Soon</h3>
-            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                We're constantly adding new privacy-focused tools based on user feedback. 
-                All suggestions welcome!
-            </p>
-            <div class="flex flex-wrap justify-center gap-4 mb-8">
-                <span class="coming-soon-badge">📝 Text & Markdown Converter</span>
-                <span class="coming-soon-badge">🎨 Color Palette Generator</span>
-                <span class="coming-soon-badge">🔐 Secure Password Generator</span>
-                <span class="coming-soon-badge">📊 CSV & JSON Converter</span>
-                <span class="coming-soon-badge">🔍 Hash & Checksum Tools</span>
-                <span class="coming-soon-badge">📏 Unit Converter</span>
+        <!-- More Tools -->
+        <section class="mt-20">
+            <div class="text-center mb-16 animate-fade-in">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">More Tools</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Additional privacy-focused tools for text processing, design, security, and data conversion.
+                </p>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Text & Markdown Converter -->
+                <div class="tool-card p-8 animate-fade-in stagger-7">
+                    <div class="tool-icon mb-6">📝</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Text & Markdown Converter</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Convert between text, Markdown and HTML formats. Live preview, formatting tools, 
+                        and export options for documentation.
+                    </p>
+                    <a href="/tools/text-markdown-converter.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Color Palette Generator -->
+                <div class="tool-card p-8 animate-fade-in stagger-8">
+                    <div class="tool-icon mb-6">🎨</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Color Palette Generator</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Create beautiful color schemes and palettes. Generate harmonious colors, 
+                        extract from images, and export in various formats.
+                    </p>
+                    <a href="/tools/color-palette-generator.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Secure Password Generator -->
+                <div class="tool-card p-8 animate-fade-in stagger-9">
+                    <div class="tool-icon mb-6">🔐</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Secure Password Generator</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Generate strong, secure passwords and passphrases. Check password strength, 
+                        bulk generation, and security analysis.
+                    </p>
+                    <a href="/tools/password-generator.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- CSV & JSON Converter -->
+                <div class="tool-card p-8 animate-fade-in stagger-10">
+                    <div class="tool-icon mb-6">📊</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">CSV & JSON Converter</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Convert between CSV and JSON formats. Parse, validate, and transform data 
+                        with custom delimiters and formatting options.
+                    </p>
+                    <a href="/tools/csv-json-converter.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Hash & Checksum Tools -->
+                <div class="tool-card p-8 animate-fade-in stagger-11">
+                    <div class="tool-icon mb-6">🔍</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Hash & Checksum Tools</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Generate and verify file hashes and checksums. Support for MD5, SHA-256, 
+                        file integrity verification and comparison.
+                    </p>
+                    <a href="/tools/hash-checksum-tools.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+                <!-- Unit Converter -->
+                <div class="tool-card p-8 animate-fade-in stagger-12">
+                    <div class="tool-icon mb-6">📏</div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Unit Converter</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Convert between different units of measurement. Length, weight, temperature, 
+                        area, volume, speed, and more with high precision.
+                    </p>
+                    <a href="/tools/unit-converter.html" class="cta-button inline-block">
+                        Open Tool →
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Request a Tool -->
+        <section class="mt-20 text-center animate-fade-in">
             <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 max-w-2xl mx-auto">
                 <h4 class="text-xl font-bold text-gray-800 mb-4">🚀 Request a Tool</h4>
                 <p class="text-gray-600 mb-4">

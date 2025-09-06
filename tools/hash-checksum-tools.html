@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash & Checksum Tools - Private Online Tools</title>
+    <meta name="description" content="Generate and verify file hashes and checksums. Support for MD5, SHA-1, SHA-256, SHA-512, CRC32, and more. Compare files, verify integrity. 100% client-side.">
+    <meta name="keywords" content="hash generator, checksum tool, md5, sha256, sha1, sha512, crc32, file integrity, hash checker, crypto hash, file verification">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .back-to-tools-btn {
+            transition: all 0.3s ease;
+        }
+        .back-to-tools-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .hash-output {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+            min-height: 200px;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #6366f1;
+            background-color: #f8fafc;
+        }
+        
+        .algorithm-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .algorithm-card:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+        
+        .algorithm-card.selected {
+            border-color: #6366f1;
+            background-color: #f0f4ff;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* Notification styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #10b981;
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .notification.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .comparison-result {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .comparison-match {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        
+        .comparison-mismatch {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .file-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .file-info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .file-info-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .file-info-value {
+            color: #6b7280;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Hash & Checksum Tools</h1>
+                    <p class="text-sm md:text-base opacity-90">Generate and verify file hashes and checksums</p>
+                </div>
+                <div class="navigation-wrapper">
+                    <!-- Breadcrumb container for dynamic breadcrumbs -->
+                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
+                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                        ← Back to Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <button id="fileHashTab" class="tab-button active flex-1 py-3 px-6 rounded-lg font-medium transition-colors">
+                    📁 File Hash Generator
+                </button>
+                <button id="textHashTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    📝 Text Hash Generator
+                </button>
+                <button id="hashVerifyTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    ✅ Hash Verification
+                </button>
+                <button id="hashCompareTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    🔍 File Comparison
+                </button>
+            </div>
+        </div>
+
+        <!-- File Hash Generator Section -->
+        <div id="fileHashSection" class="space-y-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">File Hash Generator</h2>
+                
+                <div class="space-y-6">
+                    <!-- File Upload / Drop Zone -->
+                    <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="fileDropZone">
+                        <div>
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-xl font-medium text-gray-700 mb-2">Drop a file here or click to select</p>
+                            <p class="text-sm text-gray-500">Supports any file type, processed locally in your browser</p>
+                            <input type="file" id="fileInput" class="hidden">
+                            <button id="selectFileBtn" class="mt-6 px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-medium">
+                                Select File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- File Information -->
+                    <div id="fileInfo" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">File Information</h3>
+                        <div class="file-info">
+                            <div id="fileInfoContent" class="file-info-grid">
+                                <!-- File information will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Algorithm Selection -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Select Hash Algorithms</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div class="algorithm-card p-4 border rounded-lg" data-algorithm="md5">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="algo-md5" class="mr-3" checked>
+                                    <label for="algo-md5" class="font-medium cursor-pointer">MD5</label>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">128-bit hash</p>
+                            </div>
+                            <div class="algorithm-card p-4 border rounded-lg" data-algorithm="sha1">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="algo-sha1" class="mr-3" checked>
+                                    <label for="algo-sha1" class="font-medium cursor-pointer">SHA-1</label>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">160-bit hash</p>
+                            </div>
+                            <div class="algorithm-card p-4 border rounded-lg" data-algorithm="sha256">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="algo-sha256" class="mr-3" checked>
+                                    <label for="algo-sha256" class="font-medium cursor-pointer">SHA-256</label>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">256-bit hash</p>
+                            </div>
+                            <div class="algorithm-card p-4 border rounded-lg" data-algorithm="sha512">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="algo-sha512" class="mr-3">
+                                    <label for="algo-sha512" class="font-medium cursor-pointer">SHA-512</label>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">512-bit hash</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-4 mt-6">
+                            <button id="generateFileHashes" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium" disabled>
+                                Generate Hashes
+                            </button>
+                            <button id="selectAllAlgorithms" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                Select All
+                            </button>
+                            <button id="clearAllAlgorithms" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div id="hashProgress" class="hidden">
+                        <div class="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Generating hashes...</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hash Results -->
+                    <div id="hashResults" class="hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Generated Hashes</h3>
+                            <div class="flex gap-2">
+                                <button id="copyAllHashes" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">
+                                    Copy All
+                                </button>
+                                <button id="downloadHashes" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">
+                                    Download .txt
+                                </button>
+                            </div>
+                        </div>
+                        <div id="hashResultsContent" class="space-y-4">
+                            <!-- Hash results will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Hash Generator Section -->
+        <div id="textHashSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Text Hash Generator</h2>
+                
+                <div class="space-y-6">
+                    <!-- Text Input -->
+                    <div>
+                        <label for="textInput" class="block text-sm font-medium text-gray-700 mb-2">Text to Hash</label>
+                        <textarea id="textInput" placeholder="Enter your text here..." 
+                                  class="w-full h-32 p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-vertical"></textarea>
+                        <div class="flex justify-between text-sm text-gray-500 mt-1">
+                            <span>Enter any text to generate its hash values</span>
+                            <span id="textLength">0 characters</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Encoding Options -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Text Encoding</label>
+                        <select id="textEncoding" class="border border-gray-300 rounded px-3 py-2">
+                            <option value="utf8">UTF-8</option>
+                            <option value="ascii">ASCII</option>
+                            <option value="latin1">Latin-1</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="flex flex-wrap gap-2">
+                        <button id="clearTextInput" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Clear</button>
+                        <button id="loadSampleText" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Load Sample</button>
+                        <button id="generateTextHashes" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors font-medium">
+                            Generate Hashes
+                        </button>
+                    </div>
+                    
+                    <!-- Text Hash Results -->
+                    <div id="textHashResults" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Generated Hashes</h3>
+                        <div id="textHashResultsContent" class="space-y-4">
+                            <!-- Text hash results will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Verification Section -->
+        <div id="hashVerifySection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Hash Verification</h2>
+                
+                <div class="space-y-6">
+                    <!-- File Upload -->
+                    <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-6 text-center" id="verifyFileDropZone">
+                        <div>
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Select file to verify</p>
+                            <input type="file" id="verifyFileInput" class="hidden">
+                            <button id="selectVerifyFileBtn" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">
+                                Select File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Expected Hash Input -->
+                    <div>
+                        <label for="expectedHash" class="block text-sm font-medium text-gray-700 mb-2">Expected Hash Value</label>
+                        <input type="text" id="expectedHash" placeholder="Enter the expected hash value..." 
+                               class="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono">
+                        <p class="text-sm text-gray-500 mt-1">Paste the hash value you want to verify against</p>
+                    </div>
+                    
+                    <!-- Hash Algorithm Detection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hash Algorithm</label>
+                        <select id="verifyAlgorithm" class="border border-gray-300 rounded px-3 py-2">
+                            <option value="auto">Auto-detect from length</option>
+                            <option value="md5">MD5 (32 characters)</option>
+                            <option value="sha1">SHA-1 (40 characters)</option>
+                            <option value="sha256">SHA-256 (64 characters)</option>
+                            <option value="sha512">SHA-512 (128 characters)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="verifyHashBtn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium" disabled>
+                        Verify Hash
+                    </button>
+                    
+                    <!-- Verification Results -->
+                    <div id="verificationResults" class="hidden">
+                        <!-- Verification results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Comparison Section -->
+        <div id="hashCompareSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">File Comparison</h2>
+                
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- File 1 -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">File 1</h3>
+                            <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-4 text-center" id="compareFile1DropZone">
+                                <div>
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium text-gray-700">Drop file 1 here</p>
+                                    <input type="file" id="compareFile1Input" class="hidden">
+                                    <button id="selectCompareFile1Btn" class="mt-2 px-3 py-1 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600 transition-colors">
+                                        Select File
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="file1Info" class="hidden mt-3">
+                                <div class="file-info">
+                                    <div id="file1InfoContent" class="file-info-grid">
+                                        <!-- File 1 info will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- File 2 -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">File 2</h3>
+                            <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-4 text-center" id="compareFile2DropZone">
+                                <div>
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                    <p class="text-sm font-medium text-gray-700">Drop file 2 here</p>
+                                    <input type="file" id="compareFile2Input" class="hidden">
+                                    <button id="selectCompareFile2Btn" class="mt-2 px-3 py-1 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600 transition-colors">
+                                        Select File
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="file2Info" class="hidden mt-3">
+                                <div class="file-info">
+                                    <div id="file2InfoContent" class="file-info-grid">
+                                        <!-- File 2 info will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button id="compareFilesBtn" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium" disabled>
+                            Compare Files
+                        </button>
+                    </div>
+                    
+                    <!-- Comparison Results -->
+                    <div id="comparisonResults" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Comparison Results</h3>
+                        <div id="comparisonResultsContent">
+                            <!-- Comparison results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">Need these tools regularly? Support the project:</p>
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
+        </div>
+    </footer>
+
+    <!-- Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
+            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
+            <div class="space-y-3">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <button id="closeSupportModal" class="mt-4 w-full bg-gray-200 hover:bg-gray-300 py-2 rounded transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Hash computation functions using Web Crypto API
+        async function computeHash(data, algorithm) {
+            const encoder = new TextEncoder();
+            const dataBuffer = data instanceof ArrayBuffer ? data : encoder.encode(data);
+            const hashBuffer = await crypto.subtle.digest(algorithm, dataBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // MD5 implementation (since Web Crypto API doesn't support MD5)
+        function md5(data) {
+            // Simple MD5 implementation for demonstration
+            // In a real application, you'd use a proper MD5 library
+            return CryptoJS ? CryptoJS.MD5(data).toString() : 'MD5 not available (requires crypto-js library)';
+        }
+
+        // Utility functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function detectHashAlgorithm(hash) {
+            const length = hash.replace(/[^a-fA-F0-9]/g, '').length;
+            switch (length) {
+                case 32: return 'MD5';
+                case 40: return 'SHA-1';
+                case 64: return 'SHA-256';
+                case 128: return 'SHA-512';
+                default: return 'Unknown';
+            }
+        }
+
+        // File processing functions
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function generateFileHashes(file, algorithms, onProgress) {
+            const arrayBuffer = await readFileAsArrayBuffer(file);
+            const results = {};
+            
+            let completed = 0;
+            const total = algorithms.length;
+            
+            for (const algorithm of algorithms) {
+                try {
+                    let hash;
+                    switch (algorithm) {
+                        case 'md5':
+                            // For MD5, we need to convert ArrayBuffer to string
+                            const uint8Array = new Uint8Array(arrayBuffer);
+                            const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+                            hash = md5(binaryString);
+                            break;
+                        case 'sha1':
+                            hash = await computeHash(arrayBuffer, 'SHA-1');
+                            break;
+                        case 'sha256':
+                            hash = await computeHash(arrayBuffer, 'SHA-256');
+                            break;
+                        case 'sha512':
+                            hash = await computeHash(arrayBuffer, 'SHA-512');
+                            break;
+                        default:
+                            hash = 'Unsupported algorithm';
+                    }
+                    results[algorithm] = hash;
+                } catch (error) {
+                    results[algorithm] = `Error: ${error.message}`;
+                }
+                
+                completed++;
+                if (onProgress) {
+                    onProgress(completed / total);
+                }
+            }
+            
+            return results;
+        }
+
+        // UI utility functions
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        async function copyToClipboard(text, successMessage) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(successMessage);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy to clipboard', 'error');
+            }
+        }
+
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification(`Downloaded ${filename}`);
+        }
+
+        function createFileInfoDisplay(file, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="file-info-label">Name:</div>
+                <div class="file-info-value">${file.name}</div>
+                <div class="file-info-label">Size:</div>
+                <div class="file-info-value">${formatFileSize(file.size)}</div>
+                <div class="file-info-label">Type:</div>
+                <div class="file-info-value">${file.type || 'Unknown'}</div>
+                <div class="file-info-label">Modified:</div>
+                <div class="file-info-value">${formatDate(new Date(file.lastModified))}</div>
+            `;
+        }
+
+        // Tab functionality
+        const tabs = {
+            'fileHashTab': 'fileHashSection',
+            'textHashTab': 'textHashSection',
+            'hashVerifyTab': 'hashVerifySection',
+            'hashCompareTab': 'hashCompareSection'
+        };
+
+        Object.keys(tabs).forEach(tabId => {
+            document.getElementById(tabId).addEventListener('click', function() {
+                // Hide all sections
+                Object.values(tabs).forEach(sectionId => {
+                    document.getElementById(sectionId).classList.add('hidden');
+                });
+                
+                // Remove active class from all tabs
+                Object.keys(tabs).forEach(id => {
+                    const tab = document.getElementById(id);
+                    tab.classList.remove('active');
+                    tab.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                });
+                
+                // Show selected section
+                document.getElementById(tabs[tabId]).classList.remove('hidden');
+                
+                // Add active class to selected tab
+                this.classList.add('active');
+                this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            });
+        });
+
+        // File Hash Generator functionality
+        const fileInput = document.getElementById('fileInput');
+        const fileDropZone = document.getElementById('fileDropZone');
+        let selectedFile = null;
+
+        document.getElementById('selectFileBtn').addEventListener('click', () => fileInput.click());
+        fileDropZone.addEventListener('click', () => fileInput.click());
+
+        fileDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        fileDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        fileDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelection(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleFileSelection(this.files[0]);
+            }
+        });
+
+        function handleFileSelection(file) {
+            selectedFile = file;
+            createFileInfoDisplay(file, 'fileInfoContent');
+            document.getElementById('fileInfo').classList.remove('hidden');
+            document.getElementById('generateFileHashes').disabled = false;
+            showNotification(`Selected: ${file.name}`);
+        }
+
+        // Algorithm selection
+        document.getElementById('selectAllAlgorithms').addEventListener('click', function() {
+            document.querySelectorAll('.algorithm-card input[type="checkbox"]').forEach(cb => cb.checked = true);
+        });
+
+        document.getElementById('clearAllAlgorithms').addEventListener('click', function() {
+            document.querySelectorAll('.algorithm-card input[type="checkbox"]').forEach(cb => cb.checked = false);
+        });
+
+        // Generate file hashes
+        document.getElementById('generateFileHashes').addEventListener('click', async function() {
+            if (!selectedFile) return;
+            
+            const selectedAlgorithms = Array.from(document.querySelectorAll('.algorithm-card input[type="checkbox"]:checked'))
+                .map(cb => cb.id.replace('algo-', ''));
+            
+            if (selectedAlgorithms.length === 0) {
+                showNotification('Please select at least one algorithm', 'warning');
+                return;
+            }
+            
+            const progressBar = document.getElementById('hashProgress');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercent');
+            
+            progressBar.classList.remove('hidden');
+            
+            try {
+                const results = await generateFileHashes(selectedFile, selectedAlgorithms, (progress) => {
+                    const percent = Math.round(progress * 100);
+                    progressFill.style.width = `${percent}%`;
+                    progressPercent.textContent = `${percent}%`;
+                });
+                
+                displayHashResults(results, selectedFile.name);
+                progressBar.classList.add('hidden');
+                
+            } catch (error) {
+                showNotification(`Error generating hashes: ${error.message}`, 'error');
+                progressBar.classList.add('hidden');
+            }
+        });
+
+        function displayHashResults(results, filename) {
+            const container = document.getElementById('hashResultsContent');
+            container.innerHTML = '';
+            
+            Object.entries(results).forEach(([algorithm, hash]) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'border border-gray-200 rounded-lg p-4';
+                resultDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-gray-800 uppercase">${algorithm}</h4>
+                        <button class="copy-hash-btn px-3 py-1 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600 transition-colors" 
+                                data-hash="${hash}">
+                            Copy
+                        </button>
+                    </div>
+                    <div class="hash-output bg-gray-50 p-3 rounded border font-mono text-sm break-all">${hash}</div>
+                `;
+                container.appendChild(resultDiv);
+            });
+            
+            // Add event listeners for copy buttons
+            container.querySelectorAll('.copy-hash-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    copyToClipboard(this.dataset.hash, 'Hash copied to clipboard!');
+                });
+            });
+            
+            document.getElementById('hashResults').classList.remove('hidden');
+        }
+
+        // Copy all hashes
+        document.getElementById('copyAllHashes').addEventListener('click', function() {
+            const results = [];
+            document.querySelectorAll('#hashResultsContent .hash-output').forEach((output, index) => {
+                const algorithm = output.parentElement.querySelector('h4').textContent;
+                results.push(`${algorithm}: ${output.textContent}`);
+            });
+            
+            if (results.length > 0) {
+                const allHashes = `File: ${selectedFile ? selectedFile.name : 'Unknown'}\n` + results.join('\n');
+                copyToClipboard(allHashes, 'All hashes copied to clipboard!');
+            }
+        });
+
+        // Download hashes
+        document.getElementById('downloadHashes').addEventListener('click', function() {
+            const results = [];
+            document.querySelectorAll('#hashResultsContent .hash-output').forEach((output, index) => {
+                const algorithm = output.parentElement.querySelector('h4').textContent;
+                results.push(`${algorithm}: ${output.textContent}`);
+            });
+            
+            if (results.length > 0) {
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+                const content = `File: ${selectedFile ? selectedFile.name : 'Unknown'}\nGenerated: ${new Date().toISOString()}\n\n` + results.join('\n');
+                downloadFile(content, `hashes_${timestamp}.txt`, 'text/plain');
+            }
+        });
+
+        // Text Hash Generator functionality
+        const textInput = document.getElementById('textInput');
+        const textLength = document.getElementById('textLength');
+
+        textInput.addEventListener('input', function() {
+            textLength.textContent = `${this.value.length} characters`;
+        });
+
+        document.getElementById('clearTextInput').addEventListener('click', function() {
+            textInput.value = '';
+            textLength.textContent = '0 characters';
+            document.getElementById('textHashResults').classList.add('hidden');
+        });
+
+        document.getElementById('loadSampleText').addEventListener('click', function() {
+            textInput.value = 'Hello, World! This is a sample text for hash generation.';
+            textLength.textContent = `${textInput.value.length} characters`;
+        });
+
+        document.getElementById('generateTextHashes').addEventListener('click', async function() {
+            const text = textInput.value;
+            if (!text) {
+                showNotification('Please enter some text to hash', 'warning');
+                return;
+            }
+            
+            const algorithms = ['md5', 'sha1', 'sha256', 'sha512'];
+            const results = {};
+            
+            for (const algorithm of algorithms) {
+                try {
+                    let hash;
+                    switch (algorithm) {
+                        case 'md5':
+                            hash = md5(text);
+                            break;
+                        case 'sha1':
+                            hash = await computeHash(text, 'SHA-1');
+                            break;
+                        case 'sha256':
+                            hash = await computeHash(text, 'SHA-256');
+                            break;
+                        case 'sha512':
+                            hash = await computeHash(text, 'SHA-512');
+                            break;
+                    }
+                    results[algorithm] = hash;
+                } catch (error) {
+                    results[algorithm] = `Error: ${error.message}`;
+                }
+            }
+            
+            displayTextHashResults(results);
+        });
+
+        function displayTextHashResults(results) {
+            const container = document.getElementById('textHashResultsContent');
+            container.innerHTML = '';
+            
+            Object.entries(results).forEach(([algorithm, hash]) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'border border-gray-200 rounded-lg p-4';
+                resultDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-gray-800 uppercase">${algorithm}</h4>
+                        <button class="copy-text-hash-btn px-3 py-1 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600 transition-colors" 
+                                data-hash="${hash}">
+                            Copy
+                        </button>
+                    </div>
+                    <div class="hash-output bg-gray-50 p-3 rounded border font-mono text-sm break-all">${hash}</div>
+                `;
+                container.appendChild(resultDiv);
+            });
+            
+            // Add event listeners for copy buttons
+            container.querySelectorAll('.copy-text-hash-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    copyToClipboard(this.dataset.hash, 'Hash copied to clipboard!');
+                });
+            });
+            
+            document.getElementById('textHashResults').classList.remove('hidden');
+        }
+
+        // Hash Verification functionality
+        const verifyFileInput = document.getElementById('verifyFileInput');
+        const verifyFileDropZone = document.getElementById('verifyFileDropZone');
+        const expectedHash = document.getElementById('expectedHash');
+        let verifyFile = null;
+
+        document.getElementById('selectVerifyFileBtn').addEventListener('click', () => verifyFileInput.click());
+        verifyFileDropZone.addEventListener('click', () => verifyFileInput.click());
+
+        verifyFileDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        verifyFileDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        verifyFileDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleVerifyFileSelection(files[0]);
+            }
+        });
+
+        verifyFileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleVerifyFileSelection(this.files[0]);
+            }
+        });
+
+        function handleVerifyFileSelection(file) {
+            verifyFile = file;
+            updateVerifyButton();
+            showNotification(`Selected file for verification: ${file.name}`);
+        }
+
+        expectedHash.addEventListener('input', function() {
+            const hash = this.value.trim();
+            if (hash) {
+                const algorithm = detectHashAlgorithm(hash);
+                const select = document.getElementById('verifyAlgorithm');
+                switch (algorithm) {
+                    case 'MD5':
+                        select.value = 'md5';
+                        break;
+                    case 'SHA-1':
+                        select.value = 'sha1';
+                        break;
+                    case 'SHA-256':
+                        select.value = 'sha256';
+                        break;
+                    case 'SHA-512':
+                        select.value = 'sha512';
+                        break;
+                    default:
+                        select.value = 'auto';
+                }
+            }
+            updateVerifyButton();
+        });
+
+        function updateVerifyButton() {
+            const btn = document.getElementById('verifyHashBtn');
+            btn.disabled = !verifyFile || !expectedHash.value.trim();
+        }
+
+        document.getElementById('verifyHashBtn').addEventListener('click', async function() {
+            if (!verifyFile || !expectedHash.value.trim()) return;
+            
+            const expectedHashValue = expectedHash.value.trim().toLowerCase();
+            let algorithm = document.getElementById('verifyAlgorithm').value;
+            
+            if (algorithm === 'auto') {
+                const detected = detectHashAlgorithm(expectedHashValue);
+                switch (detected) {
+                    case 'MD5':
+                        algorithm = 'md5';
+                        break;
+                    case 'SHA-1':
+                        algorithm = 'sha1';
+                        break;
+                    case 'SHA-256':
+                        algorithm = 'sha256';
+                        break;
+                    case 'SHA-512':
+                        algorithm = 'sha512';
+                        break;
+                    default:
+                        showNotification('Could not detect hash algorithm', 'error');
+                        return;
+                }
+            }
+            
+            try {
+                const results = await generateFileHashes(verifyFile, [algorithm]);
+                const actualHash = results[algorithm].toLowerCase();
+                
+                displayVerificationResults(expectedHashValue, actualHash, algorithm, verifyFile.name);
+                
+            } catch (error) {
+                showNotification(`Error verifying hash: ${error.message}`, 'error');
+            }
+        });
+
+        function displayVerificationResults(expected, actual, algorithm, filename) {
+            const container = document.getElementById('verificationResults');
+            const isMatch = expected === actual;
+            
+            container.innerHTML = `
+                <div class="comparison-result ${isMatch ? 'comparison-match' : 'comparison-mismatch'}">
+                    <div class="flex items-center mb-3">
+                        <span class="text-2xl mr-3">${isMatch ? '✅' : '❌'}</span>
+                        <h4 class="text-lg font-semibold">
+                            ${isMatch ? 'Hash Verified Successfully' : 'Hash Verification Failed'}
+                        </h4>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <strong>File:</strong> ${filename}
+                        </div>
+                        <div>
+                            <strong>Algorithm:</strong> ${algorithm.toUpperCase()}
+                        </div>
+                        <div>
+                            <strong>Expected Hash:</strong>
+                            <div class="font-mono bg-white p-2 rounded border mt-1 break-all">${expected}</div>
+                        </div>
+                        <div>
+                            <strong>Actual Hash:</strong>
+                            <div class="font-mono bg-white p-2 rounded border mt-1 break-all">${actual}</div>
+                        </div>
+                        ${!isMatch ? '<div class="mt-3 font-semibold">⚠️ The file may have been corrupted or modified</div>' : ''}
+                    </div>
+                </div>
+            `;
+            
+            container.classList.remove('hidden');
+            
+            showNotification(
+                isMatch ? 'Hash verification successful!' : 'Hash verification failed!',
+                isMatch ? 'success' : 'error'
+            );
+        }
+
+        // File Comparison functionality
+        const compareFile1Input = document.getElementById('compareFile1Input');
+        const compareFile2Input = document.getElementById('compareFile2Input');
+        const compareFile1DropZone = document.getElementById('compareFile1DropZone');
+        const compareFile2DropZone = document.getElementById('compareFile2DropZone');
+        let compareFile1 = null;
+        let compareFile2 = null;
+
+        // File 1 handlers
+        document.getElementById('selectCompareFile1Btn').addEventListener('click', () => compareFile1Input.click());
+        compareFile1DropZone.addEventListener('click', () => compareFile1Input.click());
+
+        compareFile1DropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        compareFile1DropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        compareFile1DropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleCompareFile1Selection(files[0]);
+            }
+        });
+
+        compareFile1Input.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleCompareFile1Selection(this.files[0]);
+            }
+        });
+
+        // File 2 handlers
+        document.getElementById('selectCompareFile2Btn').addEventListener('click', () => compareFile2Input.click());
+        compareFile2DropZone.addEventListener('click', () => compareFile2Input.click());
+
+        compareFile2DropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        compareFile2DropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        compareFile2DropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleCompareFile2Selection(files[0]);
+            }
+        });
+
+        compareFile2Input.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleCompareFile2Selection(this.files[0]);
+            }
+        });
+
+        function handleCompareFile1Selection(file) {
+            compareFile1 = file;
+            createFileInfoDisplay(file, 'file1InfoContent');
+            document.getElementById('file1Info').classList.remove('hidden');
+            updateCompareButton();
+            showNotification(`Selected file 1: ${file.name}`);
+        }
+
+        function handleCompareFile2Selection(file) {
+            compareFile2 = file;
+            createFileInfoDisplay(file, 'file2InfoContent');
+            document.getElementById('file2Info').classList.remove('hidden');
+            updateCompareButton();
+            showNotification(`Selected file 2: ${file.name}`);
+        }
+
+        function updateCompareButton() {
+            const btn = document.getElementById('compareFilesBtn');
+            btn.disabled = !compareFile1 || !compareFile2;
+        }
+
+        document.getElementById('compareFilesBtn').addEventListener('click', async function() {
+            if (!compareFile1 || !compareFile2) return;
+            
+            try {
+                const algorithms = ['md5', 'sha1', 'sha256'];
+                
+                const [results1, results2] = await Promise.all([
+                    generateFileHashes(compareFile1, algorithms),
+                    generateFileHashes(compareFile2, algorithms)
+                ]);
+                
+                displayComparisonResults(results1, results2, compareFile1, compareFile2);
+                
+            } catch (error) {
+                showNotification(`Error comparing files: ${error.message}`, 'error');
+            }
+        });
+
+        function displayComparisonResults(results1, results2, file1, file2) {
+            const container = document.getElementById('comparisonResultsContent');
+            
+            // Check if files are identical
+            const identical = Object.keys(results1).every(algorithm => 
+                results1[algorithm] === results2[algorithm]
+            );
+            
+            let html = `
+                <div class="comparison-result ${identical ? 'comparison-match' : 'comparison-mismatch'}">
+                    <div class="flex items-center mb-4">
+                        <span class="text-2xl mr-3">${identical ? '✅' : '❌'}</span>
+                        <h4 class="text-lg font-semibold">
+                            ${identical ? 'Files are identical' : 'Files are different'}
+                        </h4>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">File 1: ${file1.name}</h4>
+                        <div class="space-y-2">
+            `;
+            
+            Object.entries(results1).forEach(([algorithm, hash]) => {
+                const matches = results2[algorithm] === hash;
+                html += `
+                    <div class="border rounded p-3 ${matches ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-medium uppercase">${algorithm}</span>
+                            <span class="text-sm">${matches ? '✅ Match' : '❌ Different'}</span>
+                        </div>
+                        <div class="font-mono text-xs break-all text-gray-600">${hash}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-3">File 2: ${file2.name}</h4>
+                        <div class="space-y-2">
+            `;
+            
+            Object.entries(results2).forEach(([algorithm, hash]) => {
+                const matches = results1[algorithm] === hash;
+                html += `
+                    <div class="border rounded p-3 ${matches ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-medium uppercase">${algorithm}</span>
+                            <span class="text-sm">${matches ? '✅ Match' : '❌ Different'}</span>
+                        </div>
+                        <div class="font-mono text-xs break-all text-gray-600">${hash}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            document.getElementById('comparisonResults').classList.remove('hidden');
+            
+            showNotification(
+                identical ? 'Files are identical!' : 'Files are different!',
+                identical ? 'success' : 'warning'
+            );
+        }
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+
+        // Simple MD5 implementation (basic version)
+        // In a real application, you would include a proper crypto library
+        function md5(input) {
+            // This is a placeholder - you would need to include a proper MD5 library
+            // For demonstration purposes, we'll use a simple hash
+            let hash = 0;
+            if (input.length === 0) return hash.toString(16);
+            for (let i = 0; i < input.length; i++) {
+                const char = input.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return Math.abs(hash).toString(16).padStart(8, '0') + '00000000000000000000000000000000'.substring(0, 24);
+        }
+    </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>

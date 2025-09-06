@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator - Private Online Tools</title>
+    <meta name="description" content="Generate beautiful color palettes and schemes. Extract colors from images, create harmonious palettes, and export in various formats. 100% client-side.">
+    <meta name="keywords" content="color palette generator, color scheme, color picker, color harmony, color wheel, palette creator, design colors, hex colors, rgb colors">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .back-to-tools-btn {
+            transition: all 0.3s ease;
+        }
+        .back-to-tools-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .color-swatch {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .color-swatch:hover {
+            transform: scale(1.05);
+            border-color: #6366f1;
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .palette-color {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+        
+        .palette-color:hover {
+            transform: scale(1.1);
+        }
+        
+        .palette-color::after {
+            content: attr(data-color);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 500;
+            color: #374151;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .palette-color:hover::after {
+            opacity: 1;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: border-color 0.3s ease;
+            min-height: 200px;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #6366f1;
+            background-color: #f8fafc;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* Notification styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: #10b981;
+        }
+        
+        .notification.error {
+            border-left-color: #ef4444;
+        }
+        
+        .color-info {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Color Palette Generator</h1>
+                    <p class="text-sm md:text-base opacity-90">Create beautiful color schemes and palettes</p>
+                </div>
+                <div class="navigation-wrapper">
+                    <!-- Breadcrumb container for dynamic breadcrumbs -->
+                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
+                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
+                        ← Back to Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <button id="generatePaletteTab" class="tab-button active flex-1 py-3 px-6 rounded-lg font-medium transition-colors">
+                    🎨 Generate Palette
+                </button>
+                <button id="colorHarmonyTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    🌈 Color Harmony
+                </button>
+                <button id="imageExtractTab" class="tab-button flex-1 py-3 px-6 rounded-lg font-medium bg-gray-100 hover:bg-gray-200 transition-colors">
+                    🖼️ Extract from Image
+                </button>
+            </div>
+        </div>
+
+        <!-- Generate Palette Section -->
+        <div id="generatePaletteSection" class="space-y-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Random Palette Generator</h2>
+                
+                <div class="space-y-6">
+                    <!-- Controls -->
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <button id="generateRandom" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors">
+                            🎲 Generate Random Palette
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <label for="paletteSize" class="text-sm font-medium text-gray-700">Colors:</label>
+                            <select id="paletteSize" class="border border-gray-300 rounded px-3 py-1">
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5" selected>5</option>
+                                <option value="6">6</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="paletteType" class="text-sm font-medium text-gray-700">Type:</label>
+                            <select id="paletteType" class="border border-gray-300 rounded px-3 py-1">
+                                <option value="vibrant">Vibrant</option>
+                                <option value="pastel">Pastel</option>
+                                <option value="dark">Dark</option>
+                                <option value="monochrome">Monochrome</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Generated Palette -->
+                    <div id="generatedPalette" class="color-palette min-h-[120px] flex items-center justify-center text-gray-500">
+                        Click "Generate Random Palette" to create your first palette
+                    </div>
+                    
+                    <!-- Palette Actions -->
+                    <div id="paletteActions" class="flex flex-wrap gap-2 hidden">
+                        <button id="copyPaletteCSS" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Copy CSS</button>
+                        <button id="copyPaletteJSON" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Copy JSON</button>
+                        <button id="downloadPaletteImage" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download PNG</button>
+                        <button id="savePalette" class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">Save Palette</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Color Harmony Section -->
+        <div id="colorHarmonySection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Color Harmony Generator</h2>
+                
+                <div class="space-y-6">
+                    <!-- Color Picker -->
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <div>
+                            <label for="baseColor" class="block text-sm font-medium text-gray-700 mb-2">Base Color</label>
+                            <input type="color" id="baseColor" value="#3b82f6" class="w-20 h-12 border border-gray-300 rounded cursor-pointer">
+                        </div>
+                        <div>
+                            <label for="harmonyType" class="block text-sm font-medium text-gray-700 mb-2">Harmony Type</label>
+                            <select id="harmonyType" class="border border-gray-300 rounded px-3 py-2">
+                                <option value="complementary">Complementary</option>
+                                <option value="triadic">Triadic</option>
+                                <option value="analogous">Analogous</option>
+                                <option value="splitComplementary">Split Complementary</option>
+                                <option value="tetradic">Tetradic</option>
+                                <option value="monochromatic">Monochromatic</option>
+                            </select>
+                        </div>
+                        <button id="generateHarmony" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-colors mt-6">
+                            Generate Harmony
+                        </button>
+                    </div>
+                    
+                    <!-- Color Info -->
+                    <div id="colorInfo" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Color information will be displayed here -->
+                    </div>
+                    
+                    <!-- Harmony Palette -->
+                    <div id="harmonyPalette" class="color-palette min-h-[120px] flex items-center justify-center text-gray-500">
+                        Select a base color and harmony type to generate a palette
+                    </div>
+                    
+                    <!-- Harmony Actions -->
+                    <div id="harmonyActions" class="flex flex-wrap gap-2 hidden">
+                        <button id="copyHarmonyCSS" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Copy CSS</button>
+                        <button id="copyHarmonyJSON" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Copy JSON</button>
+                        <button id="downloadHarmonyImage" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extract from Image Section -->
+        <div id="imageExtractSection" class="space-y-8 hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Extract Colors from Image</h2>
+                
+                <div class="space-y-6">
+                    <!-- Image Upload -->
+                    <div class="drop-zone border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" id="imageDropZone">
+                        <div>
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="text-lg font-medium text-gray-700 mb-2">Drop an image here or click to select</p>
+                            <p class="text-sm text-gray-500">Supports JPG, PNG, GIF, WebP</p>
+                            <input type="file" id="imageInput" accept="image/*" class="hidden">
+                            <button id="selectImage" class="mt-4 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors">
+                                Select Image
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div id="imagePreview" class="hidden">
+                        <img id="previewImg" class="max-w-full h-auto max-h-64 mx-auto rounded-lg shadow-md">
+                    </div>
+                    
+                    <!-- Extraction Controls -->
+                    <div id="extractionControls" class="hidden">
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <div>
+                                <label for="extractColors" class="block text-sm font-medium text-gray-700 mb-2">Number of Colors</label>
+                                <select id="extractColors" class="border border-gray-300 rounded px-3 py-2">
+                                    <option value="3">3</option>
+                                    <option value="5" selected>5</option>
+                                    <option value="8">8</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            <button id="extractFromImage" class="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 transition-colors mt-6">
+                                Extract Colors
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Extracted Palette -->
+                    <div id="extractedPalette" class="color-palette min-h-[120px] flex items-center justify-center text-gray-500 hidden">
+                        <!-- Extracted colors will appear here -->
+                    </div>
+                    
+                    <!-- Extract Actions -->
+                    <div id="extractActions" class="flex flex-wrap gap-2 hidden">
+                        <button id="copyExtractCSS" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Copy CSS</button>
+                        <button id="copyExtractJSON" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Copy JSON</button>
+                        <button id="downloadExtractImage" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">Download PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Palettes -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Saved Palettes</h2>
+            <div id="savedPalettes" class="space-y-4">
+                <p class="text-gray-500 text-center py-8">No saved palettes yet. Generate and save some palettes to see them here.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">Need these tools regularly? Support the project:</p>
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
+        </div>
+    </footer>
+
+    <!-- Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
+            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
+            <div class="space-y-3">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <button id="closeSupportModal" class="mt-4 w-full bg-gray-200 hover:bg-gray-300 py-2 rounded transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Color utility functions
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return {h: h * 360, s: s * 100, l: l * 100};
+        }
+
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            const a = s * Math.min(l, 1 - l);
+            const f = n => {
+                const k = (n + h / (1/12)) % 12;
+                return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+            };
+            return {
+                r: Math.round(f(0) * 255),
+                g: Math.round(f(8) * 255),
+                b: Math.round(f(4) * 255)
+            };
+        }
+
+        // Generate random colors
+        function generateRandomColor(type = 'vibrant') {
+            let h, s, l;
+            
+            switch (type) {
+                case 'pastel':
+                    h = Math.random() * 360;
+                    s = 20 + Math.random() * 30; // 20-50%
+                    l = 80 + Math.random() * 15; // 80-95%
+                    break;
+                case 'dark':
+                    h = Math.random() * 360;
+                    s = 30 + Math.random() * 70; // 30-100%
+                    l = 10 + Math.random() * 30; // 10-40%
+                    break;
+                case 'monochrome':
+                    h = 0;
+                    s = 0;
+                    l = Math.random() * 100;
+                    break;
+                default: // vibrant
+                    h = Math.random() * 360;
+                    s = 60 + Math.random() * 40; // 60-100%
+                    l = 40 + Math.random() * 30; // 40-70%
+            }
+            
+            const rgb = hslToRgb(h, s, l);
+            return rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+
+        // Generate color harmony
+        function generateHarmony(baseColor, type) {
+            const rgb = hexToRgb(baseColor);
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            const colors = [baseColor];
+            
+            switch (type) {
+                case 'complementary':
+                    const compH = (hsl.h + 180) % 360;
+                    const compRgb = hslToRgb(compH, hsl.s, hsl.l);
+                    colors.push(rgbToHex(compRgb.r, compRgb.g, compRgb.b));
+                    break;
+                    
+                case 'triadic':
+                    for (let i = 1; i <= 2; i++) {
+                        const newH = (hsl.h + i * 120) % 360;
+                        const newRgb = hslToRgb(newH, hsl.s, hsl.l);
+                        colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+                    }
+                    break;
+                    
+                case 'analogous':
+                    for (let i = -2; i <= 2; i++) {
+                        if (i !== 0) {
+                            const newH = (hsl.h + i * 30 + 360) % 360;
+                            const newRgb = hslToRgb(newH, hsl.s, hsl.l);
+                            colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+                        }
+                    }
+                    break;
+                    
+                case 'splitComplementary':
+                    const split1H = (hsl.h + 150) % 360;
+                    const split2H = (hsl.h + 210) % 360;
+                    const split1Rgb = hslToRgb(split1H, hsl.s, hsl.l);
+                    const split2Rgb = hslToRgb(split2H, hsl.s, hsl.l);
+                    colors.push(rgbToHex(split1Rgb.r, split1Rgb.g, split1Rgb.b));
+                    colors.push(rgbToHex(split2Rgb.r, split2Rgb.g, split2Rgb.b));
+                    break;
+                    
+                case 'tetradic':
+                    for (let i = 1; i <= 3; i++) {
+                        const newH = (hsl.h + i * 90) % 360;
+                        const newRgb = hslToRgb(newH, hsl.s, hsl.l);
+                        colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+                    }
+                    break;
+                    
+                case 'monochromatic':
+                    for (let i = 1; i <= 4; i++) {
+                        const newL = Math.max(10, Math.min(90, hsl.l + (i - 2.5) * 20));
+                        const newRgb = hslToRgb(hsl.h, hsl.s, newL);
+                        colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+                    }
+                    break;
+            }
+            
+            return colors;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${type === 'success' ? '✅' : '❌'}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => container.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard(text, successMessage) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(successMessage);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy to clipboard', 'error');
+            }
+        }
+
+        // Create palette display
+        function createPaletteDisplay(colors, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            colors.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'palette-color';
+                colorDiv.style.backgroundColor = color;
+                colorDiv.setAttribute('data-color', color.toUpperCase());
+                colorDiv.addEventListener('click', () => {
+                    copyToClipboard(color.toUpperCase(), `Copied ${color.toUpperCase()} to clipboard!`);
+                });
+                container.appendChild(colorDiv);
+            });
+        }
+
+        // Generate CSS from colors
+        function generateCSS(colors, name = 'palette') {
+            let css = `:root {\n`;
+            colors.forEach((color, index) => {
+                css += `  --${name}-color-${index + 1}: ${color};\n`;
+            });
+            css += `}\n\n.${name} {\n`;
+            colors.forEach((color, index) => {
+                css += `  --color-${index + 1}: ${color};\n`;
+            });
+            css += `}`;
+            return css;
+        }
+
+        // Generate JSON from colors
+        function generateJSON(colors) {
+            return JSON.stringify({
+                palette: colors,
+                timestamp: new Date().toISOString(),
+                format: 'hex'
+            }, null, 2);
+        }
+
+        // Download palette as image
+        function downloadPaletteImage(colors, filename = 'palette.png') {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const swatchWidth = 100;
+            const swatchHeight = 100;
+            
+            canvas.width = swatchWidth * colors.length;
+            canvas.height = swatchHeight;
+            
+            colors.forEach((color, index) => {
+                ctx.fillStyle = color;
+                ctx.fillRect(index * swatchWidth, 0, swatchWidth, swatchHeight);
+            });
+            
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification(`Downloaded ${filename}`);
+            });
+        }
+
+        // Local storage for saved palettes
+        function savePaletteToStorage(colors) {
+            const saved = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+            const palette = {
+                id: Date.now(),
+                colors: colors,
+                timestamp: new Date().toISOString()
+            };
+            saved.unshift(palette);
+            localStorage.setItem('colorPalettes', JSON.stringify(saved.slice(0, 20))); // Keep last 20
+            displaySavedPalettes();
+            showNotification('Palette saved!');
+        }
+
+        function displaySavedPalettes() {
+            const container = document.getElementById('savedPalettes');
+            const saved = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+            
+            if (saved.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No saved palettes yet. Generate and save some palettes to see them here.</p>';
+                return;
+            }
+            
+            container.innerHTML = saved.map(palette => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-500">${new Date(palette.timestamp).toLocaleDateString()}</span>
+                        <button onclick="deletePalette(${palette.id})" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                    <div class="flex gap-2 mb-2">
+                        ${palette.colors.map(color => `
+                            <div class="w-8 h-8 rounded cursor-pointer" style="background-color: ${color}" 
+                                 onclick="copyToClipboard('${color}', 'Copied ${color} to clipboard!')" 
+                                 title="${color}"></div>
+                        `).join('')}
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <button onclick="copyToClipboard('${palette.colors.join(', ')}', 'Palette colors copied!')" 
+                                class="px-2 py-1 bg-blue-100 text-blue-700 rounded">Copy Colors</button>
+                        <button onclick="downloadPaletteImage(${JSON.stringify(palette.colors)}, 'saved-palette-${palette.id}.png')" 
+                                class="px-2 py-1 bg-purple-100 text-purple-700 rounded">Download</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePalette(id) {
+            const saved = JSON.parse(localStorage.getItem('colorPalettes') || '[]');
+            const filtered = saved.filter(p => p.id !== id);
+            localStorage.setItem('colorPalettes', JSON.stringify(filtered));
+            displaySavedPalettes();
+            showNotification('Palette deleted');
+        }
+
+        // Tab functionality
+        const tabs = {
+            'generatePaletteTab': 'generatePaletteSection',
+            'colorHarmonyTab': 'colorHarmonySection',
+            'imageExtractTab': 'imageExtractSection'
+        };
+
+        Object.keys(tabs).forEach(tabId => {
+            document.getElementById(tabId).addEventListener('click', function() {
+                // Hide all sections
+                Object.values(tabs).forEach(sectionId => {
+                    document.getElementById(sectionId).classList.add('hidden');
+                });
+                
+                // Remove active class from all tabs
+                Object.keys(tabs).forEach(id => {
+                    const tab = document.getElementById(id);
+                    tab.classList.remove('active');
+                    tab.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                });
+                
+                // Show selected section
+                document.getElementById(tabs[tabId]).classList.remove('hidden');
+                
+                // Add active class to selected tab
+                this.classList.add('active');
+                this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            });
+        });
+
+        // Generate random palette
+        let currentPalette = [];
+        document.getElementById('generateRandom').addEventListener('click', function() {
+            const size = parseInt(document.getElementById('paletteSize').value);
+            const type = document.getElementById('paletteType').value;
+            
+            currentPalette = [];
+            for (let i = 0; i < size; i++) {
+                currentPalette.push(generateRandomColor(type));
+            }
+            
+            createPaletteDisplay(currentPalette, 'generatedPalette');
+            document.getElementById('paletteActions').classList.remove('hidden');
+        });
+
+        // Palette actions
+        document.getElementById('copyPaletteCSS').addEventListener('click', function() {
+            copyToClipboard(generateCSS(currentPalette, 'generated'), 'CSS copied to clipboard!');
+        });
+
+        document.getElementById('copyPaletteJSON').addEventListener('click', function() {
+            copyToClipboard(generateJSON(currentPalette), 'JSON copied to clipboard!');
+        });
+
+        document.getElementById('downloadPaletteImage').addEventListener('click', function() {
+            downloadPaletteImage(currentPalette, 'generated-palette.png');
+        });
+
+        document.getElementById('savePalette').addEventListener('click', function() {
+            savePaletteToStorage(currentPalette);
+        });
+
+        // Color harmony functionality
+        let currentHarmony = [];
+        document.getElementById('generateHarmony').addEventListener('click', function() {
+            const baseColor = document.getElementById('baseColor').value;
+            const harmonyType = document.getElementById('harmonyType').value;
+            
+            currentHarmony = generateHarmony(baseColor, harmonyType);
+            createPaletteDisplay(currentHarmony, 'harmonyPalette');
+            document.getElementById('harmonyActions').classList.remove('hidden');
+            
+            // Update color info
+            const rgb = hexToRgb(baseColor);
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            document.getElementById('colorInfo').innerHTML = `
+                <div class="bg-gray-50 p-4 rounded">
+                    <h4 class="font-semibold mb-2">Hex</h4>
+                    <p class="color-info">${baseColor.toUpperCase()}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <h4 class="font-semibold mb-2">RGB</h4>
+                    <p class="color-info">rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <h4 class="font-semibold mb-2">HSL</h4>
+                    <p class="color-info">hsl(${Math.round(hsl.h)}°, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)</p>
+                </div>
+            `;
+        });
+
+        // Harmony actions
+        document.getElementById('copyHarmonyCSS').addEventListener('click', function() {
+            copyToClipboard(generateCSS(currentHarmony, 'harmony'), 'CSS copied to clipboard!');
+        });
+
+        document.getElementById('copyHarmonyJSON').addEventListener('click', function() {
+            copyToClipboard(generateJSON(currentHarmony), 'JSON copied to clipboard!');
+        });
+
+        document.getElementById('downloadHarmonyImage').addEventListener('click', function() {
+            downloadPaletteImage(currentHarmony, 'harmony-palette.png');
+        });
+
+        // Image extraction functionality
+        const imageInput = document.getElementById('imageInput');
+        const selectImage = document.getElementById('selectImage');
+        const imageDropZone = document.getElementById('imageDropZone');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const extractionControls = document.getElementById('extractionControls');
+        let currentImage = null;
+        let extractedColors = [];
+
+        selectImage.addEventListener('click', () => imageInput.click());
+        imageDropZone.addEventListener('click', () => imageInput.click());
+
+        // Drag and drop functionality
+        imageDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        imageDropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        imageDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageFile(files[0]);
+            }
+        });
+
+        imageInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleImageFile(this.files[0]);
+            }
+        });
+
+        function handleImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showNotification('Please select a valid image file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                currentImage = previewImg;
+                imagePreview.classList.remove('hidden');
+                extractionControls.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Simple color extraction (gets dominant colors by sampling pixels)
+        function extractColorsFromImage(img, numColors = 5) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Scale down image for faster processing
+            const maxSize = 200;
+            const scale = Math.min(maxSize / img.width, maxSize / img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const colorCounts = {};
+            
+            // Sample every nth pixel to reduce processing time
+            const step = 4;
+            for (let i = 0; i < data.length; i += step * 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const a = data[i + 3];
+                
+                // Skip transparent pixels
+                if (a < 128) continue;
+                
+                // Round to reduce color variations
+                const roundedR = Math.round(r / 16) * 16;
+                const roundedG = Math.round(g / 16) * 16;
+                const roundedB = Math.round(b / 16) * 16;
+                
+                const hex = rgbToHex(roundedR, roundedG, roundedB);
+                colorCounts[hex] = (colorCounts[hex] || 0) + 1;
+            }
+            
+            // Sort by frequency and return top colors
+            const sortedColors = Object.entries(colorCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, numColors * 2) // Get more than needed to filter out similar colors
+                .map(([color]) => color);
+            
+            // Filter out very similar colors
+            const finalColors = [];
+            for (const color of sortedColors) {
+                if (finalColors.length >= numColors) break;
+                
+                const rgb = hexToRgb(color);
+                const isDifferent = finalColors.every(existingColor => {
+                    const existingRgb = hexToRgb(existingColor);
+                    const distance = Math.sqrt(
+                        Math.pow(rgb.r - existingRgb.r, 2) +
+                        Math.pow(rgb.g - existingRgb.g, 2) +
+                        Math.pow(rgb.b - existingRgb.b, 2)
+                    );
+                    return distance > 50; // Minimum difference threshold
+                });
+                
+                if (isDifferent) {
+                    finalColors.push(color);
+                }
+            }
+            
+            return finalColors;
+        }
+
+        document.getElementById('extractFromImage').addEventListener('click', function() {
+            if (!currentImage) return;
+            
+            const numColors = parseInt(document.getElementById('extractColors').value);
+            
+            // Wait for image to load
+            if (currentImage.complete) {
+                extractedColors = extractColorsFromImage(currentImage, numColors);
+                createPaletteDisplay(extractedColors, 'extractedPalette');
+                document.getElementById('extractedPalette').classList.remove('hidden');
+                document.getElementById('extractActions').classList.remove('hidden');
+            } else {
+                currentImage.onload = function() {
+                    extractedColors = extractColorsFromImage(currentImage, numColors);
+                    createPaletteDisplay(extractedColors, 'extractedPalette');
+                    document.getElementById('extractedPalette').classList.remove('hidden');
+                    document.getElementById('extractActions').classList.remove('hidden');
+                };
+            }
+        });
+
+        // Extract actions
+        document.getElementById('copyExtractCSS').addEventListener('click', function() {
+            copyToClipboard(generateCSS(extractedColors, 'extracted'), 'CSS copied to clipboard!');
+        });
+
+        document.getElementById('copyExtractJSON').addEventListener('click', function() {
+            copyToClipboard(generateJSON(extractedColors), 'JSON copied to clipboard!');
+        });
+
+        document.getElementById('downloadExtractImage').addEventListener('click', function() {
+            downloadPaletteImage(extractedColors, 'extracted-palette.png');
+        });
+
+        // Support modal functionality
+        const supportBtn = document.getElementById('supportBtn');
+        const supportModal = document.getElementById('supportModal');
+        const closeSupportModal = document.getElementById('closeSupportModal');
+
+        supportBtn.addEventListener('click', function() {
+            supportModal.classList.remove('hidden');
+        });
+
+        closeSupportModal.addEventListener('click', function() {
+            supportModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        supportModal.addEventListener('click', function(e) {
+            if (e.target === supportModal) {
+                supportModal.classList.add('hidden');
+            }
+        });
+
+        // Initialize saved palettes display
+        displaySavedPalettes();
+    </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>
