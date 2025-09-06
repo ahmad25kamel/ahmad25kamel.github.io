@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk File Renamer - Private Online Tools</title>
+    <meta name="description" content="Rename multiple files in bulk with custom patterns. Preview changes before download, add prefixes, suffixes, numbering, and more. 100% client-side processing.">
+    <meta name="keywords" content="bulk file renamer, batch rename files, file rename tool, mass file rename, rename multiple files, file organizer, bulk rename utility">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
+    
+    <!-- i18n Support -->
+    <script src="../assets/js/i18n.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .back-to-tools-btn {
+            transition: all 0.3s ease;
+        }
+        .back-to-tools-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .file-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        
+        .file-item:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        .file-item.changed {
+            background: #ecfdf5;
+            border-color: #22c55e;
+        }
+        
+        .file-name {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+        
+        .original-name {
+            color: #374151;
+        }
+        
+        .new-name {
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+            min-height: 200px;
+            background: #f8fafc;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
+        
+        .pattern-input {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+        
+        .pattern-help {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="gradient-bg text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="back-to-tools-btn px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all flex items-center space-x-2">
+                        <span>←</span>
+                        <span>Back to Tools</span>
+                    </a>
+                    <div class="text-sm opacity-80">
+                        Tools <span class="breadcrumb-separator">›</span> <span class="breadcrumb-current">Bulk File Renamer</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Title Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Bulk File Renamer</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Rename multiple files in bulk with custom patterns. Add prefixes, suffixes, numbering, 
+                and more. Preview changes before downloading your renamed files.
+            </p>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">1. Select Files</h3>
+                <div id="dropZone" class="drop-zone rounded-lg p-8 text-center cursor-pointer">
+                    <div class="mb-4">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <p class="text-lg text-gray-600 mb-2">Drop files here or click to select</p>
+                    <p class="text-sm text-gray-500">Select multiple files to rename in bulk</p>
+                </div>
+                <input type="file" id="fileInput" multiple class="hidden">
+                
+                <div class="mt-4 flex justify-between items-center">
+                    <button id="selectFiles" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        📁 Select Files
+                    </button>
+                    <button id="clearFiles" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors" style="display: none;">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Controls Panel -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Renaming Options -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4">2. Renaming Options</h3>
+                    
+                    <!-- Tabs -->
+                    <div class="flex mb-4 bg-gray-200 rounded-lg p-1">
+                        <button id="patternTab" class="tab-button flex-1 px-3 py-2 rounded-lg font-medium active">Pattern</button>
+                        <button id="replaceTab" class="tab-button flex-1 px-3 py-2 rounded-lg font-medium">Replace</button>
+                        <button id="caseTab" class="tab-button flex-1 px-3 py-2 rounded-lg font-medium">Case</button>
+                    </div>
+
+                    <!-- Pattern Mode -->
+                    <div id="patternMode" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pattern</label>
+                            <input type="text" id="namePattern" placeholder="{name}_{#}" class="pattern-input w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <div class="pattern-help mt-2">
+                                <strong>Variables:</strong><br>
+                                <code>{name}</code> - Original filename<br>
+                                <code>{#}</code> - Number (starting from 1)<br>
+                                <code>{##}</code> - Number with leading zeros<br>
+                                <code>{ext}</code> - File extension<br>
+                                <code>{date}</code> - Current date (YYYY-MM-DD)
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Prefix</label>
+                                <input type="text" id="prefix" placeholder="IMG_" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Suffix</label>
+                                <input type="text" id="suffix" placeholder="_edited" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Number</label>
+                            <input type="number" id="startNumber" value="1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+
+                    <!-- Replace Mode -->
+                    <div id="replaceMode" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Find</label>
+                            <input type="text" id="findText" placeholder="old_text" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Replace with</label>
+                            <input type="text" id="replaceText" placeholder="new_text" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="regexMode" class="mr-2">
+                            <label for="regexMode" class="text-sm text-gray-700">Use Regular Expressions</label>
+                        </div>
+                    </div>
+
+                    <!-- Case Mode -->
+                    <div id="caseMode" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Change Case</label>
+                            <select id="caseChange" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="">No Change</option>
+                                <option value="lower">lowercase</option>
+                                <option value="upper">UPPERCASE</option>
+                                <option value="title">Title Case</option>
+                                <option value="camel">camelCase</option>
+                                <option value="snake">snake_case</option>
+                                <option value="kebab">kebab-case</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="applyRename" class="w-full mt-4 px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        ✨ Apply Renaming
+                    </button>
+                </div>
+
+                <!-- Statistics -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4">Statistics</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stats-card">
+                            <div id="totalFiles" class="stats-number">0</div>
+                            <div class="stats-label">Total Files</div>
+                        </div>
+                        <div class="stats-card">
+                            <div id="changedFiles" class="stats-number">0</div>
+                            <div class="stats-label">Changed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download -->
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-lg font-semibold mb-4">3. Download</h3>
+                    <button id="downloadFiles" class="w-full px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors" disabled>
+                        📦 Download Renamed Files
+                    </button>
+                    <p class="text-sm text-gray-500 mt-2">Files will be downloaded individually with new names</p>
+                </div>
+            </div>
+
+            <!-- File List Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">File List & Preview</h3>
+                        <button id="resetAll" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors" style="display: none;">
+                            🔄 Reset All
+                        </button>
+                    </div>
+                    
+                    <div id="fileList" class="space-y-3">
+                        <div class="text-center py-12 text-gray-500">
+                            <svg class="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-lg">No files selected</p>
+                            <p class="text-sm">Select files to see preview here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">Need these tools regularly? Support the project:</p>
+            <div class="flex justify-center space-x-4 mb-4">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
+        </div>
+    </footer>
+
+    <!-- Support Button -->
+    <button id="supportBtn" class="floating-btn">☕ Support</button>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
+            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
+            <div class="space-y-3">
+                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
+                    ☕ Saweria (Indonesia)
+                </a>
+                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
+                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
+                    💖 GitHub Sponsors
+                </a>
+            </div>
+            <button id="closeSupportModal" class="mt-4 w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors">Close</button>
+        </div>
+    </div>
+
+    <!-- Note: ZIP functionality requires JSZip library -->
+    <!-- For now, files will be downloaded individually -->
+
+    <script>
+        // Global state
+        let selectedFiles = [];
+        let renamedFiles = [];
+        let currentMode = 'pattern';
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            // File selection
+            document.getElementById('selectFiles').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', handleFileSelection);
+
+            // Drag and drop
+            const dropZone = document.getElementById('dropZone');
+            dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
+            dropZone.addEventListener('dragover', handleDragOver);
+            dropZone.addEventListener('dragleave', handleDragLeave);
+            dropZone.addEventListener('drop', handleDrop);
+
+            // Tab switching
+            document.getElementById('patternTab').addEventListener('click', () => switchMode('pattern'));
+            document.getElementById('replaceTab').addEventListener('click', () => switchMode('replace'));
+            document.getElementById('caseTab').addEventListener('click', () => switchMode('case'));
+
+            // Controls
+            document.getElementById('applyRename').addEventListener('click', applyRenaming);
+            document.getElementById('clearFiles').addEventListener('click', clearFiles);
+            document.getElementById('resetAll').addEventListener('click', resetAll);
+            document.getElementById('downloadFiles').addEventListener('click', downloadFiles);
+
+            // Real-time preview
+            ['namePattern', 'prefix', 'suffix', 'startNumber', 'findText', 'replaceText', 'caseChange'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePreview);
+            });
+            document.getElementById('regexMode').addEventListener('change', updatePreview);
+
+            // Support modal
+            setupSupportModal();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(mode + 'Tab').classList.add('active');
+            
+            // Show/hide mode panels
+            document.getElementById('patternMode').classList.toggle('hidden', mode !== 'pattern');
+            document.getElementById('replaceMode').classList.toggle('hidden', mode !== 'replace');
+            document.getElementById('caseMode').classList.toggle('hidden', mode !== 'case');
+            
+            updatePreview();
+        }
+
+        function handleFileSelection(event) {
+            const files = Array.from(event.target.files);
+            addFiles(files);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            addFiles(files);
+        }
+
+        function addFiles(files) {
+            // Add new files to the list, avoiding duplicates
+            files.forEach(file => {
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            });
+            
+            updateFileList();
+            updateStats();
+            updateControls();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <svg class="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-lg">No files selected</p>
+                        <p class="text-sm">Select files to see preview here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            fileList.innerHTML = selectedFiles.map((file, index) => {
+                const renamed = renamedFiles[index];
+                const isChanged = renamed && renamed.newName !== file.name;
+                
+                return `
+                    <div class="file-item ${isChanged ? 'changed' : ''}">
+                        <div class="file-name original-name">
+                            <strong>Original:</strong> ${file.name}
+                        </div>
+                        <div class="file-name new-name">
+                            <strong>New:</strong> ${renamed ? renamed.newName : file.name}
+                        </div>
+                        <button onclick="removeFile(${index})" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded">×</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renamedFiles.splice(index, 1);
+            updateFileList();
+            updateStats();
+            updateControls();
+        }
+
+        function clearFiles() {
+            selectedFiles = [];
+            renamedFiles = [];
+            updateFileList();
+            updateStats();
+            updateControls();
+        }
+
+        function resetAll() {
+            renamedFiles = [];
+            updateFileList();
+            updateStats();
+            updateControls();
+        }
+
+        function updateStats() {
+            document.getElementById('totalFiles').textContent = selectedFiles.length;
+            const changed = renamedFiles.filter((renamed, index) => 
+                renamed && renamed.newName !== selectedFiles[index].name
+            ).length;
+            document.getElementById('changedFiles').textContent = changed;
+        }
+
+        function updateControls() {
+            const hasFiles = selectedFiles.length > 0;
+            document.getElementById('clearFiles').style.display = hasFiles ? 'block' : 'none';
+            document.getElementById('resetAll').style.display = hasFiles ? 'block' : 'none';
+            document.getElementById('downloadFiles').disabled = !hasFiles || renamedFiles.length === 0;
+        }
+
+        function updatePreview() {
+            if (selectedFiles.length === 0) return;
+            
+            renamedFiles = selectedFiles.map((file, index) => {
+                let newName = generateNewName(file, index);
+                return { originalFile: file, newName: newName };
+            });
+            
+            updateFileList();
+            updateStats();
+            updateControls();
+        }
+
+        function generateNewName(file, index) {
+            const name = file.name;
+            const nameWithoutExt = name.substring(0, name.lastIndexOf('.')) || name;
+            const ext = name.substring(name.lastIndexOf('.') + 1) || '';
+            
+            let newName = name;
+            
+            if (currentMode === 'pattern') {
+                const pattern = document.getElementById('namePattern').value || '{name}';
+                const prefix = document.getElementById('prefix').value || '';
+                const suffix = document.getElementById('suffix').value || '';
+                const startNum = parseInt(document.getElementById('startNumber').value) || 1;
+                const currentNum = startNum + index;
+                
+                const today = new Date().toISOString().split('T')[0];
+                
+                newName = pattern
+                    .replace(/\{name\}/g, nameWithoutExt)
+                    .replace(/\{##\}/g, currentNum.toString().padStart(2, '0'))
+                    .replace(/\{#\}/g, currentNum.toString())
+                    .replace(/\{ext\}/g, ext)
+                    .replace(/\{date\}/g, today);
+                
+                if (prefix) newName = prefix + newName;
+                if (suffix) newName = newName + suffix;
+                if (ext) newName = newName + '.' + ext;
+                
+            } else if (currentMode === 'replace') {
+                const findText = document.getElementById('findText').value;
+                const replaceText = document.getElementById('replaceText').value || '';
+                const useRegex = document.getElementById('regexMode').checked;
+                
+                if (findText) {
+                    if (useRegex) {
+                        try {
+                            const regex = new RegExp(findText, 'g');
+                            newName = name.replace(regex, replaceText);
+                        } catch (e) {
+                            // Invalid regex, do nothing
+                        }
+                    } else {
+                        newName = name.replaceAll(findText, replaceText);
+                    }
+                }
+                
+            } else if (currentMode === 'case') {
+                const caseChange = document.getElementById('caseChange').value;
+                
+                switch (caseChange) {
+                    case 'lower':
+                        newName = name.toLowerCase();
+                        break;
+                    case 'upper':
+                        newName = name.toUpperCase();
+                        break;
+                    case 'title':
+                        newName = name.replace(/\w\S*/g, (txt) => 
+                            txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+                        );
+                        break;
+                    case 'camel':
+                        newName = nameWithoutExt.replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '') + (ext ? '.' + ext : '');
+                        break;
+                    case 'snake':
+                        newName = nameWithoutExt.replace(/[-\s]+/g, '_').toLowerCase() + (ext ? '.' + ext : '');
+                        break;
+                    case 'kebab':
+                        newName = nameWithoutExt.replace(/[_\s]+/g, '-').toLowerCase() + (ext ? '.' + ext : '');
+                        break;
+                }
+            }
+            
+            return newName;
+        }
+
+        function applyRenaming() {
+            updatePreview();
+        }
+
+        async function downloadFiles() {
+            if (selectedFiles.length === 0 || renamedFiles.length === 0) return;
+            
+            try {
+                // Download files individually with new names
+                // Note: Browsers don't allow multiple simultaneous downloads
+                // We'll download them one by one with a small delay
+                
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    const renamed = renamedFiles[i];
+                    
+                    if (renamed) {
+                        const url = URL.createObjectURL(file);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = renamed.newName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        // Small delay between downloads to prevent browser blocking
+                        if (i < selectedFiles.length - 1) {
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                        }
+                    }
+                }
+                
+                alert(`${selectedFiles.length} files will be downloaded with new names.`);
+                
+            } catch (error) {
+                console.error('Error downloading files:', error);
+                alert('Error downloading files. Please try again.');
+            }
+        }
+
+        function setupSupportModal() {
+            const supportBtn = document.getElementById('supportBtn');
+            const supportModal = document.getElementById('supportModal');
+            const closeSupportModal = document.getElementById('closeSupportModal');
+
+            supportBtn.addEventListener('click', function() {
+                supportModal.classList.remove('hidden');
+            });
+
+            closeSupportModal.addEventListener('click', function() {
+                supportModal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            supportModal.addEventListener('click', function(e) {
+                if (e.target === supportModal) {
+                    supportModal.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+    
+    <!-- Dark Mode Toggle -->
+    <script src="../assets/js/theme-toggle.js"></script>
+</body>
+</html>
