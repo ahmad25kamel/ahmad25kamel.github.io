@@ -1,6 +1,42 @@
 # Sitemap Update Documentation
 
-## Changes Made for Google Best Practices Compliance
+## Latest Update: Simplified for Parser Compatibility
+
+**Date:** 2025-01-15  
+**Issue:** [#97 - Sitemap too complex](https://github.com/ahmad25kamel/ahmad25kamel.github.io/issues/97)
+
+### Simplified Sitemap Format
+
+**Change:** Converted complex sitemap to basic format for maximum parser compatibility.
+
+**Previous Issues:**
+- Complex XML structure with image namespace declarations
+- Multiple image:image elements causing parsing problems
+- Detailed metadata (priority, changefreq) not essential for basic indexing
+- Comments and verbose structure increasing complexity
+
+**Solution:** Simplified to basic format matching user's requested example:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://ahmad25kamel.github.io/</loc>
+<lastmod>2025-01-15</lastmod>
+</url>
+<!-- Additional URLs follow same pattern -->
+</urlset>
+```
+
+**Benefits:**
+- ✅ Compatible with all sitemap parsers
+- ✅ Clean, minimal structure
+- ✅ Faster parsing and processing
+- ✅ Maintains all essential URL information
+- ✅ Reduced file size (31 lines vs 103 lines)
+
+---
+
+## Previous Update: Google Best Practices Compliance
 
 **Date:** 2025-08-27T15:48:42+00:00  
 **Reference:** [Google Search Documentation - Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
