@@ -27,7 +27,8 @@ class ThemeToggle {
     }
     
     setInitialTheme() {
-        const savedTheme = localStorage.getItem(this.storageKey);
+        let savedTheme = null;
+        try { savedTheme = localStorage.getItem(this.storageKey); } catch(e) {}
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const initialTheme = savedTheme || systemTheme;
         
@@ -38,7 +39,7 @@ class ThemeToggle {
         document.documentElement.setAttribute('data-theme', theme);
         
         if (save) {
-            localStorage.setItem(this.storageKey, theme);
+            try { localStorage.setItem(this.storageKey, theme); } catch(e) {}
         }
         
         this.updateToggleButton(theme);
@@ -93,7 +94,9 @@ class ThemeToggle {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         mediaQuery.addEventListener('change', (e) => {
             // Only auto-switch if user hasn't manually set a preference
-            if (!localStorage.getItem(this.storageKey)) {
+            let _saved = null;
+            try { _saved = localStorage.getItem(this.storageKey); } catch(e) {}
+            if (!_saved) {
                 const systemTheme = e.matches ? 'dark' : 'light';
                 this.setTheme(systemTheme, false);
             }

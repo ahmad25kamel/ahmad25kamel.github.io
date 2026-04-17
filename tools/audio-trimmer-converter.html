@@ -13,6 +13,9 @@
     
     <!-- i18n Support -->
     <script src="../assets/js/i18n.js"></script>
+
+    <!-- lamejs for MP3 encoding (local) -->
+    <script src="../assets/js/vendor/lame.min.js"></script>
     
     <style>
         .gradient-bg {
@@ -746,13 +749,79 @@
         }
 
         async function convertAndDownload(audioBuffer, format, bitrate, sampleRate) {
-            // For this demo, we'll create a basic WAV file
-            // In a full implementation, you'd use libraries like lamejs for MP3 or opus-recorder for OGG
-            
-            const wav = bufferToWav(audioBuffer);
-            const blob = new Blob([wav], { type: 'audio/wav' });
-            
+            let blob;
             const fileName = generateFileName(format);
+
+            if (format === 'mp3') {
+                const channels = audioBuffer.numberOfChannels;
+                const kbps = parseInt(bitrate) || 128;
+                const mp3encoder = new lamejs.Mp3Encoder(channels, audioBuffer.sampleRate, kbps);
+                const mp3Data = [];
+
+                function floatTo16Bit(buf) {
+                    const out = new Int16Array(buf.length);
+                    for (let i = 0; i < buf.length; i++) {
+                        const s = Math.max(-1, Math.min(1, buf[i]));
+                        out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+                    return out;
+                }
+
+                const blockSize = 1152;
+                if (channels === 1) {
+                    const samples = floatTo16Bit(audioBuffer.getChannelData(0));
+                    for (let i = 0; i < samples.length; i += blockSize) {
+                        const enc = mp3encoder.encodeBuffer(samples.subarray(i, i + blockSize));
+                        if (enc.length > 0) mp3Data.push(new Int8Array(enc));
+                    }
+                } else {
+                    const left = floatTo16Bit(audioBuffer.getChannelData(0));
+                    const right = floatTo16Bit(audioBuffer.getChannelData(1));
+                    for (let i = 0; i < left.length; i += blockSize) {
+                        const enc = mp3encoder.encodeBuffer(
+                            left.subarray(i, i + blockSize),
+                            right.subarray(i, i + blockSize)
+                        );
+                        if (enc.length > 0) mp3Data.push(new Int8Array(enc));
+                    }
+                }
+                const last = mp3encoder.flush();
+                if (last.length > 0) mp3Data.push(new Int8Array(last));
+                blob = new Blob(mp3Data, { type: 'audio/mp3' });
+
+            } else if (format === 'ogg') {
+                const mimeOgg = 'audio/ogg;codecs=opus';
+                const mimeWebm = 'audio/webm;codecs=opus';
+                const supported = MediaRecorder.isTypeSupported(mimeOgg) ? mimeOgg
+                                : MediaRecorder.isTypeSupported(mimeWebm) ? mimeWebm
+                                : null;
+                if (!supported) {
+                    showNotification('OGG not supported in this browser. Exporting as WAV.', 'warning');
+                    blob = new Blob([bufferToWav(audioBuffer)], { type: 'audio/wav' });
+                } else {
+                    blob = await new Promise((resolve) => {
+                        const tmpCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        const dest = tmpCtx.createMediaStreamDestination();
+                        const src = tmpCtx.createBufferSource();
+                        src.buffer = audioBuffer;
+                        src.connect(dest);
+                        const rec = new MediaRecorder(dest.stream, { mimeType: supported });
+                        const chunks = [];
+                        rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+                        rec.onstop = () => { tmpCtx.close(); resolve(new Blob(chunks, { type: supported })); };
+                        rec.start();
+                        src.start();
+                        src.onended = () => rec.stop();
+                    });
+                    if (supported === mimeWebm) {
+                        showNotification('Chrome exports as WebM/Opus. Rename to .webm if needed.', 'warning');
+                    }
+                }
+
+            } else {
+                blob = new Blob([bufferToWav(audioBuffer)], { type: 'audio/wav' });
+            }
+
             downloadBlob(blob, fileName);
         }
 
