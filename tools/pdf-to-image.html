@@ -23,11 +23,11 @@
     <script src="../assets/js/routing-bridge.js"></script>
     <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
     
-    <!-- PDF.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    
-    <!-- JSZip CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- PDF.js (local) -->
+    <script src="../assets/js/vendor/pdf.min.js"></script>
+
+    <!-- JSZip (local) -->
+    <script src="../assets/js/vendor/jszip.min.js"></script>
     
     <style>
         .gradient-bg {
@@ -191,7 +191,7 @@
 
     <script>
         // PDF.js worker setup
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/js/vendor/pdf.worker.min.js';
 
         // Elements
         const dropZone = document.getElementById('dropZone');

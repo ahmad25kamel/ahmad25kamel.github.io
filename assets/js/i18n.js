@@ -128,24 +128,25 @@ window.i18n = {
         
         if (langParam && this.translations[langParam]) {
             this.currentLang = langParam;
-            localStorage.setItem('preferred-language', langParam);
+            try { localStorage.setItem('preferred-language', langParam); } catch(e) {}
             return;
         }
-        
+
         // Check localStorage
-        const savedLang = localStorage.getItem('preferred-language');
+        let savedLang = null;
+        try { savedLang = localStorage.getItem('preferred-language'); } catch(e) {}
         if (savedLang && this.translations[savedLang]) {
             this.currentLang = savedLang;
             return;
         }
-        
+
         // Check browser language
         const browserLang = navigator.language || navigator.userLanguage;
         const langCode = browserLang.substring(0, 2);
-        
+
         if (this.translations[langCode]) {
             this.currentLang = langCode;
-            localStorage.setItem('preferred-language', langCode);
+            try { localStorage.setItem('preferred-language', langCode); } catch(e) {}
         }
     },
     
@@ -188,7 +189,7 @@ window.i18n = {
     setLanguage: function(langCode) {
         if (this.translations[langCode]) {
             this.currentLang = langCode;
-            localStorage.setItem('preferred-language', langCode);
+            try { localStorage.setItem('preferred-language', langCode); } catch(e) {}
             this.applyTranslations();
             
             // Update URL parameter
