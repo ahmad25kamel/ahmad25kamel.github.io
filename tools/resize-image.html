@@ -1,430 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resize Image - Private Online Tools</title>
-    <meta name="description" content="Change image dimensions by pixels or percentage with preview. 100% client-side, no uploads required.">
-    <meta name="keywords" content="image resizer, resize image online, image dimensions, image resize tool, bulk image resize, photo resize, picture resize, image size change, free image resizer, online image editor">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-    
-    <!-- Local CSS -->
-    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
-    
-    <!-- i18n Support -->
-    <script src="../assets/js/i18n.js"></script>
-    
-    <!-- Routing Bridge for seamless navigation -->
-    <script src="../assets/js/routing-bridge.js"></script>
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .drop-zone {
-            border: 2px dashed #cbd5e0;
-            transition: border-color 0.3s ease;
-        }
-        .drop-zone.dragover {
-            border-color: #f59e0b;
-            background-color: #fffbeb;
-        }
-        
-        /* Breadcrumb styling */
-        .breadcrumb-container {
-            font-size: 0.875rem;
-        }
-        .breadcrumb-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        .breadcrumb-link:hover {
-            color: white;
-        }
-        .breadcrumb-separator {
-            margin: 0 8px;
-            opacity: 0.6;
-        }
-        .breadcrumb-current {
-            color: white;
-            font-weight: 500;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resize Image – PrivTools</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="gradient-bg text-white py-4">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">Resize Image</h1>
-                    <p class="text-sm md:text-base opacity-90">Change image dimensions with preview</p>
-                </div>
-                <div class="navigation-wrapper">
-                    <!-- Breadcrumb container for dynamic breadcrumbs -->
-                    <div class="breadcrumb-container text-sm opacity-75 mb-2"></div>
-                    <a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
-                        ← Back to Tools
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+<body>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Upload Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload Image</h2>
-            
-            <!-- Drop Zone -->
-            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
-                <div class="mb-4">
-                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <p class="text-gray-600 mb-2">Drag and drop your image here</p>
-                <p class="text-sm text-gray-500 mb-4">or</p>
-                <input type="file" id="fileInput" accept="image/*" class="hidden">
-                <label for="fileInput" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
-                    Choose Image File
-                </label>
-            </div>
-            
-            <p class="text-sm text-gray-500 text-center">
-                Supported formats: JPG, PNG, GIF, WebP, BMP
-            </p>
-        </div>
-
-        <!-- Image Info Section -->
-        <div id="imageInfoSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Image Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-600">Original Size</p>
-                    <p class="font-semibold" id="originalSize">-</p>
-                </div>
-                <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-600">File Size</p>
-                    <p class="font-semibold" id="fileSize">-</p>
-                </div>
-                <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-600">Format</p>
-                    <p class="font-semibold" id="imageFormat">-</p>
-                </div>
-                <div class="bg-gray-50 p-3 rounded">
-                    <p class="text-sm text-gray-600">Aspect Ratio</p>
-                    <p class="font-semibold" id="aspectRatio">-</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resize Controls -->
-        <div id="resizeControls" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Resize Settings</h2>
-            
-            <!-- Resize by pixels -->
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-3">Dimensions</label>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Width (px)</label>
-                        <input type="number" id="newWidth" class="w-full p-2 border border-gray-300 rounded" placeholder="Width">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Height (px)</label>
-                        <input type="number" id="newHeight" class="w-full p-2 border border-gray-300 rounded" placeholder="Height">
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="maintainAspectRatio" checked class="mr-2">
-                        <span class="text-sm text-gray-700">Maintain aspect ratio</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Resize Button -->
-            <button id="resizeBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded transition-colors">
-                🔄 Resize Image
-            </button>
-        </div>
-
-        <!-- Preview Section -->
-        <div id="previewSection" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Preview</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Original Image -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-2">Original</h3>
-                    <div class="border rounded-lg overflow-hidden bg-gray-50">
-                        <img id="originalPreview" class="w-full" alt="Original">
-                    </div>
-                    <p class="text-sm text-gray-600 mt-2" id="originalInfo">-</p>
-                </div>
-                
-                <!-- Resized Image -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-2">Resized</h3>
-                    <div class="border rounded-lg overflow-hidden bg-gray-50">
-                        <img id="resizedPreview" class="w-full" alt="Resized">
-                    </div>
-                    <p class="text-sm text-gray-600 mt-2" id="resizedInfo">-</p>
-                </div>
-            </div>
-            
-            <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded mt-4 transition-colors">
-                📥 Download Resized Image
-            </button>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
-        </div>
-    </footer>
-
-    <!-- Floating Support Button -->
-    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
-        ☕ Support
-    </button>
-
-    <!-- Support Modal -->
-    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
-                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
-                <div class="space-y-3">
-                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
-                        🎁 Saweria (Indonesia)
-                    </a>
-                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
-                        ❤️ GitHub Sponsors
-                    </a>
-                </div>
-                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
-            </div>
-        </div>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">🔒 PrivTools</a>
+    <span class="nav-breadcrumb">Tools › Resize Image</span>
+    <div class="nav-right">
+      <a href="/" class="btn-back">← Back</a>
+      <button id="theme-toggle" aria-label="Toggle theme"></button>
     </div>
+  </div>
+</nav>
 
-    <script>
-        // Elements
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const imageInfoSection = document.getElementById('imageInfoSection');
-        const originalSize = document.getElementById('originalSize');
-        const fileSize = document.getElementById('fileSize');
-        const imageFormat = document.getElementById('imageFormat');
-        const aspectRatio = document.getElementById('aspectRatio');
-        const resizeControls = document.getElementById('resizeControls');
-        const newWidth = document.getElementById('newWidth');
-        const newHeight = document.getElementById('newHeight');
-        const maintainAspectRatio = document.getElementById('maintainAspectRatio');
-        const resizeBtn = document.getElementById('resizeBtn');
-        const previewSection = document.getElementById('previewSection');
-        const originalPreview = document.getElementById('originalPreview');
-        const resizedPreview = document.getElementById('resizedPreview');
-        const originalInfo = document.getElementById('originalInfo');
-        const resizedInfo = document.getElementById('resizedInfo');
-        const downloadBtn = document.getElementById('downloadBtn');
+<header class="tool-hero">
+  <div class="container">
+    <h1>Resize Image</h1>
+    <p>Resize images to exact dimensions with optional aspect ratio lock.</p>
+  </div>
+</header>
 
-        let originalImage = null;
-        let originalImageFile = null;
-        let resizedImageDataUrl = null;
+<main class="container" style="padding-top:2rem;padding-bottom:4rem;">
 
-        // Drag and drop handlers
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div id="dropZone" class="drop-zone">
+      <div class="drop-zone-icon">📐</div>
+      <div class="drop-zone-title">Drop an image here</div>
+      <div class="drop-zone-hint">or click to browse — any image format supported</div>
+      <input type="file" id="fileInput" accept="image/*" class="hidden" />
+    </div>
+  </div>
 
-        dropZone.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-        });
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h2 class="card-title">Resize Options</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem;">
+      <div class="form-group">
+        <label class="form-label" for="newWidth">Width (px)</label>
+        <input type="number" id="newWidth" class="form-input" min="1" max="16000" placeholder="e.g. 800" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="newHeight">Height (px)</label>
+        <input type="number" id="newHeight" class="form-input" min="1" max="16000" placeholder="e.g. 600" />
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:1.25rem;">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+        <input type="checkbox" id="maintainAspectRatio" checked style="width:1rem;height:1rem;" />
+        <span class="form-label" style="margin:0;">Maintain aspect ratio</span>
+      </label>
+    </div>
+    <p id="originalDimensions" class="text-muted text-sm" style="margin-bottom:1rem;"></p>
+    <button id="resizeBtn" class="btn btn-primary btn-lg" disabled>Resize Image</button>
+  </div>
 
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type.startsWith('image/')) {
-                loadImage(files[0]);
-            }
-        });
+  <div id="resultsSection" class="hidden">
+    <div class="card" style="margin-bottom:1.5rem;">
+      <h2 class="card-title">Result</h2>
+      <button id="downloadBtn" class="btn btn-success btn-lg">⬇ Download Resized Image (PNG)</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <div class="card">
+        <h3 class="card-title">Original</h3>
+        <img id="originalPreview" src="" alt="Original" style="width:100%;border-radius:6px;display:block;" />
+      </div>
+      <div class="card">
+        <h3 class="card-title">Resized</h3>
+        <img id="resizedPreview" src="" alt="Resized" style="width:100%;border-radius:6px;display:block;" />
+      </div>
+    </div>
+  </div>
 
-        // File input handler
-        fileInput.addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                loadImage(e.target.files[0]);
-            }
-        });
+</main>
 
-        // Maintain aspect ratio
-        maintainAspectRatio.addEventListener('change', function() {
-            if (this.checked && originalImage) {
-                updateAspectRatio();
-            }
-        });
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-links">
+      <a href="/">← All Tools</a>
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer">☕ Saweria</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer">💖 Sponsors</a>
+    </div>
+    <p>All tools run locally in your browser — no data is ever sent to a server.</p>
+  </div>
+</footer>
 
-        // Width/Height input handlers
-        newWidth.addEventListener('input', function() {
-            if (maintainAspectRatio.checked && originalImage && this.value) {
-                const ratio = originalImage.height / originalImage.width;
-                newHeight.value = Math.round(this.value * ratio);
-            }
-        });
+<button id="support-fab" aria-label="Support this project">☕ Support</button>
+<div id="support-modal" class="hidden" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h3 class="modal-title">Support This Project</h3>
+    <p class="modal-body">These tools are free and run entirely in your browser. If they've been helpful, consider supporting!</p>
+    <div style="display:flex;flex-direction:column;gap:.6rem;">
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg" style="background:#f97316;color:#fff;justify-content:center;">☕ Saweria (Indonesia)</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg btn-primary" style="justify-content:center;">💖 GitHub Sponsors</a>
+    </div>
+    <button id="support-modal-close" class="btn btn-gray" style="width:100%;margin-top:.75rem;">Close</button>
+  </div>
+</div>
 
-        newHeight.addEventListener('input', function() {
-            if (maintainAspectRatio.checked && originalImage && this.value) {
-                const ratio = originalImage.width / originalImage.height;
-                newWidth.value = Math.round(this.value * ratio);
-            }
-        });
+<script src="../assets/js/shared.js"></script>
+<script>
+(function () {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const newWidth = document.getElementById('newWidth');
+  const newHeight = document.getElementById('newHeight');
+  const maintainAspectRatio = document.getElementById('maintainAspectRatio');
+  const resizeBtn = document.getElementById('resizeBtn');
+  const originalPreview = document.getElementById('originalPreview');
+  const resizedPreview = document.getElementById('resizedPreview');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const resultsSection = document.getElementById('resultsSection');
+  const originalDimensions = document.getElementById('originalDimensions');
 
-        // Load image
-        function loadImage(file) {
-            originalImageFile = file;
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                originalImage = new Image();
-                originalImage.onload = function() {
-                    displayImageInfo();
-                    setupResizeControls();
-                    originalPreview.src = e.target.result;
-                    
-                    imageInfoSection.classList.remove('hidden');
-                    resizeControls.classList.remove('hidden');
-                };
-                originalImage.src = e.target.result;
-            };
-            
-            reader.readAsDataURL(file);
-        }
+  let currentFile = null;
+  let aspectRatio = 1;
+  let resizedDataUrl = null;
+  let updating = false;
 
-        // Display image information
-        function displayImageInfo() {
-            originalSize.textContent = originalImage.width + ' × ' + originalImage.height;
-            fileSize.textContent = formatFileSize(originalImageFile.size);
-            imageFormat.textContent = originalImageFile.type.split('/')[1].toUpperCase();
-            
-            const ratio = calculateAspectRatio(originalImage.width, originalImage.height);
-            aspectRatio.textContent = ratio.width + ':' + ratio.height;
-        }
+  dropZone.addEventListener('click', function (e) {
+    if (e.target !== fileInput) fileInput.click();
+  });
 
-        // Setup resize controls with original dimensions
-        function setupResizeControls() {
-            newWidth.value = originalImage.width;
-            newHeight.value = originalImage.height;
-        }
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
 
-        // Update aspect ratio
-        function updateAspectRatio() {
-            if (newWidth.value) {
-                const ratio = originalImage.height / originalImage.width;
-                newHeight.value = Math.round(newWidth.value * ratio);
-            }
-        }
+  dropZone.addEventListener('dragleave', function () {
+    dropZone.classList.remove('drag-over');
+  });
 
-        // Calculate aspect ratio
-        function calculateAspectRatio(width, height) {
-            function gcd(a, b) {
-                return b === 0 ? a : gcd(b, a % b);
-            }
-            const divisor = gcd(width, height);
-            return {
-                width: width / divisor,
-                height: height / divisor
-            };
-        }
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      loadFile(file);
+    } else {
+      window.showToast('Please drop a valid image file.', 'error');
+    }
+  });
 
-        // Resize image
-        resizeBtn.addEventListener('click', function() {
-            if (!originalImage) return;
+  fileInput.addEventListener('change', function () {
+    if (this.files[0]) loadFile(this.files[0]);
+  });
 
-            const targetWidth = parseInt(newWidth.value);
-            const targetHeight = parseInt(newHeight.value);
+  function loadFile(file) {
+    currentFile = file;
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = function () {
+      aspectRatio = img.naturalWidth / img.naturalHeight;
+      newWidth.value = img.naturalWidth;
+      newHeight.value = img.naturalHeight;
+      originalPreview.src = url;
+      originalDimensions.textContent = 'Original: ' + img.naturalWidth + ' × ' + img.naturalHeight + ' px';
+      resizeBtn.disabled = false;
+      window.showToast('Image loaded: ' + file.name, 'success');
+    };
+    img.src = url;
+  }
 
-            if (!targetWidth || !targetHeight) {
-                alert('Please enter valid dimensions.');
-                return;
-            }
+  newWidth.addEventListener('input', function () {
+    if (updating) return;
+    if (maintainAspectRatio.checked && this.value) {
+      updating = true;
+      newHeight.value = Math.round(parseInt(this.value) / aspectRatio);
+      updating = false;
+    }
+  });
 
-            resizeImage(targetWidth, targetHeight);
-        });
+  newHeight.addEventListener('input', function () {
+    if (updating) return;
+    if (maintainAspectRatio.checked && this.value) {
+      updating = true;
+      newWidth.value = Math.round(parseInt(this.value) * aspectRatio);
+      updating = false;
+    }
+  });
 
-        // Resize image function
-        function resizeImage(width, height) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = width;
-            canvas.height = height;
-            
-            ctx.drawImage(originalImage, 0, 0, width, height);
+  resizeBtn.addEventListener('click', function () {
+    if (!currentFile) return;
+    const w = parseInt(newWidth.value);
+    const h = parseInt(newHeight.value);
+    if (!w || !h || w < 1 || h < 1) {
+      window.showToast('Please enter valid width and height.', 'error');
+      return;
+    }
 
-            resizedImageDataUrl = canvas.toDataURL('image/png', 0.9);
-            
-            // Update preview
-            resizedPreview.src = resizedImageDataUrl;
-            originalInfo.textContent = originalImage.width + ' × ' + originalImage.height + ' (' + formatFileSize(originalImageFile.size) + ')';
-            
-            // Calculate new file size (approximate)
-            const newSize = Math.round(resizedImageDataUrl.length * 0.75);
-            resizedInfo.textContent = width + ' × ' + height + ' (' + formatFileSize(newSize) + ')';
-            
-            previewSection.classList.remove('hidden');
-        }
+    resizeBtn.textContent = 'Resizing…';
+    resizeBtn.disabled = true;
 
-        // Download resized image
-        downloadBtn.addEventListener('click', function() {
-            if (!resizedImageDataUrl) return;
+    const img = new Image();
+    const url = URL.createObjectURL(currentFile);
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resizedDataUrl = canvas.toDataURL('image/png');
+      resizedPreview.src = resizedDataUrl;
+      resultsSection.classList.remove('hidden');
+      resizeBtn.textContent = 'Resize Image';
+      resizeBtn.disabled = false;
+      window.showToast('Resize complete! ' + w + '×' + h + ' px', 'success');
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = function () {
+      resizeBtn.textContent = 'Resize Image';
+      resizeBtn.disabled = false;
+      window.showToast('Failed to load image.', 'error');
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
 
-            const link = document.createElement('a');
-            link.href = resizedImageDataUrl;
-            link.download = 'resized-image.png';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-        // Format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // Support modal functionality
-        const supportBtn = document.getElementById('supportBtn');
-        const supportModal = document.getElementById('supportModal');
-        const closeSupportModal = document.getElementById('closeSupportModal');
-
-        supportBtn.addEventListener('click', function() {
-            supportModal.classList.remove('hidden');
-        });
-
-        closeSupportModal.addEventListener('click', function() {
-            supportModal.classList.add('hidden');
-        });
-
-        // Close modal when clicking outside
-        supportModal.addEventListener('click', function(e) {
-            if (e.target === supportModal) {
-                supportModal.classList.add('hidden');
-            }
-        });
-    </script>
-    <!-- Dark Mode Toggle -->
-    <script src="../assets/js/theme-toggle.js"></script>
+  downloadBtn.addEventListener('click', function () {
+    if (!resizedDataUrl) return;
+    const baseName = currentFile ? currentFile.name.replace(/\.[^.]+$/, '') : 'resized';
+    const w = newWidth.value || 'w';
+    const h = newHeight.value || 'h';
+    const link = document.createElement('a');
+    link.href = resizedDataUrl;
+    link.download = baseName + '-' + w + 'x' + h + '.png';
+    link.click();
+    window.showToast('Download started!', 'success');
+  });
+})();
+</script>
 </body>
 </html>

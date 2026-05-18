@@ -1,820 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Invoice Generator - Private Online Tools</title>
-    <meta name="description" content="Create professional invoices for freelancers and small businesses. Add items, calculate totals, and export as PDF. 100% client-side processing.">
-    <meta name="keywords" content="invoice generator, freelancer invoice, small business invoice, invoice maker, invoice template, PDF invoice, billing tool">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-    
-    <!-- Local CSS -->
-    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
-    
-    <!-- i18n Support -->
-    <script src="../assets/js/i18n.js"></script>
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .back-to-tools-btn {
-            transition: all 0.3s ease;
-        }
-        .back-to-tools-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3) !important;
-        }
-        
-        .invoice-container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .invoice-header {
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        
-        .invoice-table th,
-        .invoice-table td {
-            border: 1px solid #e5e7eb;
-            padding: 12px;
-            text-align: left;
-        }
-        
-        .invoice-table th {
-            background: #f8fafc;
-            font-weight: 600;
-        }
-        
-        .invoice-table tr:nth-child(even) {
-            background: #f9fafb;
-        }
-        
-        .invoice-total {
-            background: #f0f9ff;
-            border: 2px solid #0ea5e9;
-        }
-        
-        .item-row {
-            transition: all 0.2s ease;
-        }
-        
-        .item-row:hover {
-            background: #f1f5f9;
-        }
-        
-        .currency-symbol {
-            font-weight: 600;
-            color: #059669;
-        }
-        
-        .floating-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 16px 24px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .floating-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
-        }
-        
-        .form-section {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        
-        .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .two-column {
-                grid-template-columns: 1fr;
-            }
-            
-            .invoice-container {
-                padding: 20px;
-            }
-            
-            .invoice-table {
-                font-size: 14px;
-            }
-            
-            .invoice-table th,
-            .invoice-table td {
-                padding: 8px 6px;
-            }
-        }
-        
-        .print-hidden {
-            display: block;
-        }
-        
-        @media print {
-            .print-hidden {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-            }
-            
-            .invoice-container {
-                box-shadow: none;
-                max-width: none;
-                margin: 0;
-                padding: 20px;
-            }
-        }
-        
-        .item-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .item-controls button {
-            padding: 4px 8px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .add-item-btn {
-            background: #10b981;
-            color: white;
-        }
-        
-        .add-item-btn:hover {
-            background: #059669;
-        }
-        
-        .remove-item-btn {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .remove-item-btn:hover {
-            background: #dc2626;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Generator – PrivTools</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <style>
+    @media print {
+      .print-hidden { display: none !important; }
+      body { background: #fff !important; }
+      .invoice-preview { box-shadow: none !important; border: none !important; }
+    }
+    .invoice-preview {
+      background: #fff;
+      color: #111;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    .invoice-table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    .invoice-table th { background:#f3f4f6; padding:.5rem .75rem; text-align:left; font-size:.85rem; }
+    .invoice-table td { padding:.45rem .75rem; border-bottom:1px solid #e5e7eb; font-size:.9rem; }
+    .invoice-table input { border:none; background:transparent; width:100%; font-size:.9rem; padding:0; outline:none; }
+    .invoice-table td:last-child { text-align:right; font-family:monospace; }
+    .invoice-totals { margin-left:auto; width:260px; margin-top:1rem; }
+    .invoice-totals td { padding:.3rem .5rem; font-size:.9rem; }
+    .invoice-totals .total-row td { font-weight:700; font-size:1rem; border-top:2px solid #374151; padding-top:.5rem; }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="gradient-bg text-white py-4 print-hidden">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="back-to-tools-btn px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all flex items-center space-x-2">
-                        <span>←</span>
-                        <span>Back to Tools</span>
-                    </a>
-                    <div class="text-sm opacity-80">
-                        Tools <span class="breadcrumb-separator">›</span> <span class="breadcrumb-current">Simple Invoice Generator</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<nav class="navbar print-hidden">
+  <div class="container">
+    <a href="/" class="nav-logo">🔒 PrivTools</a>
+    <span class="nav-breadcrumb">Tools › Invoice Generator</span>
+    <div class="nav-right">
+      <a href="/" class="btn-back">← Back</a>
+      <button id="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+  </div>
+</nav>
 
-    <main class="container mx-auto px-4 py-8">
-        <!-- Title Section -->
-        <div class="text-center mb-12 print-hidden">
-            <h1 class="text-4xl font-bold text-gray-800 mb-4">Simple Invoice Generator</h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Create professional invoices for your freelance work or small business. 
-                Add items, calculate totals automatically, and save or print your invoices.
-            </p>
-        </div>
+<header class="tool-hero print-hidden">
+  <div class="container">
+    <h1>Simple Invoice Generator</h1>
+    <p>Create professional invoices in your browser — no account needed, no data sent anywhere.</p>
+  </div>
+</header>
 
-        <!-- Controls -->
-        <div class="mb-8 print-hidden">
-            <div class="form-section">
-                <div class="flex flex-wrap gap-4 justify-center">
-                    <button id="newInvoice" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                        📄 New Invoice
-                    </button>
-                    <button id="saveInvoice" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                        💾 Save Invoice
-                    </button>
-                    <button id="loadInvoice" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
-                        📂 Load Invoice
-                    </button>
-                    <button id="printInvoice" class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors">
-                        🖨️ Print Invoice
-                    </button>
-                </div>
-            </div>
-        </div>
+<main class="container" style="padding-bottom:3rem;">
+  <!-- Action Buttons -->
+  <div class="print-hidden" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+    <button id="newInvoice" class="btn btn-danger">✕ New Invoice</button>
+    <button id="saveInvoice" class="btn btn-gray">💾 Save (JSON)</button>
+    <label class="btn btn-gray" style="cursor:pointer;">
+      📂 Load Invoice <input id="loadInvoice" type="file" accept=".json" style="display:none;" />
+    </label>
+    <button id="printInvoice" class="btn btn-primary">🖨 Print / PDF</button>
+  </div>
 
-        <!-- Invoice Setup -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 print-hidden">
-            <!-- Business Info -->
-            <div class="form-section">
-                <h3 class="text-lg font-semibold mb-4">Your Business Information</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
-                        <input type="text" id="businessName" placeholder="Your Business Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                        <textarea id="businessAddress" placeholder="Your business address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
-                    </div>
-                    <div class="two-column">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" id="businessEmail" placeholder="your@email.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                            <input type="tel" id="businessPhone" placeholder="+1 234 567 8900" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Client Info -->
-            <div class="form-section">
-                <h3 class="text-lg font-semibold mb-4">Client Information</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
-                        <input type="text" id="clientName" placeholder="Client Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Client Address</label>
-                        <textarea id="clientAddress" placeholder="Client address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
-                    </div>
-                    <div class="two-column">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
-                            <input type="email" id="clientEmail" placeholder="client@email.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Phone</label>
-                            <input type="tel" id="clientPhone" placeholder="+1 234 567 8900" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Invoice Details -->
-        <div class="form-section mb-8 print-hidden">
-            <h3 class="text-lg font-semibold mb-4">Invoice Details</h3>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label>
-                    <input type="text" id="invoiceNumber" placeholder="INV-001" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Issue Date</label>
-                    <input type="date" id="issueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
-                    <input type="date" id="dueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                    <select id="currency" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                        <option value="$">USD ($)</option>
-                        <option value="€">EUR (€)</option>
-                        <option value="£">GBP (£)</option>
-                        <option value="¥">JPY (¥)</option>
-                        <option value="Rp">IDR (Rp)</option>
-                        <option value="₹">INR (₹)</option>
-                        <option value="₽">RUB (₽)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Invoice Preview -->
-        <div class="invoice-container">
-            <!-- Invoice Header -->
-            <div class="invoice-header">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-800">INVOICE</h1>
-                        <p class="text-gray-600 mt-2">Invoice #<span id="previewInvoiceNumber">INV-001</span></p>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-sm text-gray-600">
-                            <p>Issue Date: <span id="previewIssueDate">-</span></p>
-                            <p>Due Date: <span id="previewDueDate">-</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Business and Client Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">From:</h3>
-                    <div id="previewBusinessInfo" class="text-gray-600">
-                        <p class="font-semibold" id="previewBusinessName">Your Business Name</p>
-                        <div id="previewBusinessAddress" class="whitespace-pre-line">Your business address</div>
-                        <p id="previewBusinessEmail">your@email.com</p>
-                        <p id="previewBusinessPhone">+1 234 567 8900</p>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">To:</h3>
-                    <div id="previewClientInfo" class="text-gray-600">
-                        <p class="font-semibold" id="previewClientName">Client Name</p>
-                        <div id="previewClientAddress" class="whitespace-pre-line">Client address</div>
-                        <p id="previewClientEmail">client@email.com</p>
-                        <p id="previewClientPhone">+1 234 567 8900</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Items Table -->
-            <table class="invoice-table">
-                <thead>
-                    <tr>
-                        <th>Description</th>
-                        <th>Quantity</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
-                        <th class="print-hidden">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsTableBody">
-                    <tr class="item-row">
-                        <td><input type="text" placeholder="Service description" class="item-description w-full border-none bg-transparent"></td>
-                        <td><input type="number" min="1" value="1" class="item-quantity w-full border-none bg-transparent text-center" style="width: 80px;"></td>
-                        <td><input type="number" min="0" step="0.01" placeholder="0.00" class="item-rate w-full border-none bg-transparent text-center" style="width: 100px;"></td>
-                        <td class="item-amount text-center font-semibold"><span class="currency-symbol">$</span>0.00</td>
-                        <td class="print-hidden">
-                            <div class="item-controls">
-                                <button class="add-item-btn" onclick="addItem()">+</button>
-                                <button class="remove-item-btn" onclick="removeItem(this)" style="display: none;">×</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3" class="text-right font-semibold">Subtotal:</td>
-                        <td class="text-center font-semibold"><span class="currency-symbol">$</span><span id="subtotal">0.00</span></td>
-                        <td class="print-hidden"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="text-right font-semibold">
-                            Tax (<input type="number" id="taxRate" min="0" max="100" step="0.1" value="0" class="w-16 text-center border-none bg-transparent">%):
-                        </td>
-                        <td class="text-center font-semibold"><span class="currency-symbol">$</span><span id="taxAmount">0.00</span></td>
-                        <td class="print-hidden"></td>
-                    </tr>
-                    <tr class="invoice-total">
-                        <td colspan="3" class="text-right text-lg font-bold">TOTAL:</td>
-                        <td class="text-center text-lg font-bold"><span class="currency-symbol">$</span><span id="total">0.00</span></td>
-                        <td class="print-hidden"></td>
-                    </tr>
-                </tfoot>
-            </table>
-
-            <!-- Notes -->
-            <div class="mt-8">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Notes:</h3>
-                <textarea id="invoiceNotes" placeholder="Payment terms, additional notes, etc." rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg print-hidden"></textarea>
-                <div id="previewNotes" class="text-gray-600 whitespace-pre-line"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-20 print-hidden">
-        <div class="container mx-auto px-4 text-center">
-            <p class="mb-4">Need these tools regularly? Support the project:</p>
-            <div class="flex justify-center space-x-4 mb-4">
-                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                   class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded transition-colors">
-                    ☕ Saweria (Indonesia)
-                </a>
-                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                   class="bg-purple-500 hover:bg-purple-600 px-6 py-2 rounded transition-colors">
-                    💖 GitHub Sponsors
-                </a>
-            </div>
-            <p class="text-sm opacity-75">All tools run locally in your browser. No data is sent to servers.</p>
-        </div>
-    </footer>
-
-    <!-- Support Button -->
-    <button id="supportBtn" class="floating-btn print-hidden">☕ Support</button>
-
-    <!-- Support Modal -->
-    <div id="supportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 print-hidden">
-        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
-            <h3 class="text-xl font-bold mb-4">Support This Project</h3>
-            <p class="text-gray-600 mb-6">These tools are free and run entirely in your browser. If they've been helpful, consider supporting the project:</p>
-            <div class="space-y-3">
-                <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                   class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded transition-colors">
-                    ☕ Saweria (Indonesia)
-                </a>
-                <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                   class="block w-full bg-purple-500 hover:bg-purple-600 text-white text-center py-3 rounded transition-colors">
-                    💖 GitHub Sponsors
-                </a>
-            </div>
-            <button id="closeSupportModal" class="mt-4 w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors">Close</button>
-        </div>
+  <!-- Form -->
+  <div class="print-hidden" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+    <!-- Business Info -->
+    <div class="card">
+      <div class="card-title">Your Business</div>
+      <div class="form-group">
+        <label class="form-label" for="businessName">Business Name</label>
+        <input id="businessName" type="text" class="form-input" placeholder="Acme Corp" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="businessAddress">Address</label>
+        <textarea id="businessAddress" class="form-textarea" rows="2" placeholder="123 Main St, City, State 12345"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="businessEmail">Email</label>
+        <input id="businessEmail" type="email" class="form-input" placeholder="hello@acme.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="businessPhone">Phone</label>
+        <input id="businessPhone" type="tel" class="form-input" placeholder="+1 555 000 0000" />
+      </div>
     </div>
 
-    <!-- Hidden file input for loading -->
-    <input type="file" id="fileInput" accept=".json" class="hidden">
+    <!-- Client Info -->
+    <div class="card">
+      <div class="card-title">Bill To</div>
+      <div class="form-group">
+        <label class="form-label" for="clientName">Client Name</label>
+        <input id="clientName" type="text" class="form-input" placeholder="Client Inc." />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="clientAddress">Address</label>
+        <textarea id="clientAddress" class="form-textarea" rows="2" placeholder="456 Client Ave, City, State 67890"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="clientEmail">Email</label>
+        <input id="clientEmail" type="email" class="form-input" placeholder="client@example.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="clientPhone">Phone</label>
+        <input id="clientPhone" type="tel" class="form-input" placeholder="+1 555 111 1111" />
+      </div>
+    </div>
+  </div>
 
-    <script>
-        // Global state
-        let invoiceData = {
-            businessName: '',
-            businessAddress: '',
-            businessEmail: '',
-            businessPhone: '',
-            clientName: '',
-            clientAddress: '',
-            clientEmail: '',
-            clientPhone: '',
-            invoiceNumber: 'INV-001',
-            issueDate: '',
-            dueDate: '',
-            currency: '$',
-            items: [{ description: '', quantity: 1, rate: 0 }],
-            taxRate: 0,
-            notes: ''
-        };
+  <!-- Invoice Details -->
+  <div class="card print-hidden" style="margin-bottom:2rem;">
+    <div class="card-title">Invoice Details</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;">
+      <div class="form-group">
+        <label class="form-label" for="invoiceNumber">Invoice #</label>
+        <input id="invoiceNumber" type="text" class="form-input" placeholder="INV-0001" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="issueDate">Issue Date</label>
+        <input id="issueDate" type="date" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="dueDate">Due Date</label>
+        <input id="dueDate" type="date" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="currency">Currency</label>
+        <select id="currency" class="form-select">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="JPY">JPY (¥)</option>
+          <option value="IDR">IDR (Rp)</option>
+          <option value="INR">INR (₹)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="taxRate">Tax Rate (%)</label>
+        <input id="taxRate" type="number" class="form-input" value="0" min="0" max="100" step="0.5" />
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:.5rem;">
+      <label class="form-label" for="invoiceNotes">Notes / Payment Terms</label>
+      <textarea id="invoiceNotes" class="form-textarea" rows="2" placeholder="Thank you for your business! Payment due within 30 days."></textarea>
+    </div>
+  </div>
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeInvoice();
-            setupEventListeners();
-            updatePreview();
-        });
+  <!-- Invoice Preview -->
+  <div class="invoice-preview" id="invoicePreviewArea">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;">
+      <div>
+        <h2 id="previewBusinessName" style="font-size:1.5rem;font-weight:700;margin:0;">Your Business</h2>
+        <div id="previewBusinessAddress" style="margin-top:.25rem;white-space:pre-line;font-size:.9rem;color:#6b7280;"></div>
+        <div id="previewBusinessEmail" style="font-size:.85rem;color:#6b7280;"></div>
+        <div id="previewBusinessPhone" style="font-size:.85rem;color:#6b7280;"></div>
+      </div>
+      <div style="text-align:right;">
+        <h1 style="font-size:2rem;font-weight:800;color:#374151;margin:0;">INVOICE</h1>
+        <div style="margin-top:.5rem;font-size:.9rem;">
+          <div><strong>#</strong> <span id="previewInvoiceNumber">INV-0001</span></div>
+          <div><strong>Date:</strong> <span id="previewIssueDate"></span></div>
+          <div><strong>Due:</strong> <span id="previewDueDate"></span></div>
+        </div>
+      </div>
+    </div>
 
-        function initializeInvoice() {
-            // Set default dates
-            const today = new Date().toISOString().split('T')[0];
-            const dueDate = new Date();
-            dueDate.setDate(dueDate.getDate() + 30);
-            
-            document.getElementById('issueDate').value = today;
-            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
-            
-            invoiceData.issueDate = today;
-            invoiceData.dueDate = dueDate.toISOString().split('T')[0];
-        }
+    <!-- Bill to -->
+    <div style="margin-bottom:1.5rem;">
+      <p style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 .25rem;">Bill To</p>
+      <div id="previewClientName" style="font-weight:600;font-size:1rem;"></div>
+      <div id="previewClientAddress" style="white-space:pre-line;font-size:.9rem;color:#6b7280;"></div>
+      <div id="previewClientEmail" style="font-size:.85rem;color:#6b7280;"></div>
+      <div id="previewClientPhone" style="font-size:.85rem;color:#6b7280;"></div>
+    </div>
 
-        function setupEventListeners() {
-            // Form field listeners
-            const formFields = [
-                'businessName', 'businessAddress', 'businessEmail', 'businessPhone',
-                'clientName', 'clientAddress', 'clientEmail', 'clientPhone',
-                'invoiceNumber', 'issueDate', 'dueDate', 'currency', 'invoiceNotes'
-            ];
+    <!-- Items table -->
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th style="width:45%;">Description</th>
+          <th style="width:15%;text-align:right;">Qty</th>
+          <th style="width:20%;text-align:right;">Rate</th>
+          <th style="width:20%;text-align:right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody id="itemsTableBody"></tbody>
+    </table>
 
-            formFields.forEach(field => {
-                const element = document.getElementById(field);
-                if (element) {
-                    element.addEventListener('input', updatePreview);
-                }
-            });
+    <div class="print-hidden" style="margin-top:.75rem;">
+      <button id="addItemBtn" class="btn btn-gray btn-sm">+ Add Item</button>
+    </div>
 
-            // Tax rate listener
-            document.getElementById('taxRate').addEventListener('input', function() {
-                invoiceData.taxRate = parseFloat(this.value) || 0;
-                calculateTotals();
-            });
+    <!-- Totals -->
+    <table class="invoice-totals">
+      <tbody>
+        <tr><td>Subtotal</td><td id="subtotal" style="text-align:right;font-family:monospace;">0.00</td></tr>
+        <tr><td>Tax (<span id="taxRateDisplay">0</span>%)</td><td id="taxAmount" style="text-align:right;font-family:monospace;">0.00</td></tr>
+        <tr class="total-row"><td>Total</td><td id="total" style="text-align:right;font-family:monospace;">0.00</td></tr>
+      </tbody>
+    </table>
 
-            // Action buttons
-            document.getElementById('newInvoice').addEventListener('click', newInvoice);
-            document.getElementById('saveInvoice').addEventListener('click', saveInvoice);
-            document.getElementById('loadInvoice').addEventListener('click', loadInvoice);
-            document.getElementById('printInvoice').addEventListener('click', printInvoice);
+    <!-- Notes -->
+    <div id="previewNotesSection" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb;display:none;">
+      <p style="font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin:0 0 .25rem;">Notes</p>
+      <p id="previewNotes" style="font-size:.9rem;color:#4b5563;white-space:pre-line;margin:0;"></p>
+    </div>
+  </div>
+</main>
 
-            // Support modal
-            setupSupportModal();
+<button id="support-fab" aria-label="Support this project" class="print-hidden">☕ Support</button>
+<div id="support-modal" class="hidden print-hidden" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h3 class="modal-title">Support This Project</h3>
+    <p class="modal-body">These tools are free and run entirely in your browser. If they've been helpful, consider supporting!</p>
+    <div style="display:flex;flex-direction:column;gap:.6rem;">
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg" style="background:#f97316;color:#fff;justify-content:center;">☕ Saweria (Indonesia)</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg btn-primary" style="justify-content:center;">💖 GitHub Sponsors</a>
+    </div>
+    <button id="support-modal-close" class="btn btn-gray" style="width:100%;margin-top:.75rem;">Close</button>
+  </div>
+</div>
 
-            // Item field listeners
-            setupItemListeners();
-        }
+<footer class="site-footer print-hidden">
+  <div class="container">
+    <div class="footer-links">
+      <a href="/">← All Tools</a>
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer">☕ Saweria</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer">💖 Sponsors</a>
+    </div>
+    <p>All tools run locally in your browser — no data is ever sent to a server.</p>
+  </div>
+</footer>
 
-        function setupItemListeners() {
-            const tbody = document.getElementById('itemsTableBody');
-            tbody.addEventListener('input', function(e) {
-                if (e.target.classList.contains('item-description') ||
-                    e.target.classList.contains('item-quantity') ||
-                    e.target.classList.contains('item-rate')) {
-                    updateItemsData();
-                    calculateTotals();
-                }
-            });
-        }
+<script src="../assets/js/shared.js"></script>
+<script>
+/* ── Currency symbols ── */
+var currencySymbols = { USD:'$', EUR:'€', GBP:'£', JPY:'¥', IDR:'Rp', INR:'₹' };
 
-        function updatePreview() {
-            // Update business info
-            invoiceData.businessName = document.getElementById('businessName').value;
-            invoiceData.businessAddress = document.getElementById('businessAddress').value;
-            invoiceData.businessEmail = document.getElementById('businessEmail').value;
-            invoiceData.businessPhone = document.getElementById('businessPhone').value;
+/* ── State ── */
+var invoiceData = {
+  businessName:'', businessAddress:'', businessEmail:'', businessPhone:'',
+  clientName:'', clientAddress:'', clientEmail:'', clientPhone:'',
+  invoiceNumber:'INV-0001', issueDate:'', dueDate:'', currency:'USD',
+  items:[{ description:'', qty:1, rate:0 }], taxRate:0, notes:''
+};
 
-            // Update client info
-            invoiceData.clientName = document.getElementById('clientName').value;
-            invoiceData.clientAddress = document.getElementById('clientAddress').value;
-            invoiceData.clientEmail = document.getElementById('clientEmail').value;
-            invoiceData.clientPhone = document.getElementById('clientPhone').value;
+/* ── Set default dates ── */
+function formatDate(d) {
+  return d.toISOString().split('T')[0];
+}
+var today = new Date();
+var due = new Date(today); due.setDate(due.getDate() + 30);
+document.getElementById('issueDate').value = formatDate(today);
+document.getElementById('dueDate').value = formatDate(due);
+document.getElementById('invoiceNumber').value = 'INV-' + String(Math.floor(Math.random()*9000+1000));
 
-            // Update invoice details
-            invoiceData.invoiceNumber = document.getElementById('invoiceNumber').value;
-            invoiceData.issueDate = document.getElementById('issueDate').value;
-            invoiceData.dueDate = document.getElementById('dueDate').value;
-            invoiceData.currency = document.getElementById('currency').value;
-            invoiceData.notes = document.getElementById('invoiceNotes').value;
+/* ── Two-way bind helper ── */
+function bindField(id, key) {
+  var el = document.getElementById(id);
+  el.addEventListener('input', function() {
+    invoiceData[key] = el.value;
+    updatePreview();
+  });
+}
 
-            // Update preview elements
-            document.getElementById('previewBusinessName').textContent = invoiceData.businessName || 'Your Business Name';
-            document.getElementById('previewBusinessAddress').textContent = invoiceData.businessAddress || 'Your business address';
-            document.getElementById('previewBusinessEmail').textContent = invoiceData.businessEmail || 'your@email.com';
-            document.getElementById('previewBusinessPhone').textContent = invoiceData.businessPhone || '+1 234 567 8900';
+bindField('businessName','businessName');
+bindField('businessAddress','businessAddress');
+bindField('businessEmail','businessEmail');
+bindField('businessPhone','businessPhone');
+bindField('clientName','clientName');
+bindField('clientAddress','clientAddress');
+bindField('clientEmail','clientEmail');
+bindField('clientPhone','clientPhone');
+bindField('invoiceNumber','invoiceNumber');
+bindField('issueDate','issueDate');
+bindField('dueDate','dueDate');
+bindField('invoiceNotes','notes');
+bindField('taxRate','taxRate');
+document.getElementById('currency').addEventListener('change', function() {
+  invoiceData.currency = this.value;
+  updatePreview();
+});
 
-            document.getElementById('previewClientName').textContent = invoiceData.clientName || 'Client Name';
-            document.getElementById('previewClientAddress').textContent = invoiceData.clientAddress || 'Client address';
-            document.getElementById('previewClientEmail').textContent = invoiceData.clientEmail || 'client@email.com';
-            document.getElementById('previewClientPhone').textContent = invoiceData.clientPhone || '+1 234 567 8900';
+/* ── Items ── */
+function addItem() {
+  invoiceData.items.push({ description:'', qty:1, rate:0 });
+  renderItems();
+  calculateTotals();
+}
+function removeItem(index) {
+  if (invoiceData.items.length <= 1) return;
+  invoiceData.items.splice(index, 1);
+  renderItems();
+  calculateTotals();
+}
 
-            document.getElementById('previewInvoiceNumber').textContent = invoiceData.invoiceNumber || 'INV-001';
-            document.getElementById('previewIssueDate').textContent = invoiceData.issueDate || '-';
-            document.getElementById('previewDueDate').textContent = invoiceData.dueDate || '-';
-            document.getElementById('previewNotes').textContent = invoiceData.notes || '';
+function renderItems() {
+  var tbody = document.getElementById('itemsTableBody');
+  tbody.innerHTML = '';
+  invoiceData.items.forEach(function(item, idx) {
+    var amount = (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0);
+    var sym = currencySymbols[invoiceData.currency] || '$';
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><input type="text" value="' + escapeAttr(item.description) + '" placeholder="Description of service/product" /></td>' +
+      '<td style="text-align:right;"><input type="number" value="' + item.qty + '" min="0" style="text-align:right;width:60px;" /></td>' +
+      '<td style="text-align:right;"><input type="number" value="' + item.rate + '" min="0" step="0.01" style="text-align:right;width:90px;" /></td>' +
+      '<td>' + sym + amount.toFixed(2) +
+        '<button class="btn btn-danger btn-sm print-hidden" style="margin-left:.5rem;padding:2px 6px;" onclick="removeItem(' + idx + ')">✕</button></td>';
 
-            // Update currency symbols
-            document.querySelectorAll('.currency-symbol').forEach(el => {
-                el.textContent = invoiceData.currency;
-            });
+    var inputs = tr.querySelectorAll('input');
+    inputs[0].addEventListener('input', function() { invoiceData.items[idx].description = this.value; });
+    inputs[1].addEventListener('input', function() { invoiceData.items[idx].qty = parseFloat(this.value) || 0; calculateTotals(); renderItems(); });
+    inputs[2].addEventListener('input', function() { invoiceData.items[idx].rate = parseFloat(this.value) || 0; calculateTotals(); renderItems(); });
+    tbody.appendChild(tr);
+  });
+}
 
-            updateItemsData();
-            calculateTotals();
-        }
+document.getElementById('addItemBtn').addEventListener('click', addItem);
 
-        function updateItemsData() {
-            const rows = document.querySelectorAll('#itemsTableBody tr');
-            invoiceData.items = [];
+/* ── Totals ── */
+function calculateTotals() {
+  var sym = currencySymbols[invoiceData.currency] || '$';
+  var taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+  var subtotal = invoiceData.items.reduce(function(sum, item) {
+    return sum + (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0);
+  }, 0);
+  var taxAmount = subtotal * taxRate / 100;
+  var total = subtotal + taxAmount;
+  document.getElementById('subtotal').textContent = sym + subtotal.toFixed(2);
+  document.getElementById('taxAmount').textContent = sym + taxAmount.toFixed(2);
+  document.getElementById('total').textContent = sym + total.toFixed(2);
+  document.getElementById('taxRateDisplay').textContent = taxRate;
+}
 
-            rows.forEach(row => {
-                const description = row.querySelector('.item-description').value;
-                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 1;
-                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-                
-                invoiceData.items.push({ description, quantity, rate });
-            });
-        }
+/* ── Preview update ── */
+function updatePreview() {
+  document.getElementById('previewBusinessName').textContent = document.getElementById('businessName').value || 'Your Business';
+  document.getElementById('previewBusinessAddress').textContent = document.getElementById('businessAddress').value;
+  document.getElementById('previewBusinessEmail').textContent = document.getElementById('businessEmail').value;
+  document.getElementById('previewBusinessPhone').textContent = document.getElementById('businessPhone').value;
+  document.getElementById('previewClientName').textContent = document.getElementById('clientName').value;
+  document.getElementById('previewClientAddress').textContent = document.getElementById('clientAddress').value;
+  document.getElementById('previewClientEmail').textContent = document.getElementById('clientEmail').value;
+  document.getElementById('previewClientPhone').textContent = document.getElementById('clientPhone').value;
+  document.getElementById('previewInvoiceNumber').textContent = document.getElementById('invoiceNumber').value;
+  document.getElementById('previewIssueDate').textContent = document.getElementById('issueDate').value;
+  document.getElementById('previewDueDate').textContent = document.getElementById('dueDate').value;
+  var notes = document.getElementById('invoiceNotes').value;
+  document.getElementById('previewNotes').textContent = notes;
+  document.getElementById('previewNotesSection').style.display = notes ? 'block' : 'none';
+  calculateTotals();
+}
 
-        function calculateTotals() {
-            let subtotal = 0;
+function escapeAttr(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
 
-            // Calculate item amounts and subtotal
-            const rows = document.querySelectorAll('#itemsTableBody tr');
-            rows.forEach((row, index) => {
-                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
-                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-                const amount = quantity * rate;
-                
-                row.querySelector('.item-amount').innerHTML = 
-                    `<span class="currency-symbol">${invoiceData.currency}</span>${amount.toFixed(2)}`;
-                
-                subtotal += amount;
-            });
+/* ── New Invoice ── */
+document.getElementById('newInvoice').addEventListener('click', function() {
+  if (!confirm('Create a new invoice? Current data will be lost.')) return;
+  document.querySelectorAll('#businessName,#businessAddress,#businessEmail,#businessPhone,#clientName,#clientAddress,#clientEmail,#clientPhone,#invoiceNotes').forEach(function(el) { el.value = ''; });
+  document.getElementById('invoiceNumber').value = 'INV-' + String(Math.floor(Math.random()*9000+1000));
+  document.getElementById('issueDate').value = formatDate(new Date());
+  var d = new Date(); d.setDate(d.getDate()+30);
+  document.getElementById('dueDate').value = formatDate(d);
+  document.getElementById('taxRate').value = '0';
+  document.getElementById('currency').value = 'USD';
+  invoiceData.items = [{ description:'', qty:1, rate:0 }];
+  renderItems();
+  updatePreview();
+});
 
-            // Calculate tax and total
-            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-            const taxAmount = subtotal * (taxRate / 100);
-            const total = subtotal + taxAmount;
+/* ── Save Invoice ── */
+document.getElementById('saveInvoice').addEventListener('click', function() {
+  var data = {
+    businessName: document.getElementById('businessName').value,
+    businessAddress: document.getElementById('businessAddress').value,
+    businessEmail: document.getElementById('businessEmail').value,
+    businessPhone: document.getElementById('businessPhone').value,
+    clientName: document.getElementById('clientName').value,
+    clientAddress: document.getElementById('clientAddress').value,
+    clientEmail: document.getElementById('clientEmail').value,
+    clientPhone: document.getElementById('clientPhone').value,
+    invoiceNumber: document.getElementById('invoiceNumber').value,
+    issueDate: document.getElementById('issueDate').value,
+    dueDate: document.getElementById('dueDate').value,
+    currency: document.getElementById('currency').value,
+    taxRate: document.getElementById('taxRate').value,
+    notes: document.getElementById('invoiceNotes').value,
+    items: invoiceData.items
+  };
+  window.downloadText(JSON.stringify(data, null, 2), 'invoice-' + data.invoiceNumber + '.json', 'application/json');
+});
 
-            // Update display
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-            document.getElementById('taxAmount').textContent = taxAmount.toFixed(2);
-            document.getElementById('total').textContent = total.toFixed(2);
-        }
+/* ── Load Invoice ── */
+document.getElementById('loadInvoice').addEventListener('change', function() {
+  var f = this.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      ['businessName','businessAddress','businessEmail','businessPhone',
+       'clientName','clientAddress','clientEmail','clientPhone',
+       'invoiceNumber','issueDate','dueDate','currency','taxRate'].forEach(function(k) {
+        if (data[k] !== undefined && document.getElementById(k)) document.getElementById(k).value = data[k];
+      });
+      if (data.notes !== undefined) document.getElementById('invoiceNotes').value = data.notes;
+      if (data.items) invoiceData.items = data.items;
+      renderItems();
+      updatePreview();
+      window.showToast('Invoice loaded!', 'success');
+    } catch(err) {
+      window.showToast('Invalid invoice file', 'error');
+    }
+  };
+  reader.readAsText(f);
+  this.value = '';
+});
 
-        function addItem() {
-            const tbody = document.getElementById('itemsTableBody');
-            const newRow = document.createElement('tr');
-            newRow.className = 'item-row';
-            newRow.innerHTML = `
-                <td><input type="text" placeholder="Service description" class="item-description w-full border-none bg-transparent"></td>
-                <td><input type="number" min="1" value="1" class="item-quantity w-full border-none bg-transparent text-center" style="width: 80px;"></td>
-                <td><input type="number" min="0" step="0.01" placeholder="0.00" class="item-rate w-full border-none bg-transparent text-center" style="width: 100px;"></td>
-                <td class="item-amount text-center font-semibold"><span class="currency-symbol">${invoiceData.currency}</span>0.00</td>
-                <td class="print-hidden">
-                    <div class="item-controls">
-                        <button class="add-item-btn" onclick="addItem()">+</button>
-                        <button class="remove-item-btn" onclick="removeItem(this)">×</button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(newRow);
-            
-            // Show remove buttons when there's more than one item
-            updateRemoveButtons();
-        }
+/* ── Print ── */
+document.getElementById('printInvoice').addEventListener('click', function() { window.print(); });
 
-        function removeItem(button) {
-            const row = button.closest('tr');
-            row.remove();
-            updateRemoveButtons();
-            updateItemsData();
-            calculateTotals();
-        }
-
-        function updateRemoveButtons() {
-            const rows = document.querySelectorAll('#itemsTableBody tr');
-            rows.forEach((row, index) => {
-                const removeBtn = row.querySelector('.remove-item-btn');
-                if (removeBtn) {
-                    removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
-                }
-            });
-        }
-
-        function newInvoice() {
-            if (confirm('Are you sure you want to create a new invoice? All current data will be lost.')) {
-                // Reset form
-                document.querySelectorAll('input, textarea, select').forEach(field => {
-                    if (field.type === 'date') {
-                        // Keep date fields as they were initially set
-                        return;
-                    } else if (field.id === 'currency') {
-                        field.value = '$';
-                    } else if (field.id === 'invoiceNumber') {
-                        field.value = 'INV-001';
-                    } else if (field.id === 'taxRate') {
-                        field.value = '0';
-                    } else {
-                        field.value = '';
-                    }
-                });
-
-                // Reset items table
-                const tbody = document.getElementById('itemsTableBody');
-                tbody.innerHTML = `
-                    <tr class="item-row">
-                        <td><input type="text" placeholder="Service description" class="item-description w-full border-none bg-transparent"></td>
-                        <td><input type="number" min="1" value="1" class="item-quantity w-full border-none bg-transparent text-center" style="width: 80px;"></td>
-                        <td><input type="number" min="0" step="0.01" placeholder="0.00" class="item-rate w-full border-none bg-transparent text-center" style="width: 100px;"></td>
-                        <td class="item-amount text-center font-semibold"><span class="currency-symbol">$</span>0.00</td>
-                        <td class="print-hidden">
-                            <div class="item-controls">
-                                <button class="add-item-btn" onclick="addItem()">+</button>
-                                <button class="remove-item-btn" onclick="removeItem(this)" style="display: none;">×</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                updatePreview();
-            }
-        }
-
-        function saveInvoice() {
-            updateItemsData();
-            const dataStr = JSON.stringify(invoiceData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `invoice_${invoiceData.invoiceNumber || 'draft'}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-
-        function loadInvoice() {
-            document.getElementById('fileInput').click();
-        }
-
-        function printInvoice() {
-            window.print();
-        }
-
-        // Handle file loading
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file && file.type === 'application/json') {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        loadInvoiceData(data);
-                    } catch (error) {
-                        alert('Error loading invoice file. Please make sure it\'s a valid invoice JSON file.');
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        function loadInvoiceData(data) {
-            invoiceData = { ...invoiceData, ...data };
-            
-            // Update form fields
-            document.getElementById('businessName').value = data.businessName || '';
-            document.getElementById('businessAddress').value = data.businessAddress || '';
-            document.getElementById('businessEmail').value = data.businessEmail || '';
-            document.getElementById('businessPhone').value = data.businessPhone || '';
-            document.getElementById('clientName').value = data.clientName || '';
-            document.getElementById('clientAddress').value = data.clientAddress || '';
-            document.getElementById('clientEmail').value = data.clientEmail || '';
-            document.getElementById('clientPhone').value = data.clientPhone || '';
-            document.getElementById('invoiceNumber').value = data.invoiceNumber || '';
-            document.getElementById('issueDate').value = data.issueDate || '';
-            document.getElementById('dueDate').value = data.dueDate || '';
-            document.getElementById('currency').value = data.currency || '$';
-            document.getElementById('invoiceNotes').value = data.notes || '';
-            document.getElementById('taxRate').value = data.taxRate || 0;
-
-            // Update items table
-            if (data.items && data.items.length > 0) {
-                const tbody = document.getElementById('itemsTableBody');
-                tbody.innerHTML = '';
-                
-                data.items.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.className = 'item-row';
-                    row.innerHTML = `
-                        <td><input type="text" placeholder="Service description" class="item-description w-full border-none bg-transparent" value="${item.description || ''}"></td>
-                        <td><input type="number" min="1" value="${item.quantity || 1}" class="item-quantity w-full border-none bg-transparent text-center" style="width: 80px;"></td>
-                        <td><input type="number" min="0" step="0.01" placeholder="0.00" class="item-rate w-full border-none bg-transparent text-center" style="width: 100px;" value="${item.rate || ''}"></td>
-                        <td class="item-amount text-center font-semibold"><span class="currency-symbol">${data.currency}</span>0.00</td>
-                        <td class="print-hidden">
-                            <div class="item-controls">
-                                <button class="add-item-btn" onclick="addItem()">+</button>
-                                <button class="remove-item-btn" onclick="removeItem(this)" ${data.items.length <= 1 ? 'style="display: none;"' : ''}>×</button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-
-            updatePreview();
-        }
-
-        function setupSupportModal() {
-            const supportBtn = document.getElementById('supportBtn');
-            const supportModal = document.getElementById('supportModal');
-            const closeSupportModal = document.getElementById('closeSupportModal');
-
-            supportBtn.addEventListener('click', function() {
-                supportModal.classList.remove('hidden');
-            });
-
-            closeSupportModal.addEventListener('click', function() {
-                supportModal.classList.add('hidden');
-            });
-
-            // Close modal when clicking outside
-            supportModal.addEventListener('click', function(e) {
-                if (e.target === supportModal) {
-                    supportModal.classList.add('hidden');
-                }
-            });
-        }
-    </script>
-    
-    <!-- Dark Mode Toggle -->
-    <script src="../assets/js/theme-toggle.js"></script>
+/* ── Init ── */
+renderItems();
+updatePreview();
+</script>
 </body>
 </html>
