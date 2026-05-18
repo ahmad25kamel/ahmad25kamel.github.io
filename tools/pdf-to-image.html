@@ -1,369 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF to Image Converter - Private Online Tools</title>
-    <meta name="description" content="Convert PDF pages to PNG/JPG images. Download individually or as ZIP. 100% client-side, no uploads required.">
-    <meta name="keywords" content="PDF to image, PDF to PNG, PDF to JPG, convert PDF, PDF converter, PDF to picture, extract images from PDF, PDF image extractor, free PDF converter, online PDF to image">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-EK4W85EF5F');
-    </script>
-    
-    <!-- Local CSS -->
-    
-    <!-- Routing Bridge for seamless navigation -->
-    <script src="../assets/js/routing-bridge.js"></script>
-    <link rel="stylesheet" href="../assets/css/minimal-tailwind.css">
-    
-    <!-- PDF.js (local) -->
-    <script src="../assets/js/vendor/pdf.min.js"></script>
-
-    <!-- JSZip (local) -->
-    <script src="../assets/js/vendor/jszip.min.js"></script>
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .drop-zone {
-            border: 2px dashed #cbd5e0;
-            transition: border-color 0.3s ease;
-        }
-        .drop-zone.dragover {
-            border-color: #3182ce;
-            background-color: #ebf8ff;
-        }
-        
-        /* Breadcrumb styling */
-        .breadcrumb-container {
-            font-size: 0.875rem;
-        }
-        .breadcrumb-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        .breadcrumb-link:hover {
-            color: white;
-        }
-        .breadcrumb-separator {
-            margin: 0 8px;
-            opacity: 0.6;
-        }
-        .breadcrumb-current {
-            color: white;
-            font-weight: 500;
-        }
-        .floating-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF to Image – PrivTools</title>
+  <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="gradient-bg text-white py-4">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold">PDF to Image Converter</h1>
-                    <p class="text-sm md:text-base opacity-90">Convert PDF pages to PNG/JPG images</p>
-                </div>
-                <div class="navigation-wrapper"><div class="breadcrumb-container text-sm opacity-75 mb-2"></div><a href="/" class="back-to-tools-btn bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded transition-colors">
-                    ← Back to Tools
-                </a>
-            </div>
-        </div>
-    </header>
+<body>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Upload Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload PDF File</h2>
-            
-            <!-- Drop Zone -->
-            <div id="dropZone" class="drop-zone rounded-lg p-8 text-center mb-4">
-                <div class="mb-4">
-                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                </div>
-                <p class="text-gray-600 mb-2">Drag and drop your PDF file here</p>
-                <p class="text-sm text-gray-500 mb-4">or</p>
-                <input type="file" id="fileInput" accept=".pdf" class="hidden">
-                <label for="fileInput" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded cursor-pointer transition-colors">
-                    Choose PDF File
-                </label>
-            </div>
-            
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Output Format</label>
-                    <select id="outputFormat" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="png">PNG (Lossless)</option>
-                        <option value="jpg">JPG (Smaller file size)</option>
-                    </select>
-                </div>
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Image Quality (for JPG)</label>
-                    <input type="range" id="qualitySlider" min="10" max="100" value="90" class="w-full">
-                    <div class="text-sm text-gray-600 text-center mt-1">Quality: <span id="qualityValue">90</span>%</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Processing Status -->
-        <div id="processingStatus" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 hidden">
-            <div class="flex items-center">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
-                <span class="text-blue-800">Processing PDF... <span id="progressText">0%</span></span>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div id="resultsSection" class="hidden">
-            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Converted Images</h2>
-                    <button id="downloadAllZip" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors">
-                        📦 Download All as ZIP
-                    </button>
-                </div>
-                <div id="imageGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Images will be added here dynamically -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Info Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-3">🔒 Privacy & Security</h3>
-            <ul class="text-gray-600 space-y-2">
-                <li>• Your PDF files are processed entirely in your browser</li>
-                <li>• No files are uploaded to any server</li>
-                <li>• All processing happens offline on your device</li>
-                <li>• Perfect for confidential documents</li>
-            </ul>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="gradient-bg text-white py-4 mt-12">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm opacity-75">If this tool saved your time, consider supporting ❤️</p>
-        </div>
-    </footer>
-
-    <!-- Floating Support Button -->
-    <button id="supportBtn" class="floating-btn bg-yellow-500 hover:bg-yellow-600 text-white p-3 rounded-full shadow-lg transition-colors">
-        ☕ Support
-    </button>
-
-    <!-- Support Modal -->
-    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Support This Project</h3>
-                <p class="text-gray-600 mb-6">Help keep these tools free and improve them with your support!</p>
-                <div class="space-y-3">
-                    <a href="https://saweria.co/ahmad25kamel" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded font-medium transition-colors">
-                        🎁 Saweria (Indonesia)
-                    </a>
-                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" class="block w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded font-medium transition-colors">
-                        ❤️ GitHub Sponsors
-                    </a>
-                </div>
-                <button id="closeSupportModal" class="mt-4 text-gray-500 hover:text-gray-700 text-sm">Close</button>
-            </div>
-        </div>
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="nav-logo">🔒 PrivTools</a>
+    <span class="nav-breadcrumb">Tools › PDF to Image</span>
+    <div class="nav-right">
+      <a href="/" class="btn-back">← Back</a>
+      <button id="theme-toggle" aria-label="Toggle theme"></button>
     </div>
+  </div>
+</nav>
 
-    <script>
-        // PDF.js worker setup
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/js/vendor/pdf.worker.min.js';
+<header class="tool-hero">
+  <div class="container">
+    <h1>PDF to Image</h1>
+    <p>Convert PDF pages to PNG or JPEG images. Download all as ZIP.</p>
+  </div>
+</header>
 
-        // Elements
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const outputFormat = document.getElementById('outputFormat');
-        const qualitySlider = document.getElementById('qualitySlider');
-        const qualityValue = document.getElementById('qualityValue');
-        const processingStatus = document.getElementById('processingStatus');
-        const progressText = document.getElementById('progressText');
-        const resultsSection = document.getElementById('resultsSection');
-        const imageGrid = document.getElementById('imageGrid');
-        const downloadAllZip = document.getElementById('downloadAllZip');
+<main class="container" style="padding-top:2rem;padding-bottom:4rem;">
 
-        let convertedImages = [];
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div id="dropZone" class="drop-zone">
+      <div class="drop-zone-icon">📄</div>
+      <div class="drop-zone-title">Drop a PDF file here</div>
+      <div class="drop-zone-hint">or click to browse</div>
+      <input type="file" id="fileInput" accept=".pdf,application/pdf" class="hidden" />
+    </div>
+  </div>
 
-        // Quality slider update
-        qualitySlider.addEventListener('input', function() {
-            qualityValue.textContent = this.value;
-        });
+  <div class="card" style="margin-bottom:1.5rem;">
+    <h2 class="card-title">Options</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem;">
+      <div class="form-group">
+        <label class="form-label" for="outputFormat">Output Format</label>
+        <select id="outputFormat" class="form-select">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+        </select>
+      </div>
+      <div class="form-group" id="qualityGroup">
+        <label class="form-label" for="qualitySlider">JPEG Quality: <strong id="qualityValue">90</strong></label>
+        <input type="range" id="qualitySlider" min="1" max="100" value="90" style="width:100%;" />
+      </div>
+    </div>
+    <button id="convertBtn" class="btn btn-primary btn-lg" disabled>Convert to Images</button>
+  </div>
 
-        // Drag and drop handlers
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+  <div id="processingSection" class="hidden card" style="margin-bottom:1.5rem;">
+    <p id="processingStatus" class="text-muted" style="margin-bottom:.75rem;">Processing…</p>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar" style="width:0%;"></div>
+    </div>
+  </div>
 
-        dropZone.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-        });
+  <div id="resultsSection" class="hidden">
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+        <h2 class="card-title" style="margin:0;">Converted Pages</h2>
+        <button id="downloadAllBtn" class="btn btn-success">⬇ Download All as ZIP</button>
+      </div>
+    </div>
+    <div id="imageGrid" class="image-grid"></div>
+  </div>
 
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type === 'application/pdf') {
-                processPDF(files[0]);
-            }
-        });
+</main>
 
-        // File input handler
-        fileInput.addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                processPDF(e.target.files[0]);
-            }
-        });
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-links">
+      <a href="/">← All Tools</a>
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer">☕ Saweria</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer">💖 Sponsors</a>
+    </div>
+    <p>All tools run locally in your browser — no data is ever sent to a server.</p>
+  </div>
+</footer>
 
-        // Process PDF function
-        async function processPDF(file) {
-            try {
-                convertedImages = [];
-                imageGrid.innerHTML = '';
-                resultsSection.classList.add('hidden');
-                processingStatus.classList.remove('hidden');
+<button id="support-fab" aria-label="Support this project">☕ Support</button>
+<div id="support-modal" class="hidden" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <h3 class="modal-title">Support This Project</h3>
+    <p class="modal-body">These tools are free and run entirely in your browser. If they've been helpful, consider supporting!</p>
+    <div style="display:flex;flex-direction:column;gap:.6rem;">
+      <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg" style="background:#f97316;color:#fff;justify-content:center;">☕ Saweria (Indonesia)</a>
+      <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer" class="btn btn-lg btn-primary" style="justify-content:center;">💖 GitHub Sponsors</a>
+    </div>
+    <button id="support-modal-close" class="btn btn-gray" style="width:100%;margin-top:.75rem;">Close</button>
+  </div>
+</div>
 
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                const totalPages = pdf.numPages;
+<script src="../assets/js/vendor/pdf.min.js"></script>
+<script src="../assets/js/vendor/jszip.min.js"></script>
+<script src="../assets/js/shared.js"></script>
+<script>
+(function () {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/js/vendor/pdf.worker.min.js';
 
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    progressText.textContent = `${Math.round((pageNum / totalPages) * 100)}%`;
-                    
-                    const page = await pdf.getPage(pageNum);
-                    const viewport = page.getViewport({ scale: 2 });
-                    
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const outputFormat = document.getElementById('outputFormat');
+  const qualitySlider = document.getElementById('qualitySlider');
+  const qualityValue = document.getElementById('qualityValue');
+  const qualityGroup = document.getElementById('qualityGroup');
+  const convertBtn = document.getElementById('convertBtn');
+  const processingSection = document.getElementById('processingSection');
+  const processingStatus = document.getElementById('processingStatus');
+  const progressBar = document.getElementById('progressBar');
+  const resultsSection = document.getElementById('resultsSection');
+  const imageGrid = document.getElementById('imageGrid');
+  const downloadAllBtn = document.getElementById('downloadAllBtn');
 
-                    await page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
+  let currentFile = null;
+  let renderedPages = []; // {dataUrl, pageNum, ext}
 
-                    // Convert to desired format
-                    const format = outputFormat.value;
-                    const quality = qualitySlider.value / 100;
-                    const mimeType = format === 'png' ? 'image/png' : 'image/jpeg';
-                    const dataUrl = canvas.toDataURL(mimeType, quality);
+  outputFormat.addEventListener('change', function () {
+    qualityGroup.style.display = this.value === 'jpeg' ? '' : 'none';
+  });
+  // Init
+  qualityGroup.style.display = 'none';
 
-                    convertedImages.push({
-                        dataUrl: dataUrl,
-                        filename: `page-${pageNum}.${format}`,
-                        pageNum: pageNum
-                    });
+  qualitySlider.addEventListener('input', function () {
+    qualityValue.textContent = this.value;
+  });
 
-                    // Add to grid
-                    addImageToGrid(dataUrl, pageNum, format);
-                }
+  dropZone.addEventListener('click', function (e) {
+    if (e.target !== fileInput) fileInput.click();
+  });
 
-                processingStatus.classList.add('hidden');
-                resultsSection.classList.remove('hidden');
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
 
-            } catch (error) {
-                console.error('Error processing PDF:', error);
-                alert('Error processing PDF. Please try again.');
-                processingStatus.classList.add('hidden');
-            }
-        }
+  dropZone.addEventListener('dragleave', function () {
+    dropZone.classList.remove('drag-over');
+  });
 
-        // Add image to grid
-        function addImageToGrid(dataUrl, pageNum, format) {
-            const imageCard = document.createElement('div');
-            imageCard.className = 'bg-gray-50 rounded-lg p-4 border';
-            imageCard.innerHTML = `
-                <div class="mb-3">
-                    <img src="${dataUrl}" alt="Page ${pageNum}" class="w-full h-48 object-contain border rounded">
-                </div>
-                <div class="text-center">
-                    <p class="text-sm text-gray-600 mb-2">Page ${pageNum}</p>
-                    <button onclick="downloadImage('${dataUrl}', 'page-${pageNum}.${format}')" 
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                        📥 Download
-                    </button>
-                </div>
-            `;
-            imageGrid.appendChild(imageCard);
-        }
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      loadFile(file);
+    } else {
+      window.showToast('Please drop a valid PDF file.', 'error');
+    }
+  });
 
-        // Download single image
-        function downloadImage(dataUrl, filename) {
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+  fileInput.addEventListener('change', function () {
+    if (this.files[0]) loadFile(this.files[0]);
+  });
 
-        // Download all as ZIP
-        downloadAllZip.addEventListener('click', async function() {
-            if (convertedImages.length === 0) return;
+  function loadFile(file) {
+    currentFile = file;
+    convertBtn.disabled = false;
+    window.showToast('PDF loaded: ' + file.name, 'success');
+  }
 
-            const zip = new JSZip();
-            
-            for (const image of convertedImages) {
-                // Convert data URL to blob
-                const response = await fetch(image.dataUrl);
-                const blob = await response.blob();
-                zip.file(image.filename, blob);
-            }
+  convertBtn.addEventListener('click', async function () {
+    if (!currentFile) return;
+    convertBtn.disabled = true;
+    convertBtn.textContent = 'Converting…';
+    renderedPages = [];
+    imageGrid.innerHTML = '';
+    resultsSection.classList.add('hidden');
+    processingSection.classList.remove('hidden');
 
-            const content = await zip.generateAsync({ type: 'blob' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(content);
-            link.download = 'pdf-images.zip';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+    const fmt = outputFormat.value;
+    const mimeType = fmt === 'jpeg' ? 'image/jpeg' : 'image/png';
+    const quality = parseInt(qualitySlider.value) / 100;
+    const ext = fmt === 'jpeg' ? 'jpg' : 'png';
 
-        // Support modal functionality
-        const supportBtn = document.getElementById('supportBtn');
-        const supportModal = document.getElementById('supportModal');
-        const closeSupportModal = document.getElementById('closeSupportModal');
+    try {
+      const arrayBuffer = await currentFile.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const totalPages = pdf.numPages;
 
-        supportBtn.addEventListener('click', () => {
-            supportModal.classList.remove('hidden');
-        });
+      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+        processingStatus.textContent = 'Rendering page ' + pageNum + ' of ' + totalPages + '…';
+        progressBar.style.width = ((pageNum - 1) / totalPages * 100) + '%';
 
-        closeSupportModal.addEventListener('click', () => {
-            supportModal.classList.add('hidden');
-        });
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport }).promise;
 
-        supportModal.addEventListener('click', (e) => {
-            if (e.target === supportModal) {
-                supportModal.classList.add('hidden');
-            }
-        });
-    </script>
-    <!-- Dark Mode Toggle -->
-    <script src="../assets/js/theme-toggle.js"></script>
+        const dataUrl = fmt === 'jpeg'
+          ? canvas.toDataURL('image/jpeg', quality)
+          : canvas.toDataURL('image/png');
+
+        renderedPages.push({ dataUrl, pageNum, ext });
+
+        // Add to grid
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        card.innerHTML = '<img src="' + dataUrl + '" alt="Page ' + pageNum + '" style="width:100%;display:block;border-radius:4px 4px 0 0;" />'
+          + '<div style="padding:.5rem;display:flex;align-items:center;justify-content:space-between;">'
+          + '<span class="text-sm text-muted">Page ' + pageNum + '</span>'
+          + '<button class="btn btn-sm btn-primary" data-index="' + (renderedPages.length - 1) + '">⬇ Save</button>'
+          + '</div>';
+        imageGrid.appendChild(card);
+      }
+
+      progressBar.style.width = '100%';
+      processingStatus.textContent = 'Done! ' + totalPages + ' pages converted.';
+      resultsSection.classList.remove('hidden');
+      convertBtn.disabled = false;
+      convertBtn.textContent = 'Convert to Images';
+      window.showToast('Converted ' + totalPages + ' pages!', 'success');
+    } catch (err) {
+      processingStatus.textContent = 'Error: ' + err.message;
+      convertBtn.disabled = false;
+      convertBtn.textContent = 'Convert to Images';
+      window.showToast('Conversion failed: ' + err.message, 'error');
+    }
+  });
+
+  imageGrid.addEventListener('click', function (e) {
+    const btn = e.target.closest('button[data-index]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index);
+    const pg = renderedPages[idx];
+    if (!pg) return;
+    const baseName = currentFile ? currentFile.name.replace(/\.pdf$/i, '') : 'page';
+    const link = document.createElement('a');
+    link.href = pg.dataUrl;
+    link.download = baseName + '-page' + pg.pageNum + '.' + pg.ext;
+    link.click();
+  });
+
+  downloadAllBtn.addEventListener('click', async function () {
+    if (!renderedPages.length) return;
+    downloadAllBtn.textContent = 'Zipping…';
+    downloadAllBtn.disabled = true;
+    const zip = new JSZip();
+    const baseName = currentFile ? currentFile.name.replace(/\.pdf$/i, '') : 'pdf-pages';
+    renderedPages.forEach(function (pg) {
+      const base64 = pg.dataUrl.split(',')[1];
+      zip.file(baseName + '-page' + pg.pageNum + '.' + pg.ext, base64, { base64: true });
+    });
+    const blob = await zip.generateAsync({ type: 'blob' });
+    window.downloadBlob(blob, baseName + '-images.zip');
+    downloadAllBtn.textContent = '⬇ Download All as ZIP';
+    downloadAllBtn.disabled = false;
+    window.showToast('ZIP download started!', 'success');
+  });
+})();
+</script>
 </body>
 </html>
