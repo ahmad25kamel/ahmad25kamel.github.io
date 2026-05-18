@@ -1,55 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://ahmad25kamel.github.io/</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/pdf-to-image.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/merge-pdf.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/split-pdf.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/resize-image.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/compress-image.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/qr-tools.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/text-markdown-converter.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/color-palette-generator.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/password-generator.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/csv-json-converter.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/hash-checksum-tools.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
-<url>
-<loc>https://ahmad25kamel.github.io/tools/unit-converter.html</loc>
-<lastmod>2025-01-15</lastmod>
-</url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/qr-tools.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/pdf-to-image.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/split-pdf.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/merge-pdf.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/compress-image.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/resize-image.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/color-palette-generator.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/css-gradient-generator.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/password-generator.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/hash-checksum-tools.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/text-markdown-converter.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/csv-json-converter.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/unit-converter.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/bulk-file-renamer.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/simple-invoice-generator.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ahmad25kamel.github.io/tools/audio-trimmer-converter.html</loc>
+    <lastmod>2026-05-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

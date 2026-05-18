@@ -3,130 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Online Tools - 100% Client-Side Privacy Tools</title>
-    <meta name="description" content="Collection of privacy-first online tools that run 100% in your browser. PDF tools, image processing, QR codes - all client-side, no uploads, fast and free.">
-    <meta name="keywords" content="privacy tools, PDF tools, image processing, QR codes, client-side, no upload, browser tools">
+    <title>Private Online Tools by Ahmad Kamel – 100% Client-Side</title>
+    <meta name="description" content="Free, privacy-first online tools by Ahmad Kamel — PDF converter, image tools, QR codes, password generator &amp; more. All client-side, no uploads, runs 100% in your browser.">
+    <meta name="keywords" content="privacy tools, PDF tools, image processing, QR codes, password generator, client-side tools, no upload, browser tools, Ahmad Kamel, Indonesia">
     <meta name="author" content="Ahmad Kamel">
     <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Private Online Tools - 100% Client-Side Privacy Tools">
-    <meta property="og:description" content="Collection of privacy-first online tools that run 100% in your browser. No files uploaded, completely private.">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Private Online Tools by Ahmad Kamel">
+    <meta property="og:description" content="16 free privacy-first tools — PDFs, images, QR codes, security &amp; more. 100% in your browser, zero uploads.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ahmad25kamel.github.io">
     <meta property="og:image" content="https://ahmad25kamel.github.io/assets/img/favicon.png">
     <meta property="og:site_name" content="Private Online Tools">
-    
-    <!-- Twitter Card Meta Tags -->
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Private Online Tools - 100% Client-Side Privacy Tools">
-    <meta name="twitter:description" content="Collection of privacy-first online tools that run 100% in your browser.">
+    <meta name="twitter:site" content="@ahmad25kamel">
+    <meta name="twitter:title" content="Private Online Tools by Ahmad Kamel">
+    <meta name="twitter:description" content="16 free privacy-first tools running 100% in your browser.">
     <meta name="twitter:image" content="https://ahmad25kamel.github.io/assets/img/favicon.png">
-    
-    <!-- Canonical URL -->
+
     <link rel="canonical" href="https://ahmad25kamel.github.io">
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/assets/img/favicon.png">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Local CSS - Self-hosted TailwindCSS fallback -->
     <link rel="stylesheet" href="/assets/css/minimal-tailwind.css">
 
     <style>
-        /* Use CSS variables from the centralized stylesheet for consistency */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--gradient-background);
             min-height: 100vh;
         }
-        
+
+        /* ── Navbar ── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            transition: background 0.3s ease;
+        }
+        [data-theme="dark"] .navbar {
+            background: rgba(15, 23, 42, 0.92);
+            border-bottom-color: rgba(255,255,255,0.08);
+        }
+        .navbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .navbar-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-decoration: none;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            white-space: nowrap;
+        }
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .navbar-links a {
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .navbar-links a:hover {
+            background: var(--primary-50);
+            color: var(--primary-600);
+        }
+        [data-theme="dark"] .navbar-links a {
+            color: var(--text-secondary-dark);
+        }
+        [data-theme="dark"] .navbar-links a:hover {
+            background: rgba(99,102,241,0.15);
+            color: var(--primary-300);
+        }
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        #theme-toggle {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        #theme-toggle:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-200);
+            color: var(--primary-600);
+        }
+        [data-theme="dark"] #theme-toggle {
+            background: var(--surface-light-dark);
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+        @media (max-width: 640px) {
+            .navbar-links { display: none; }
+        }
+
+        /* ── Hero ── */
         .gradient-bg {
             background: var(--gradient-primary);
             position: relative;
             overflow: hidden;
         }
-        
         .gradient-bg::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
         }
-        
-        .hero-content {
-            position: relative;
-            z-index: 1;
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
         }
-        
-        .feature-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+        .hero-stat {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
         }
-        
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-2xl);
+        .hero-stat-num {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+            line-height: 1;
         }
-        
-        .tool-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow-md);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
+        .hero-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.75;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+            display: block;
         }
-        
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .tool-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .tool-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: var(--shadow-2xl);
-        }
-        
-        .tool-icon {
-            font-size: 3rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
-            transition: transform 0.3s ease;
-        }
-        
-        .tool-card:hover .tool-icon {
-            transform: scale(1.1) rotate(5deg);
-        }
-        
+
+        /* ── Buttons ── */
         .cta-button {
             background: var(--gradient-primary);
             border: none;
@@ -141,655 +188,861 @@
             position: relative;
             overflow: hidden;
         }
-        
         .cta-button::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s;
         }
-        
-        .cta-button:hover::before {
-            left: 100%;
-        }
-        
+        .cta-button:hover::before { left: 100%; }
         .cta-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            color: white;
+            text-decoration: none;
         }
-        
+        .cta-button-outline {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 12px;
+            color: white;
+            padding: 10px 24px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+        .cta-button-outline:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        /* ── Cards ── */
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-2xl);
+        }
+        [data-theme="dark"] .feature-card {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .tool-card:hover::before { transform: scaleX(1); }
+        .tool-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-2xl);
+        }
+        [data-theme="dark"] .tool-card {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+        }
+
+        .tool-icon {
+            font-size: 2.75rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        .tool-card:hover .tool-icon { transform: scale(1.15) rotate(5deg); }
+
+        /* ── Category badges ── */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-pdf     { background: #fee2e2; color: #dc2626; }
+        .badge-image   { background: #fef3c7; color: #d97706; }
+        .badge-security{ background: #d1fae5; color: #059669; }
+        .badge-text    { background: #dbeafe; color: #2563eb; }
+        .badge-design  { background: #ede9fe; color: #7c3aed; }
+        .badge-data    { background: #ecfdf5; color: #047857; }
+        .badge-utility { background: #f3f4f6; color: #374151; }
+        .badge-new     { background: #fef3c7; color: #92400e; margin-left: 0.4rem; }
+        [data-theme="dark"] .badge-utility { background: var(--surface-light-dark); color: var(--text-secondary-dark); }
+
+        /* ── Filter Bar ── */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .filter-btn {
+            padding: 0.45rem 1rem;
+            border-radius: 30px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+        }
+        [data-theme="dark"] .filter-btn {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+        [data-theme="dark"] .filter-btn:hover,
+        [data-theme="dark"] .filter-btn.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+        }
+
+        /* ── Search ── */
+        .search-wrap {
+            position: relative;
+            max-width: 420px;
+            margin: 0 auto 1.5rem;
+        }
+        .search-wrap svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            pointer-events: none;
+        }
+        #tool-search {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.8rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 30px;
+            font-size: 0.95rem;
+            background: white;
+            color: var(--gray-800);
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        #tool-search:focus { border-color: var(--primary-400); }
+        [data-theme="dark"] #tool-search {
+            background: var(--surface-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        #no-results {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+            font-size: 1rem;
+        }
+
+        /* ── Support Floating Btn ── */
         .floating-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 28px;
+            right: 28px;
             background: var(--gradient-secondary);
             color: white;
             border: none;
             border-radius: 60px;
-            padding: 16px 24px;
+            padding: 14px 22px;
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
             z-index: 1000;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
+            font-size: 0.9rem;
         }
-        
         .floating-btn:hover {
             transform: translateY(-4px) scale(1.05);
             box-shadow: 0 12px 35px rgba(240, 147, 251, 0.6);
         }
-        
+        @media (max-width: 768px) {
+            .floating-btn { bottom: 20px; right: 20px; padding: 12px 18px; }
+        }
 
-        
+        /* ── Modal ── */
         .modal {
             display: none;
             position: fixed;
             z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            inset: 0;
+            background: rgba(0,0,0,0.75);
             backdrop-filter: blur(5px);
         }
-        
         .modal-content {
             background: white;
             margin: 5% auto;
-            padding: 32px;
+            padding: 2rem;
             border-radius: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 480px;
             box-shadow: var(--shadow-2xl);
-            transform: scale(0.7);
+            transform: scale(0.75);
             opacity: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .modal.show .modal-content {
-            transform: scale(1);
-            opacity: 1;
+        .modal.show .modal-content { transform: scale(1); opacity: 1; }
+        [data-theme="dark"] .modal-content {
+            background: var(--surface-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
         }
-        
         .close {
             color: var(--gray-500);
             float: right;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             cursor: pointer;
-            transition: color 0.3s ease;
+            line-height: 1;
         }
-        
-        .close:hover {
-            color: var(--gray-800);
-        }
-        
+        .close:hover { color: var(--gray-800); }
+
         .support-btn {
-            background: var(--gradient-success);
             border: none;
             border-radius: 12px;
             color: white;
-            padding: 16px 24px;
+            padding: 14px 20px;
             font-weight: 600;
             text-decoration: none;
             display: block;
             text-align: center;
             transition: all 0.3s ease;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        
         .support-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+            color: white;
+            text-decoration: none;
         }
-        
+
+        /* ── About section ── */
+        .skill-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin: 0.2rem;
+            transition: all 0.2s;
+        }
+        .skill-tag:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        [data-theme="dark"] .skill-tag {
+            background: rgba(99,102,241,0.2);
+            color: var(--primary-300);
+        }
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--gray-200);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--gray-700);
+            transition: all 0.2s ease;
+        }
+        .social-link:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-600);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+        }
+        [data-theme="dark"] .social-link {
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+        [data-theme="dark"] .social-link:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-300);
+        }
+
+        /* ── Animations ── */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        
-        .animate-fade-in {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
-        .stagger-6 { animation-delay: 0.6s; }
-        
-        /* Dark mode support - System preference fallback */
-        @media (prefers-color-scheme: dark) {
-            body:not([data-theme]) .feature-card, 
-            body:not([data-theme]) .tool-card {
-                background: rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                color: white;
-            }
-            
-            body:not([data-theme]) .modal-content {
-                background: var(--surface-dark);
-                color: var(--text-dark);
-            }
-        }
-        
-        /* Mobile optimizations */
+        .fade-in { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Misc ── */
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
         @media (max-width: 768px) {
-            .floating-btn {
-                bottom: 20px;
-                right: 20px;
-                padding: 12px 20px;
-            }
-            
-            .tool-card:hover {
-                transform: translateY(-6px) scale(1.01);
-            }
+            .tool-card:hover { transform: translateY(-6px) scale(1.01); }
         }
+        [data-theme="dark"] body { color: var(--text-dark); }
+        [data-theme="dark"] h2, [data-theme="dark"] h3 { color: var(--text-dark) !important; }
+        [data-theme="dark"] p.text-gray-600, [data-theme="dark"] p.text-gray-500 { color: var(--text-secondary-dark) !important; }
+        [data-theme="dark"] .bg-gray-50, [data-theme="dark"] .bg-white { background: var(--bg-dark) !important; }
+        .hidden-tool { display: none !important; }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header -->
-    <header class="gradient-bg text-white py-16 relative">
-        <div class="container mx-auto px-4">
-            <div class="hero-content flex flex-col items-center text-center">
-                <div class="animate-fade-in">
-                    <h1 class="text-5xl md:text-6xl font-bold mb-4 leading-tight">
-                        🔒 <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">Private Online Tools</span>
-                    </h1>
-                    <p class="text-xl md:text-2xl opacity-90 mb-8 max-w-2xl mx-auto">
-                        100% Client-Side • No Uploads • Lightning Fast & Completely Free
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="#tools" class="cta-button text-lg px-8 py-4">
-                            🚀 Explore Tools
-                        </a>
-                        <a href="#features" class="cta-button bg-white text-purple-600 hover:bg-gray-50 text-lg px-8 py-4">
-                            ✨ Learn More
-                        </a>
+
+    <!-- ── Navbar ── -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/" class="navbar-logo">🔒 PrivTools</a>
+            <div class="navbar-links">
+                <a href="#tools">Tools</a>
+                <a href="#about">About</a>
+                <a href="https://github.com/ahmad25kamel/ahmad25kamel.github.io" target="_blank" rel="noopener">GitHub</a>
+            </div>
+            <div class="navbar-actions">
+                <!-- theme-toggle.js will populate this button -->
+                <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <span role="img" aria-hidden="true">🌙</span><span>Dark</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <header class="gradient-bg text-white py-20">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 leading-tight fade-in">
+                    🔒 Private Online Tools
+                </h1>
+                <p class="text-xl md:text-2xl opacity-90 mb-8 max-w-2xl mx-auto fade-in" style="transition-delay:0.1s">
+                    100% Client-Side · No Uploads · Lightning Fast &amp; Completely Free
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in" style="transition-delay:0.2s">
+                    <a href="#tools" class="cta-button text-lg px-8 py-4">🚀 Explore Tools</a>
+                    <a href="#about" class="cta-button-outline text-lg px-8 py-4">👤 About the Author</a>
+                </div>
+                <div class="hero-stats fade-in" style="transition-delay:0.3s">
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">16</span>
+                        <span class="hero-stat-label">Free Tools</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">0</span>
+                        <span class="hero-stat-label">Uploads</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">∞</span>
+                        <span class="hero-stat-label">Free Forever</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-num">8+</span>
+                        <span class="hero-stat-label">Years Experience</span>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Floating elements for visual appeal -->
-        <div class="absolute top-20 left-10 opacity-20 text-6xl animate-pulse">🛡️</div>
-        <div class="absolute bottom-20 right-10 opacity-20 text-4xl animate-pulse">⚡</div>
-        <div class="absolute top-32 right-20 opacity-20 text-5xl animate-pulse">🔐</div>
+        <!-- Decorative floating elements -->
+        <div class="absolute top-16 left-8 opacity-15 text-6xl" aria-hidden="true">🛡️</div>
+        <div class="absolute bottom-16 right-8 opacity-15 text-5xl" aria-hidden="true">⚡</div>
+        <div class="absolute top-28 right-16 opacity-15 text-5xl" aria-hidden="true">🔐</div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-12">
-        <!-- Features Section -->
-        <section id="features" class="text-center mb-20">
-            <div class="animate-fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Why Choose Our Tools?</h2>
-                <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-                    Experience the future of privacy-first online tools with cutting-edge technology
-                </p>
-            </div>
+    <!-- ── Main ── -->
+    <main class="container py-16">
+
+        <!-- Features -->
+        <section id="features" class="text-center mb-24">
+            <h2 class="text-4xl font-bold text-gray-800 mb-3 fade-in">Why Choose Our Tools?</h2>
+            <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto fade-in" style="transition-delay:0.1s">
+                Privacy-first tools built with cutting-edge browser APIs.
+            </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="feature-card p-8 animate-fade-in stagger-1">
-                    <div class="tool-icon mb-6">🔒</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">100% Private</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        All processing happens locally in your browser. Zero data collection, zero uploads. 
-                        Your files never leave your device.
-                    </p>
+                <div class="feature-card p-8 fade-in" style="transition-delay:0.1s">
+                    <div class="tool-icon mb-5">🔒</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">100% Private</h3>
+                    <p class="text-gray-600 leading-relaxed">All processing happens locally in your browser. Zero data collection, zero uploads. Your files never leave your device.</p>
                 </div>
-                <div class="feature-card p-8 animate-fade-in stagger-2">
-                    <div class="tool-icon mb-6">⚡</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Lightning Fast</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        No server processing delays. Instant results with modern browser APIs. 
-                        Process large files in seconds.
-                    </p>
+                <div class="feature-card p-8 fade-in" style="transition-delay:0.2s">
+                    <div class="tool-icon mb-5">⚡</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Lightning Fast</h3>
+                    <p class="text-gray-600 leading-relaxed">No server round-trips. Instant results using modern browser APIs. Process large files in seconds, even offline.</p>
                 </div>
-                <div class="feature-card p-8 animate-fade-in stagger-3">
-                    <div class="tool-icon mb-6">🚫</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">No Ads, No Tracking</h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        Clean, distraction-free interface. No annoying ads or tracking scripts. 
-                        Just pure functionality.
-                    </p>
+                <div class="feature-card p-8 fade-in" style="transition-delay:0.3s">
+                    <div class="tool-icon mb-5">🚫</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">No Ads, No Tracking</h3>
+                    <p class="text-gray-600 leading-relaxed">Clean, distraction-free interface. No annoying ads or tracking scripts. Just pure, focused functionality.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Tools Grid -->
+        <!-- Tools -->
         <section id="tools">
-            <div class="text-center mb-16 animate-fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Available Tools</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Professional-grade tools for your daily workflow. All running privately in your browser.
-                </p>
+            <div class="text-center mb-10 fade-in">
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">All 16 Tools</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Professional-grade tools for your daily workflow — all running privately in your browser.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
+
+            <!-- Search -->
+            <div class="search-wrap fade-in">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input id="tool-search" type="search" placeholder="Search tools…" aria-label="Search tools">
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-bar fade-in" role="group" aria-label="Filter by category">
+                <button class="filter-btn active" data-filter="all">All (16)</button>
+                <button class="filter-btn" data-filter="pdf">📄 PDF (3)</button>
+                <button class="filter-btn" data-filter="image">🖼️ Image (3)</button>
+                <button class="filter-btn" data-filter="design">🎨 Design (2)</button>
+                <button class="filter-btn" data-filter="security">🔐 Security (2)</button>
+                <button class="filter-btn" data-filter="text">📝 Text &amp; Data (3)</button>
+                <button class="filter-btn" data-filter="utility">🛠️ Utility (3)</button>
+            </div>
+
+            <div id="no-results">No tools found. Try a different search or category.</div>
+
+            <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
                 <!-- QR Code Tools -->
-                <div class="tool-card p-8 animate-fade-in stagger-1">
-                    <div class="tool-icon mb-6">📱</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">QR Code Tools</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Generate QR codes from text or scan QR codes from images. Perfect for sharing links, 
-                        contact info, and more.
-                    </p>
-                    <a href="/tools/qr-tools.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="utility" data-name="qr code generate scan barcode">
+                    <div class="tool-icon mb-5">📱</div>
+                    <div class="mb-3"><span class="badge badge-utility">Utility</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">QR Code Tools</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Generate QR codes from text, URLs, or contact info — and decode QR codes from uploaded images.</p>
+                    <a href="/tools/qr-tools.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- PDF to Image -->
-                <div class="tool-card p-8 animate-fade-in stagger-2">
-                    <div class="tool-icon mb-6">📄</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">PDF to Image</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Convert PDF pages to PNG or JPG images. Extract images from documents 
-                        with high quality output.
-                    </p>
-                    <a href="/tools/pdf-to-image.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
-                </div>
-
-                <!-- Image Compression -->
-                <div class="tool-card p-8 animate-fade-in stagger-3">
-                    <div class="tool-icon mb-6">🖼️</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Compress Images</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Reduce image file sizes while maintaining quality. Support for JPG, PNG, 
-                        and WebP formats.
-                    </p>
-                    <a href="/tools/compress-image.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
-                </div>
-
-                <!-- Image Resize -->
-                <div class="tool-card p-8 animate-fade-in stagger-4">
-                    <div class="tool-icon mb-6">📐</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Resize Images</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Change image dimensions, crop, or scale images to exact specifications 
-                        with live preview.
-                    </p>
-                    <a href="/tools/resize-image.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="pdf" data-name="pdf to image convert png jpg extract">
+                    <div class="tool-icon mb-5">📄</div>
+                    <div class="mb-3"><span class="badge badge-pdf">PDF</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">PDF to Image</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Convert PDF pages to high-quality PNG or JPG images. Extract every page instantly in your browser.</p>
+                    <a href="/tools/pdf-to-image.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- Split PDF -->
-                <div class="tool-card p-8 animate-fade-in stagger-5">
-                    <div class="tool-icon mb-6">✂️</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Split PDF</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Extract specific pages from PDF documents or split into individual 
-                        page files.
-                    </p>
-                    <a href="/tools/split-pdf.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="pdf" data-name="split pdf extract pages separate">
+                    <div class="tool-icon mb-5">✂️</div>
+                    <div class="mb-3"><span class="badge badge-pdf">PDF</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Split PDF</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Extract specific pages from any PDF or split it into individual page files — all locally.</p>
+                    <a href="/tools/split-pdf.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- Merge PDF -->
-                <div class="tool-card p-8 animate-fade-in stagger-6">
-                    <div class="tool-icon mb-6">📊</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Merge PDF</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Combine multiple PDF files into a single document with custom 
-                        page ordering.
-                    </p>
-                    <a href="/tools/merge-pdf.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="pdf" data-name="merge pdf combine join multiple">
+                    <div class="tool-icon mb-5">📑</div>
+                    <div class="mb-3"><span class="badge badge-pdf">PDF</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Merge PDF</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Combine multiple PDF files into one document with custom page ordering.</p>
+                    <a href="/tools/merge-pdf.html" class="cta-button">Open Tool →</a>
                 </div>
 
-            </div>
-        </section>
+                <!-- Compress Images -->
+                <div class="tool-card p-8 fade-in" data-categories="image" data-name="compress image jpg png webp reduce size">
+                    <div class="tool-icon mb-5">🖼️</div>
+                    <div class="mb-3"><span class="badge badge-image">Image</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Compress Images</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Shrink image file sizes while keeping quality. Supports JPG, PNG, and WebP formats.</p>
+                    <a href="/tools/compress-image.html" class="cta-button">Open Tool →</a>
+                </div>
 
-        <!-- More Tools -->
-        <section class="mt-20">
-            <div class="text-center mb-16 animate-fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">More Tools</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Additional privacy-focused tools for text processing, design, security, and data conversion.
-                </p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <!-- Text & Markdown Converter -->
-                <div class="tool-card p-8 animate-fade-in stagger-7">
-                    <div class="tool-icon mb-6">📝</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Text & Markdown Converter</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Convert between text, Markdown and HTML formats. Live preview, formatting tools, 
-                        and export options for documentation.
-                    </p>
-                    <a href="/tools/text-markdown-converter.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <!-- Resize Images -->
+                <div class="tool-card p-8 fade-in" data-categories="image" data-name="resize image dimensions scale crop">
+                    <div class="tool-icon mb-5">📐</div>
+                    <div class="mb-3"><span class="badge badge-image">Image</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Resize Images</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Change image dimensions, crop, or scale to exact specifications with a live preview.</p>
+                    <a href="/tools/resize-image.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- Color Palette Generator -->
-                <div class="tool-card p-8 animate-fade-in stagger-8">
-                    <div class="tool-icon mb-6">🎨</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Color Palette Generator</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Create beautiful color schemes and palettes. Generate harmonious colors, 
-                        extract from images, and export in various formats.
-                    </p>
-                    <a href="/tools/color-palette-generator.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="design" data-name="color palette generator hex rgb scheme extract">
+                    <div class="tool-icon mb-5">🎨</div>
+                    <div class="mb-3"><span class="badge badge-design">Design</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Color Palette Generator</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Create beautiful color schemes, generate harmonious palettes, and extract colors from images.</p>
+                    <a href="/tools/color-palette-generator.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- CSS Gradient Generator -->
-                <div class="tool-card p-8 animate-fade-in stagger-8-1">
-                    <div class="tool-icon mb-6">🌈</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">CSS Gradient Generator</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Create beautiful CSS gradients with visual controls. Generate linear and radial gradients, 
-                        customize colors and directions, then copy CSS code instantly.
-                    </p>
-                    <a href="/tools/css-gradient-generator.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="design" data-name="css gradient linear radial generator copy code">
+                    <div class="tool-icon mb-5">🌈</div>
+                    <div class="mb-3"><span class="badge badge-design">Design</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">CSS Gradient Generator</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Build linear and radial CSS gradients visually — customize colors and direction, copy code instantly.</p>
+                    <a href="/tools/css-gradient-generator.html" class="cta-button">Open Tool →</a>
                 </div>
 
-                <!-- Secure Password Generator -->
-                <div class="tool-card p-8 animate-fade-in stagger-9">
-                    <div class="tool-icon mb-6">🔐</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Secure Password Generator</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Generate strong, secure passwords and passphrases. Check password strength, 
-                        bulk generation, and security analysis.
-                    </p>
-                    <a href="/tools/password-generator.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <!-- Password Generator -->
+                <div class="tool-card p-8 fade-in" data-categories="security" data-name="password generator secure strong random passphrase">
+                    <div class="tool-icon mb-5">🔐</div>
+                    <div class="mb-3"><span class="badge badge-security">Security</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Secure Password Generator</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Generate strong passwords and passphrases, check password strength, and analyze security.</p>
+                    <a href="/tools/password-generator.html" class="cta-button">Open Tool →</a>
+                </div>
+
+                <!-- Hash & Checksum -->
+                <div class="tool-card p-8 fade-in" data-categories="security" data-name="hash checksum md5 sha256 verify file integrity">
+                    <div class="tool-icon mb-5">🔍</div>
+                    <div class="mb-3"><span class="badge badge-security">Security</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Hash &amp; Checksum Tools</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Generate and verify file hashes — MD5, SHA-256, and more. Confirm file integrity locally.</p>
+                    <a href="/tools/hash-checksum-tools.html" class="cta-button">Open Tool →</a>
+                </div>
+
+                <!-- Text & Markdown Converter -->
+                <div class="tool-card p-8 fade-in" data-categories="text" data-name="text markdown html converter preview format">
+                    <div class="tool-icon mb-5">📝</div>
+                    <div class="mb-3"><span class="badge badge-text">Text</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Text &amp; Markdown Converter</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Convert between plain text, Markdown, and HTML with a live preview and export options.</p>
+                    <a href="/tools/text-markdown-converter.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- CSV & JSON Converter -->
-                <div class="tool-card p-8 animate-fade-in stagger-10">
-                    <div class="tool-icon mb-6">📊</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">CSV & JSON Converter</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Convert between CSV and JSON formats. Parse, validate, and transform data 
-                        with custom delimiters and formatting options.
-                    </p>
-                    <a href="/tools/csv-json-converter.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
-                </div>
-
-                <!-- Hash & Checksum Tools -->
-                <div class="tool-card p-8 animate-fade-in stagger-11">
-                    <div class="tool-icon mb-6">🔍</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Hash & Checksum Tools</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Generate and verify file hashes and checksums. Support for MD5, SHA-256, 
-                        file integrity verification and comparison.
-                    </p>
-                    <a href="/tools/hash-checksum-tools.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="text" data-name="csv json converter parse validate transform data">
+                    <div class="tool-icon mb-5">🔄</div>
+                    <div class="mb-3"><span class="badge badge-text">Text</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">CSV &amp; JSON Converter</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Convert between CSV and JSON. Parse, validate, and transform data with custom delimiters.</p>
+                    <a href="/tools/csv-json-converter.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- Unit Converter -->
-                <div class="tool-card p-8 animate-fade-in stagger-12">
-                    <div class="tool-icon mb-6">📏</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Unit Converter</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Convert between different units of measurement. Length, weight, temperature, 
-                        area, volume, speed, and more with high precision.
-                    </p>
-                    <a href="/tools/unit-converter.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="utility" data-name="unit converter length weight temperature volume speed">
+                    <div class="tool-icon mb-5">📏</div>
+                    <div class="mb-3"><span class="badge badge-utility">Utility</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Unit Converter</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Convert length, weight, temperature, area, volume, speed and more with high precision.</p>
+                    <a href="/tools/unit-converter.html" class="cta-button">Open Tool →</a>
                 </div>
 
                 <!-- Bulk File Renamer -->
-                <div class="tool-card p-8 animate-fade-in stagger-13">
-                    <div class="tool-icon mb-6">📂</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Bulk File Renamer</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Rename multiple files in bulk with custom patterns. Add prefixes, suffixes, numbering, 
-                        and more. Preview changes before downloading.
-                    </p>
-                    <a href="/tools/bulk-file-renamer.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <div class="tool-card p-8 fade-in" data-categories="utility" data-name="bulk file rename pattern prefix suffix numbering">
+                    <div class="tool-icon mb-5">📂</div>
+                    <div class="mb-3"><span class="badge badge-utility">Utility</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Bulk File Renamer</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Rename many files at once using custom patterns — add prefixes, suffixes, or numbering. Preview first.</p>
+                    <a href="/tools/bulk-file-renamer.html" class="cta-button">Open Tool →</a>
                 </div>
 
-                <!-- Simple Invoice Generator -->
-                <div class="tool-card p-8 animate-fade-in stagger-14">
-                    <div class="tool-icon mb-6">🧾</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Simple Invoice Generator</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Create professional invoices for freelancers and small businesses. Add items, 
-                        calculate totals, and save or print invoices.
-                    </p>
-                    <a href="/tools/simple-invoice-generator.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <!-- Invoice Generator -->
+                <div class="tool-card p-8 fade-in" data-categories="text" data-name="invoice generator freelance billing print pdf">
+                    <div class="tool-icon mb-5">🧾</div>
+                    <div class="mb-3"><span class="badge badge-text">Business</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Invoice Generator</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Create professional invoices for freelancers and small businesses. Add items, totals, and print to PDF.</p>
+                    <a href="/tools/simple-invoice-generator.html" class="cta-button">Open Tool →</a>
                 </div>
 
-                <!-- Audio Trimmer & Converter -->
-                <div class="tool-card p-8 animate-fade-in stagger-15">
-                    <div class="tool-icon mb-6">🎵</div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Audio Trimmer & Converter</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        Trim and convert audio files in your browser. Support for MP3, WAV, OGG formats. 
-                        Cut audio segments, adjust volume, and export.
-                    </p>
-                    <a href="/tools/audio-trimmer-converter.html" class="cta-button inline-block">
-                        Open Tool →
-                    </a>
+                <!-- Audio Trimmer -->
+                <div class="tool-card p-8 fade-in" data-categories="utility" data-name="audio trimmer converter mp3 wav ogg trim cut">
+                    <div class="tool-icon mb-5">🎵</div>
+                    <div class="mb-3"><span class="badge badge-utility">Utility</span> <span class="badge badge-new">New</span></div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Audio Trimmer &amp; Converter</h3>
+                    <p class="text-gray-600 mb-5 leading-relaxed">Trim and convert audio files in your browser. Supports MP3, WAV, OGG. Cut segments and export.</p>
+                    <a href="/tools/audio-trimmer-converter.html" class="cta-button">Open Tool →</a>
                 </div>
 
-            </div>
+            </div><!-- /tools-grid -->
         </section>
 
         <!-- Request a Tool -->
-        <section class="mt-20 text-center animate-fade-in">
-            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 max-w-2xl mx-auto">
-                <h4 class="text-xl font-bold text-gray-800 mb-4">🚀 Request a Tool</h4>
-                <p class="text-gray-600 mb-4">
-                    Have a specific tool in mind? We'd love to hear your ideas and build it for the community!
-                </p>
-                <a href="https://github.com/ahmad25kamel/ahmad25kamel.github.io/discussions" 
-                   target="_blank" rel="noopener noreferrer"
-                   class="cta-button inline-block">
+        <section class="mt-20 text-center fade-in">
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-10 max-w-2xl mx-auto" style="border:1px solid rgba(99,102,241,0.12);">
+                <div class="text-4xl mb-4">🚀</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">Request a Tool</h3>
+                <p class="text-gray-600 mb-6">Have a specific tool in mind? Share your idea and it might become the next addition!</p>
+                <a href="https://github.com/ahmad25kamel/ahmad25kamel.github.io/discussions"
+                   target="_blank" rel="noopener noreferrer" class="cta-button">
                     💡 Suggest a Tool
                 </a>
             </div>
         </section>
+
+        <!-- About the Author -->
+        <section id="about" class="mt-24 fade-in">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-gray-800 mb-3">About the Author</h2>
+                <p class="text-xl text-gray-600">The developer behind these tools</p>
+            </div>
+
+            <div class="feature-card p-10 max-w-4xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-10 items-start">
+                    <!-- Avatar & Identity -->
+                    <div class="text-center flex-shrink-0 md:w-48">
+                        <div style="width:96px;height:96px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;font-size:3rem;margin:0 auto 1rem;">👨‍💻</div>
+                        <h3 class="text-2xl font-bold text-gray-800">Ahmad Kamel</h3>
+                        <p class="text-gray-500 text-sm mt-1">Full-Stack Developer</p>
+                        <p class="text-gray-500 text-sm">📍 Pontianak, Indonesia</p>
+                        <div class="flex flex-wrap justify-center gap-2 mt-4">
+                            <a href="https://github.com/ahmad25kamel" target="_blank" rel="noopener" class="social-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                GitHub
+                            </a>
+                            <a href="https://linkedin.com/in/ahmad25kamel" target="_blank" rel="noopener" class="social-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.89 1.63-1.84 3.36-1.84 3.6 0 4.26 2.37 4.26 5.45v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM6.62 20.45H4.06V9h2.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+                                LinkedIn
+                            </a>
+                            <a href="mailto:ahmad25kamel@gmail.com" class="social-link">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                Email
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Bio & Skills -->
+                    <div class="flex-1">
+                        <p class="text-gray-600 leading-relaxed mb-5">
+                            Hi! I'm Ahmad, a full-stack developer with <strong>8+ years of experience</strong> building scalable web and mobile applications for clients worldwide. I created these tools because I believe privacy matters — your files should stay on your device, not on someone else's server.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            With over <strong>50 successfully delivered projects</strong> and a 98% client satisfaction rate, I specialize in React, Angular, Node.js, PHP, and mobile development with React Native and Flutter.
+                        </p>
+
+                        <!-- Stats row -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="text-center p-3 rounded-xl" style="background:var(--primary-50);">
+                                <div class="text-2xl font-bold" style="color:var(--primary-600);">8+</div>
+                                <div class="text-xs text-gray-500 font-medium mt-1">Years Exp.</div>
+                            </div>
+                            <div class="text-center p-3 rounded-xl" style="background:var(--primary-50);">
+                                <div class="text-2xl font-bold" style="color:var(--primary-600);">50+</div>
+                                <div class="text-xs text-gray-500 font-medium mt-1">Projects</div>
+                            </div>
+                            <div class="text-center p-3 rounded-xl" style="background:var(--primary-50);">
+                                <div class="text-2xl font-bold" style="color:var(--primary-600);">98%</div>
+                                <div class="text-xs text-gray-500 font-medium mt-1">Satisfaction</div>
+                            </div>
+                            <div class="text-center p-3 rounded-xl" style="background:var(--primary-50);">
+                                <div class="text-2xl font-bold" style="color:var(--primary-600);">16</div>
+                                <div class="text-xs text-gray-500 font-medium mt-1">Free Tools</div>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold text-gray-700 mb-2">Tech Stack</h4>
+                        <div>
+                            <span class="skill-tag">React.js</span>
+                            <span class="skill-tag">Angular</span>
+                            <span class="skill-tag">Vue.js</span>
+                            <span class="skill-tag">TypeScript</span>
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">PHP</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">React Native</span>
+                            <span class="skill-tag">Flutter</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12 mt-20 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-blue-900/20"></div>
-        <div class="container mx-auto px-4 relative z-10">
+    <footer class="mt-24 relative overflow-hidden" style="background:#0f172a; color:#f8fafc;">
+        <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(99,102,241,0.15) 0%,rgba(139,92,246,0.1) 100%);"></div>
+        <div class="container relative py-14" style="z-index:1;">
             <div class="text-center">
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold mb-4">💝 Support This Project</h3>
-                    <p class="text-lg text-gray-300 mb-6 max-w-2xl mx-auto">
-                        If these tools saved your time or helped your work, consider supporting the development. 
-                        Every contribution helps keep these tools free and ad-free!
-                    </p>
-                    <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                           class="support-btn bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
-                            🇮🇩 Support via Saweria
-                        </a>
-                        <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer"
-                           class="support-btn bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                            💖 GitHub Sponsors
-                        </a>
-                    </div>
+                <h3 class="text-2xl font-bold mb-3">💝 Support This Project</h3>
+                <p class="mb-6 max-w-xl mx-auto" style="color:#cbd5e1;">
+                    These tools are 100% free and ad-free. If they save you time, consider buying me a coffee!
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10">
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer"
+                       class="support-btn bg-gradient-to-r from-orange-500 to-red-500">
+                        🇮🇩 Support via Saweria
+                    </a>
+                    <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer"
+                       class="support-btn bg-gradient-to-r from-purple-500 to-pink-500">
+                        💖 GitHub Sponsors
+                    </a>
                 </div>
-                
-                <div class="border-t border-gray-700 pt-8">
-                    <div class="text-gray-400 space-y-2">
-                        <p class="text-lg">
-                            Made with ❤️ in Indonesia by 
-                            <a href="https://github.com/ahmad25kamel" class="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
-                                Ahmad Kamel
-                            </a>
-                        </p>
-                        <p>&copy; 2024 Private Online Tools. All rights reserved.</p>
-                        <p class="text-sm">
-                            🌟 Open source • 🔒 Privacy-first • ⚡ Zero tracking
-                        </p>
+
+                <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:2rem;">
+                    <div class="flex justify-center gap-5 mb-4 flex-wrap">
+                        <a href="https://github.com/ahmad25kamel" target="_blank" rel="noopener" style="color:#94a3b8; text-decoration:none; font-size:0.875rem; transition:color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#94a3b8'">GitHub</a>
+                        <a href="https://linkedin.com/in/ahmad25kamel" target="_blank" rel="noopener" style="color:#94a3b8; text-decoration:none; font-size:0.875rem; transition:color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#94a3b8'">LinkedIn</a>
+                        <a href="https://twitter.com/ahmad25kamel" target="_blank" rel="noopener" style="color:#94a3b8; text-decoration:none; font-size:0.875rem; transition:color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#94a3b8'">Twitter</a>
+                        <a href="mailto:ahmad25kamel@gmail.com" style="color:#94a3b8; text-decoration:none; font-size:0.875rem; transition:color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#94a3b8'">Email</a>
                     </div>
+                    <p style="color:#64748b; font-size:0.9rem;">
+                        Made with ❤️ in Indonesia by
+                        <a href="https://github.com/ahmad25kamel" style="color:#a78bfa; font-weight:600; text-decoration:none;">Ahmad Kamel</a>
+                    </p>
+                    <p style="color:#475569; font-size:0.8rem; margin-top:0.5rem;">
+                        &copy; 2026 Private Online Tools · Open Source · Privacy-First · Zero Tracking
+                    </p>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Floating Support Button -->
-    <button id="supportBtn" class="floating-btn">☕ Support</button>
+    <button id="supportBtn" class="floating-btn" aria-label="Support this project">☕ Support</button>
 
     <!-- Support Modal -->
-    <div id="supportModal" class="modal">
+    <div id="supportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" aria-label="Close">&times;</span>
             <div class="text-center">
-                <h2 class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <h2 id="modalTitle" class="text-2xl font-bold mb-3" style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
                     💖 Support This Project
                 </h2>
-                <p class="text-gray-600 mb-8 text-lg leading-relaxed">
-                    These tools are completely free, ad-free, and privacy-focused. If they've helped your workflow 
-                    or saved you time, consider supporting the development to keep them running and growing!
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    These tools are completely free, ad-free, and privacy-focused. If they've helped you, consider supporting further development!
                 </p>
-                <div class="space-y-4">
-                    <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer" 
-                       class="support-btn bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
+                <div>
+                    <a href="https://saweria.co/ahmad25kamel" target="_blank" rel="noopener noreferrer"
+                       class="support-btn bg-gradient-to-r from-orange-500 to-red-500">
                         🇮🇩 Support via Saweria (Indonesia)
                     </a>
                     <a href="https://github.com/sponsors/ahmad25kamel" target="_blank" rel="noopener noreferrer"
-                       class="support-btn bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                       class="support-btn bg-gradient-to-r from-purple-500 to-pink-500">
                         💖 GitHub Sponsors (Global)
                     </a>
                 </div>
-                <p class="text-sm text-gray-500 mt-6">
-                    🙏 Every contribution helps keep these tools free and ad-free for everyone
+                <p style="font-size:0.8rem; color:var(--gray-500); margin-top:1rem;">
+                    🙏 Every contribution helps keep these tools free for everyone
                 </p>
             </div>
         </div>
     </div>
 
     <script>
-        // Support modal functionality with improved animations
-        const supportBtn = document.getElementById('supportBtn');
+        // ── Support Modal ──
+        const supportBtn   = document.getElementById('supportBtn');
         const supportModal = document.getElementById('supportModal');
-        const closeModal = document.querySelector('.close');
+        const closeBtn     = document.querySelector('.close');
 
         function showModal() {
             supportModal.style.display = 'block';
             setTimeout(() => supportModal.classList.add('show'), 10);
         }
-
         function hideModal() {
             supportModal.classList.remove('show');
             setTimeout(() => supportModal.style.display = 'none', 300);
         }
-
         supportBtn.addEventListener('click', showModal);
-        closeModal.addEventListener('click', hideModal);
+        closeBtn.addEventListener('click', hideModal);
+        window.addEventListener('click', e => { if (e.target === supportModal) hideModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') hideModal(); });
 
-        window.addEventListener('click', (event) => {
-            if (event.target === supportModal) {
-                hideModal();
-            }
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+        // ── Smooth scroll ──
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
 
-        // Intersection Observer for animations on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
+        // ── Scroll animations ──
+        const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-        // Initialize animations
-        document.querySelectorAll('.animate-fade-in').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            observer.observe(el);
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // ── Tool Search ──
+        const searchInput = document.getElementById('tool-search');
+        const toolCards   = document.querySelectorAll('#tools-grid .tool-card');
+        const noResults   = document.getElementById('no-results');
+        let activeFilter  = 'all';
+
+        function applyFilters() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visible = 0;
+            toolCards.forEach(card => {
+                const name       = (card.dataset.name || '').toLowerCase();
+                const categories = (card.dataset.categories || '').toLowerCase();
+                const matchSearch  = !query || name.includes(query);
+                const matchFilter  = activeFilter === 'all' || categories.includes(activeFilter);
+                if (matchSearch && matchFilter) {
+                    card.classList.remove('hidden-tool');
+                    visible++;
+                } else {
+                    card.classList.add('hidden-tool');
+                }
+            });
+            noResults.style.display = visible === 0 ? 'block' : 'none';
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+
+        // ── Category filter ──
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeFilter = btn.dataset.filter;
+                applyFilters();
+            });
         });
 
-        // Add some interactive effects
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-12px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // Simple analytics (privacy-friendly)
+        // ── Analytics (respects DNT) ──
         if (!navigator.doNotTrack && !window.doNotTrack) {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F';
-            document.head.appendChild(script);
-            
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=G-EK4W85EF5F';
+            document.head.appendChild(s);
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-EK4W85EF5F');
         }
-
-        // Progressive enhancement: Preload critical images
-        document.addEventListener('DOMContentLoaded', () => {
-            // Preload critical images
-            const criticalImages = [
-                '/assets/img/favicon.png'
-            ];
-            
-            criticalImages.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-        });
     </script>
-    
-    <!-- Dark Mode Toggle -->
+
+    <!-- Dark mode toggle (populates #theme-toggle in the navbar) -->
     <script src="/assets/js/theme-toggle.js"></script>
 </body>
 </html>
